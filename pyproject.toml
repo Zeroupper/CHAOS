@@ -9,12 +9,9 @@ authors = [{ name = "Miklos Havlik", email = "s240069@dtu.dk" }, { name = "Peter
 keywords = ["llm", "agents", "multi-agent", "sensemaking"]
 
 dependencies = [
-    # LLM providers (uncomment as needed)
-    # "openai>=1.0.0",
-    # "anthropic>=0.20.0",
-    # Data handling
-    # "pandas>=2.0.0",
-    # "numpy>=1.24.0",
+    "openrouter>=0.1.0",
+    "pandas>=2.0.0",
+    "numpy>=2.0.0",
 ]
 
 [project.optional-dependencies]

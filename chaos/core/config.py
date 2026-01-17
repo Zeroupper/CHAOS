@@ -9,12 +9,9 @@ from typing import Any
 class LLMConfig:
     """LLM provider configuration."""
 
-    provider: str = "openai"  # openai, anthropic, openrouter, etc.
-    model: str = "gpt-4"
+    provider: str = "openrouter"
+    model: str = "anthropic/claude-sonnet-4"
     api_key: str | None = None
-    temperature: float = 0.7
-    max_tokens: int = 4096
-
 
 @dataclass
 class Config:
@@ -24,7 +21,6 @@ class Config:
     max_iterations: int = 5
     datasets_dir: Path = field(default_factory=lambda: Path("datasets"))
     verbose: bool = False
-    extra: dict[str, Any] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Config":

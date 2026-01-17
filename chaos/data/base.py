@@ -32,7 +32,10 @@ class BaseDataSource(ABC):
         Get the schema of this data source.
 
         Returns:
-            Dictionary describing available fields/columns.
+            Dictionary describing available fields/columns, including:
+            - columns: list of column names
+            - types: dict mapping column names to their types
+            - column_descriptions: dict mapping column names to descriptions
         """
         ...
 
@@ -81,16 +84,27 @@ class BaseDataSource(ABC):
 class CSVDataSource(BaseDataSource):
     """Data source for CSV files."""
 
-    def __init__(self, name: str, file_path: Path, description: str = "") -> None:
+    def __init__(
+        self,
+        name: str,
+        file_path: Path,
+        description: str = "",
+    ) -> None:
         self.name = name
         self.file_path = file_path
         self.description = description or f"CSV data from {file_path.name}"
+        self.column_descriptions: dict[str, str] = {}
         self._data = None
 
     def get_schema(self) -> dict[str, Any]:
         """Get CSV column schema."""
-        # TODO: Implement schema extraction
-        return {"columns": [], "types": {}}
+        # TODO: Implement schema extraction (columns/types from actual CSV)
+        # column_descriptions is populated by an agent parsing self.description
+        return {
+            "columns": [],
+            "types": {},
+            "column_descriptions": self.column_descriptions,
+        }
 
     def get_example_queries(self) -> list[str]:
         return [

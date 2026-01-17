@@ -10,9 +10,7 @@ class MemoryEntry:
     """Single entry in working memory."""
 
     content: Any
-    source: str
     timestamp: datetime = field(default_factory=datetime.now)
-    metadata: dict[str, Any] = field(default_factory=dict)
 
 
 class Memory:
@@ -32,34 +30,23 @@ class Memory:
         Add new information to memory.
 
         Args:
-            info: Information dict with 'content', 'source', and optional 'metadata'.
+            info: Information dict with 'content'.
         """
-        entry = MemoryEntry(
-            content=info.get("content"),
-            source=info.get("source", "unknown"),
-            metadata=info.get("metadata", {}),
-        )
+        entry = MemoryEntry(content=info.get("content"))
         self._entries.append(entry)
         self._update_summary()
 
-    def get_entries(
-        self,
-        source: str | None = None,
-        limit: int | None = None,
-    ) -> list[MemoryEntry]:
+    def get_entries(self, limit: int | None = None) -> list[MemoryEntry]:
         """
-        Get memory entries, optionally filtered by source.
+        Get memory entries.
 
         Args:
-            source: Filter by source name.
             limit: Maximum number of entries to return.
 
         Returns:
             List of memory entries.
         """
         entries = self._entries
-        if source:
-            entries = [e for e in entries if e.source == source]
         if limit:
             entries = entries[-limit:]
         return entries
@@ -73,26 +60,10 @@ class Memory:
         self._entries = []
         self._summary = ""
 
-    def export(self) -> dict[str, Any]:
-        """Export memory state for persistence or inspection."""
-        return {
-            "entries": [
-                {
-                    "content": e.content,
-                    "source": e.source,
-                    "timestamp": e.timestamp.isoformat(),
-                    "metadata": e.metadata,
-                }
-                for e in self._entries
-            ],
-            "summary": self._summary,
-        }
-
     def _update_summary(self) -> None:
         """Update the memory summary after new entries."""
         # TODO: Implement summarization (possibly using LLM)
-        sources = set(e.source for e in self._entries)
-        self._summary = f"Memory contains {len(self._entries)} entries from: {', '.join(sources)}"
+        self._summary = f"Memory contains {len(self._entries)} entries."
 
     def get_context_for_llm(self, max_entries: int = 10) -> str:
         """
@@ -110,6 +81,5 @@ class Memory:
         recent = self._entries[-max_entries:]
         lines = ["Information gathered so far:"]
         for i, entry in enumerate(recent, 1):
-            lines.append(f"\n{i}. From {entry.source}:")
-            lines.append(f"   {entry.content}")
+            lines.append(f"\n{i}. {entry.content}")
         return "\n".join(lines)
