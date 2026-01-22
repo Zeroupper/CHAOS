@@ -4,6 +4,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Any
 
+import pandas as pd
+
 
 class BaseDataSource(ABC):
     """
@@ -94,34 +96,107 @@ class CSVDataSource(BaseDataSource):
         self.file_path = file_path
         self.description = description or f"CSV data from {file_path.name}"
         self.column_descriptions: dict[str, str] = {}
+        self._data: pd.DataFrame | None = None
+
+    def connect(self) -> None:
+        """Load CSV file into memory."""
+        if self._data is None:
+            self._data = pd.read_csv(self.file_path)
+
+    def disconnect(self) -> None:
+        """Clear loaded data."""
         self._data = None
 
     def get_schema(self) -> dict[str, Any]:
         """Get CSV column schema."""
-        # TODO: Implement schema extraction (columns/types from actual CSV)
-        # column_descriptions is populated by an agent parsing self.description
+        self.connect()
+        if self._data is None:
+            return {"columns": [], "types": {}, "row_count": 0}
+
         return {
-            "columns": [],
-            "types": {},
+            "columns": list(self._data.columns),
+            "types": {col: str(dtype) for col, dtype in self._data.dtypes.items()},
+            "row_count": len(self._data),
             "column_descriptions": self.column_descriptions,
         }
 
     def get_example_queries(self) -> list[str]:
         return [
-            f"Get all rows from {self.name}",
-            f"Filter {self.name} where column_name = value",
+            f"exec(code=\"result = df['column'].mean()\") - Compute average of a column in {self.name}",
+            f"exec(code=\"result = len(df)\") - Count rows in {self.name}",
+            f"exec(code=\"result = df.groupby('col')['val'].sum().to_dict()\") - Group and aggregate",
+            f"exec(code=\"result = df.describe().to_dict()\") - Get statistical summary",
         ]
 
     def query(self, query: str, **kwargs: Any) -> Any:
-        """Execute query on CSV data."""
-        # TODO: Implement query execution (e.g., using pandas)
-        return None
+        """
+        Execute query on CSV data.
 
-    def connect(self) -> None:
-        """Load CSV file."""
-        # TODO: Load CSV using pandas
-        pass
+        Args:
+            query: Query type to execute. Use "exec" to run Python code.
+            **kwargs: Query parameters. For "exec", pass code="<python code>".
 
-    def disconnect(self) -> None:
-        """Clear loaded data."""
-        self._data = None
+        Returns:
+            Query results as dict.
+        """
+        self.connect()
+        if self._data is None:
+            return {"error": "Data not loaded"}
+
+        try:
+            if query == "exec":
+                import json as _json
+
+                import numpy as np
+
+                code = kwargs.get("code", "")
+                if not code:
+                    return {"error": "No code provided"}
+
+                # Create restricted namespace with DataFrame and common libraries
+                namespace = {
+                    "df": self._data.copy(),
+                    "pd": pd,
+                    "np": np,
+                    "result": None,
+                }
+
+                try:
+                    # Execute code with restricted builtins
+                    exec(code, {"__builtins__": {}}, namespace)
+
+                    # Get the result
+                    result = namespace.get("result")
+
+                    # Serialize result to string for size control
+                    try:
+                        if hasattr(result, "to_dict"):
+                            result_str = _json.dumps(result.to_dict())
+                        elif hasattr(result, "tolist"):
+                            result_str = _json.dumps(result.tolist())
+                        else:
+                            result_str = _json.dumps(result, default=str)
+                    except (TypeError, ValueError):
+                        result_str = str(result)
+
+                    # Truncate if too large
+                    max_chars = 5000
+                    truncated = False
+                    if len(result_str) > max_chars:
+                        result_str = result_str[:max_chars]
+                        truncated = True
+
+                    return {
+                        "result": result_str,
+                        "truncated": truncated,
+                    }
+
+                except Exception as e:
+                    return {"error": f"Code execution failed: {e}"}
+
+            else:
+                return {"error": f"Unknown query type '{query}'. Use 'exec' with code parameter."}
+
+        except Exception as e:
+            return {"error": str(e)}
+

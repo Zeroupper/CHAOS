@@ -83,3 +83,22 @@ class Memory:
         for i, entry in enumerate(recent, 1):
             lines.append(f"\n{i}. {entry.content}")
         return "\n".join(lines)
+
+    def export(self) -> dict[str, Any]:
+        """
+        Export memory contents for final result.
+
+        Returns:
+            Dictionary with memory summary and entries.
+        """
+        return {
+            "summary": self._summary,
+            "entry_count": len(self._entries),
+            "entries": [
+                {
+                    "content": entry.content,
+                    "timestamp": entry.timestamp.isoformat(),
+                }
+                for entry in self._entries
+            ],
+        }

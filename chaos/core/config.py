@@ -10,7 +10,7 @@ class LLMConfig:
     """LLM provider configuration."""
 
     provider: str = "openrouter"
-    model: str = "anthropic/claude-sonnet-4"
+    model: str = "openai/chatgpt-4o-latest"
     api_key: str | None = None
 
 @dataclass

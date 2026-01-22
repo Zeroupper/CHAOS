@@ -8,39 +8,39 @@ A multi-agent LLM system for open-ended sensemaking over datasets.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                         User Query                               │
-└─────────────────────────┬───────────────────────────────────────┘
-                          ▼
+│                          User Query                             │
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Planner Agent                               │
-│              Creates execution plan from query                   │
-└─────────────────────────┬───────────────────────────────────────┘
-                          ▼
+│                        Planner Agent                            │
+│                 Creates execution plan from query               │
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Sensemaking Loop                              │
+│                    Sensemaking Loop                             │
 │  ┌──────────────────┐         ┌───────────────────────────┐     │
 │  │  Sensemaker      │◄───────►│  Information Seeking      │     │
 │  │  Agent           │         │  Agent                    │     │
 │  │  - Updates memory│         │  - Queries data sources   │     │
 │  │  - Synthesizes   │         │  - Uses tools             │     │
 │  │  - Sends COMPLETE│         │                           │     │
-│  └──────────────────┘         └───────────┬───────────────┘     │
-│                                           │                      │
-│                                           ▼                      │
+│  └──────────────────┘         └─────────────┬─────────────┘     │
+│                                             │                   │
+│                                             ▼                   │
 │                               ┌───────────────────────────┐     │
 │                               │  Data Sources & Tools     │     │
 │                               │  (Registry-based)         │     │
 │                               └───────────────────────────┘     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          ▼
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                      Verifier Agent                              │
-│             Validates answer, creates report                     │
-└─────────────────────────┬───────────────────────────────────────┘
-                          ▼
+│                        Verifier Agent                           │
+│                Validates answer, creates report                 │
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Human Review                                  │
-│            Approve / Reject / Add Info                          │
+│                         Human Review                            │
+│                 Approve / Reject / Add Info                     │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -48,26 +48,26 @@ A multi-agent LLM system for open-ended sensemaking over datasets.
 
 ```
 CHAOS/
-├── chaos/                  # Main package
-│   ├── core/              # Orchestration & config
-│   │   ├── config.py      # Configuration management
-│   │   └── orchestrator.py # Main pipeline orchestrator
-│   ├── agents/            # Agent implementations
-│   │   ├── base.py        # Base agent class
-│   │   ├── planner.py     # Creates execution plans
-│   │   ├── sensemaker.py  # Synthesizes information
+├── chaos/                 # Main package
+│   ├── core/                # Orchestration & config
+│   │   ├── config.py          # Configuration management
+│   │   └── orchestrator.py    # Main pipeline orchestrator
+│   ├── agents/             # Agent implementations
+│   │   ├── base.py          # Base agent class
+│   │   ├── planner.py       # Creates execution plans
+│   │   ├── sensemaker.py    # Synthesizes information
 │   │   ├── information_seeker.py  # Retrieves data
-│   │   └── verifier.py    # Validates answers
-│   ├── tools/             # Extensible tool system
-│   │   ├── base.py        # Base tool class
-│   │   └── registry.py    # Tool registry
-│   ├── data/              # Data source management
-│   │   ├── base.py        # Base data source class
-│   │   └── registry.py    # Data source registry
-│   └── memory/            # Working memory
-│       └── memory.py      # Memory management
-├── datasets/              # Place datasets here
-├── tests/                 # Test suite
+│   │   └── verifier.py      # Validates answers
+│   ├── tools/              # Extensible tool system
+│   │   ├── base.py          # Base tool class
+│   │   └── registry.py      # Tool registry
+│   ├── data/               # Data source management
+│   │   ├── base.py          # Base data source class
+│   │   └── registry.py      # Data source registry
+│   └── memory/             # Working memory
+│       └── memory.py         # Memory management
+├── datasets/             # Place datasets here
+├── tests/                # Test suite
 ├── main.py               # Entry point
 └── pyproject.toml        # Project configuration
 ```

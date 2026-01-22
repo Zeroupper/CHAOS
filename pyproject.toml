@@ -9,7 +9,7 @@ authors = [{ name = "Miklos Havlik", email = "s240069@dtu.dk" }, { name = "Peter
 keywords = ["llm", "agents", "multi-agent", "sensemaking"]
 
 dependencies = [
-    "openrouter>=0.1.0",
+    "httpx>=0.27.0",
     "pandas>=2.0.0",
     "numpy>=2.0.0",
 ]

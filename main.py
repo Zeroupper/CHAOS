@@ -4,11 +4,13 @@ Entry point for the multi-agent sensemaking system.
 """
 
 import argparse
+import sys
 from pathlib import Path
 
 from chaos.core.config import Config
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
+from chaos.llm import LLMClient
 from chaos.tools.registry import ToolRegistry
 
 
@@ -39,6 +41,12 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Enable verbose output",
     )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="openai/chatgpt-4o-latest",
+        help="LLM model to use (default: openai/chatgpt-4o-latest)",
+    )
     return parser.parse_args()
 
 
@@ -52,6 +60,16 @@ def main() -> None:
         datasets_dir=args.datasets_dir,
         verbose=args.verbose,
     )
+    config.llm.model = args.model
+
+    # Initialize LLM client
+    try:
+        llm_client = LLMClient(config.llm)
+    except ValueError as e:
+        print(f"Error: {e}")
+        print("\nPlease set your OpenRouter API key:")
+        print("  export OPENROUTER_API_KEY=your_key_here")
+        sys.exit(1)
 
     # Initialize registries
     tool_registry = ToolRegistry()
@@ -60,9 +78,16 @@ def main() -> None:
     # Auto-discover data sources
     data_registry.auto_discover(args.datasets_dir)
 
+    if args.verbose:
+        sources = data_registry.list_sources()
+        print(f"Discovered {len(sources)} data sources:")
+        for source in sources:
+            print(f"  - {source['name']}")
+
     # Create orchestrator
     orchestrator = Orchestrator(
         config=config,
+        llm_client=llm_client,
         tool_registry=tool_registry,
         data_registry=data_registry,
     )
@@ -70,7 +95,11 @@ def main() -> None:
     # Run interactive mode or single query
     if args.query:
         result = orchestrator.run(args.query)
-        print(f"\nResult: {result}")
+        print(f"\n{'='*60}")
+        print("ANSWER:")
+        print(f"{'='*60}")
+        print(result.get("answer", "No answer generated"))
+        print(f"\nConfidence: {result.get('confidence', 0.0):.2f}")
     else:
         # Interactive mode
         print("CHAOS - Multi-agent Sensemaking System")
@@ -85,7 +114,12 @@ def main() -> None:
                     continue
 
                 result = orchestrator.run(query)
-                print(f"\nResult: {result}\n")
+                print(f"\n{'='*60}")
+                print("ANSWER:")
+                print(f"{'='*60}")
+                print(result.get("answer", "No answer generated"))
+                print(f"\nConfidence: {result.get('confidence', 0.0):.2f}")
+                print()
             except KeyboardInterrupt:
                 break
 
