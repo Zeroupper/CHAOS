@@ -96,6 +96,7 @@ class CSVDataSource(BaseDataSource):
         self.file_path = file_path
         self.description = description or f"CSV data from {file_path.name}"
         self.column_descriptions: dict[str, str] = {}
+        self.column_metadata: dict[str, dict[str, Any]] = {}
         self._data: pd.DataFrame | None = None
 
     def connect(self) -> None:
@@ -108,17 +109,23 @@ class CSVDataSource(BaseDataSource):
         self._data = None
 
     def get_schema(self) -> dict[str, Any]:
-        """Get CSV column schema."""
+        """Get CSV column schema with rich metadata if available."""
         self.connect()
         if self._data is None:
             return {"columns": [], "types": {}, "row_count": 0}
 
-        return {
+        schema = {
             "columns": list(self._data.columns),
             "types": {col: str(dtype) for col, dtype in self._data.dtypes.items()},
             "row_count": len(self._data),
             "column_descriptions": self.column_descriptions,
         }
+
+        # Include rich column metadata if available
+        if self.column_metadata:
+            schema["column_metadata"] = self.column_metadata
+
+        return schema
 
     def get_example_queries(self) -> list[str]:
         return [

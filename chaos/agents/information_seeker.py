@@ -4,6 +4,7 @@ import json
 from typing import Any
 
 from ..core.config import Config
+from ..core.logger import format_code, format_result, get_logger
 from ..data.registry import DataRegistry
 from ..llm import LLMClient
 from ..tools.registry import ToolRegistry
@@ -31,11 +32,16 @@ class InformationSeekingAgent(BaseAgent):
         super().__init__(config, llm_client)
         self.tool_registry = tool_registry
         self.data_registry = data_registry
+        self._logger = get_logger("InfoSeeker")
         self._system_prompt = """You are an information seeking agent. Write Python code to extract the needed information from datasets.
+
+You will be provided with detailed schema information about available datasets including column names, types, units, and value ranges. Use this information to write accurate queries.
 
 You have access to a pandas DataFrame called `df`. Write code that computes the answer and stores it in a variable called `result`.
 
 IMPORTANT:
+- Use exact column names from the schema (e.g., 'heart_rate' not 'hr')
+- Consider column units when reporting results (e.g., bpm, ms, steps)
 - Always compute aggregated results (mean, sum, count, etc.), never return raw data
 - Store your final answer in the `result` variable
 - Keep results small and focused
@@ -47,16 +53,17 @@ Examples:
 - Sum: result = df['steps'].sum()
 - Group stats: result = df.groupby('day')['steps'].mean().to_dict()
 - Filtered count: result = len(df[df['value'] > 100])
-- Multiple stats: result = {'mean': df['hr'].mean(), 'max': df['hr'].max()}
+- Multiple stats: result = {'mean': df['heart_rate'].mean(), 'max': df['heart_rate'].max()}
+- Time conversion: result = pd.to_datetime(df['timestamp'], unit='s').dt.hour.value_counts().to_dict()
 
 Respond with a JSON object:
 {
-    "source": "name of the data source to query",
+    "source": "exact_dataset_name_from_schema",
     "query_type": "exec",
-    "params": {"code": "result = df['column'].mean()"}
+    "params": {"code": "result = df['exact_column_name'].mean()"}
 }
 
-Be precise and compute exactly what is requested."""
+Be precise and use exact column names from the provided schema."""
 
     def execute(
         self,
@@ -81,6 +88,8 @@ Be precise and compute exactly what is requested."""
         context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         """Seek information from available sources."""
+        self._logger.debug(f"Seeking: {info_request}")
+
         # Get available sources info
         sources_info = self._get_sources_info()
 
@@ -88,6 +97,9 @@ Be precise and compute exactly what is requested."""
         query_decision = self._decide_query(info_request, sources_info, context)
 
         if "error" in query_decision:
+            self._logger.error(
+                f"Failed to decide query: {query_decision.get('error', 'Unknown')}"
+            )
             return {
                 "request": info_request,
                 "success": False,
@@ -100,7 +112,22 @@ Be precise and compute exactly what is requested."""
         query_type = query_decision.get("query_type", "")
         params = query_decision.get("params", {})
 
+        # Log code execution
+        if query_type == "exec" and "code" in params:
+            self._logger.info(
+                f"Executing on {source_name}:\n{format_code(params['code'])}"
+            )
+        else:
+            self._logger.debug(f"Querying {source_name} with {query_type}")
+
         result = self._execute_query(source_name, query_type, params)
+
+        # Log results
+        if "error" in result:
+            self._logger.error(f"Query failed: {result['error']}")
+        else:
+            result_value = result.get("result", result)
+            self._logger.info(f"Result: {format_result(result_value)}")
 
         return {
             "request": info_request,

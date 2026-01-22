@@ -13,6 +13,7 @@ from ..llm import LLMClient
 from ..memory import Memory
 from ..tools.registry import ToolRegistry
 from .config import Config
+from .logger import format_memory_state, format_plan, get_logger
 
 
 class Orchestrator:
@@ -39,6 +40,12 @@ class Orchestrator:
         self.data_registry = data_registry or DataRegistry()
         self.memory = Memory()
 
+        # Initialize loggers
+        self._orch_logger = get_logger("Orchestrator")
+        self._planner_logger = get_logger("Planner")
+        self._sensemaker_logger = get_logger("Sensemaker")
+        self._verifier_logger = get_logger("Verifier")
+
         # Initialize agents with LLM client
         self.planner = PlannerAgent(config, llm_client)
         self.sensemaker = SensemakerAgent(config, llm_client, self.memory)
@@ -60,31 +67,26 @@ class Orchestrator:
         # Reset memory for new query
         self.memory.clear()
 
-        if self.config.verbose:
-            print(f"\n[Orchestrator] Processing query: {query}")
+        self._orch_logger.info(f"Processing query: {query}")
 
         # Step 1: Create execution plan
-        if self.config.verbose:
-            print("\n[Planner] Creating execution plan...")
+        self._planner_logger.debug("Creating execution plan...")
 
         available_sources = self.data_registry.get_sources_prompt()
         plan = self.planner.create_plan(query, available_sources)
 
-        if self.config.verbose:
-            print(f"[Planner] Plan created: {plan.get('query_understanding', 'N/A')}")
+        self._planner_logger.info(format_plan(plan))
 
         # Step 2: Sensemaking loop
         result = self._sensemaking_loop(query, plan)
 
         # Step 3: Verify the result
-        if self.config.verbose:
-            print("\n[Verifier] Verifying answer...")
+        self._verifier_logger.debug("Verifying answer...")
 
         verification = self.verifier.verify(query, result)
 
-        if self.config.verbose:
-            print(f"[Verifier] Recommendation: {verification.get('recommendation')}")
-            print(self.verifier.generate_report(verification))
+        self._verifier_logger.info(f"Recommendation: {verification.get('recommendation')}")
+        self._verifier_logger.debug(self.verifier.generate_report(verification))
 
         return self._finalize(result, verification)
 
@@ -101,15 +103,18 @@ class Orchestrator:
         while iteration < self.config.max_iterations:
             iteration += 1
 
-            if self.config.verbose:
-                print(f"\n[Sensemaker] Iteration {iteration}/{self.config.max_iterations}")
+            self._sensemaker_logger.info(
+                f"=== Iteration {iteration}/{self.config.max_iterations} ==="
+            )
+
+            # Log memory state at DEBUG level
+            self._sensemaker_logger.debug(format_memory_state(self.memory.export()))
 
             # Sensemaker processes current state
             sensemaker_result = self.sensemaker.process(query, plan, new_info)
 
             if sensemaker_result.get("status") == "complete":
-                if self.config.verbose:
-                    print("[Sensemaker] Task complete!")
+                self._sensemaker_logger.info("Task complete!")
                 result = {
                     "answer": sensemaker_result.get("answer", ""),
                     "confidence": sensemaker_result.get("confidence", 0.0),
@@ -121,30 +126,29 @@ class Orchestrator:
 
             # Need more information
             info_request = sensemaker_result.get("request", "")
-            if self.config.verbose:
-                print(f"[Sensemaker] Needs info: {info_request}")
+            reasoning = sensemaker_result.get("reasoning", "")
+            if reasoning:
+                self._sensemaker_logger.info(f"Information needed: {info_request}")
+                self._sensemaker_logger.debug(f"Reasoning: {reasoning}")
+            else:
+                self._sensemaker_logger.info(f"Information needed: {info_request}")
 
             if not info_request:
-                if self.config.verbose:
-                    print("[Sensemaker] No specific info request, ending loop")
+                self._sensemaker_logger.warning("No specific info request, ending loop")
                 break
 
-            # Information seeker retrieves data
-            if self.config.verbose:
-                print(f"[InfoSeeker] Seeking: {info_request}")
-
+            # Information seeker retrieves data (logged internally by the agent)
             new_info = self.info_seeker.seek(info_request)
 
-            if self.config.verbose:
-                success = new_info.get("success", False)
-                print(f"[InfoSeeker] Success: {success}")
-                if not success:
-                    print(f"[InfoSeeker] Error: {new_info.get('error', 'Unknown')}")
+            success = new_info.get("success", False)
+            if not success:
+                self._orch_logger.warning(
+                    f"InfoSeeker failed: {new_info.get('error', 'Unknown')}"
+                )
 
         # If we hit max iterations without completing, try to get best answer
         if iteration >= self.config.max_iterations and not result.get("answer"):
-            if self.config.verbose:
-                print("[Orchestrator] Max iterations reached, getting best answer...")
+            self._orch_logger.warning("Max iterations reached, getting best answer...")
             final_result = self.sensemaker.get_answer()
             result = {
                 "answer": final_result.get("answer", "Could not complete analysis"),

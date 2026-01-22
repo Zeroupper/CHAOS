@@ -7,7 +7,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from chaos.core.config import Config
+from chaos.core.config import Config, LogConfig
+from chaos.core.logger import get_logger, setup_logging
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
 from chaos.llm import LLMClient
@@ -37,9 +38,26 @@ def parse_args() -> argparse.Namespace:
         help="Maximum sensemaking iterations",
     )
     parser.add_argument(
-        "--verbose",
+        "--verbose", "-v",
         action="store_true",
-        help="Enable verbose output",
+        help="Enable verbose output (INFO level)",
+    )
+    parser.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug output (DEBUG level, more verbose than --verbose)",
+    )
+    parser.add_argument(
+        "--log-level",
+        type=str,
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        default=None,
+        help="Set explicit log level (overrides --verbose and --debug)",
+    )
+    parser.add_argument(
+        "--no-color",
+        action="store_true",
+        help="Disable ANSI colors in output",
     )
     parser.add_argument(
         "--model",
@@ -54,11 +72,29 @@ def main() -> None:
     """Main entry point."""
     args = parse_args()
 
+    # Determine log level
+    if args.log_level:
+        log_level = args.log_level
+    elif args.debug:
+        log_level = "DEBUG"
+    elif args.verbose:
+        log_level = "INFO"
+    else:
+        log_level = "WARNING"
+
+    # Set up logging
+    use_colors = not args.no_color
+    setup_logging(level=log_level, use_colors=use_colors)
+
+    # Get logger for main module
+    logger = get_logger("Main")
+
     # Initialize configuration
+    log_config = LogConfig(level=log_level, use_colors=use_colors)
     config = Config(
         max_iterations=args.max_iterations,
         datasets_dir=args.datasets_dir,
-        verbose=args.verbose,
+        log=log_config,
     )
     config.llm.model = args.model
 
@@ -78,11 +114,9 @@ def main() -> None:
     # Auto-discover data sources
     data_registry.auto_discover(args.datasets_dir)
 
-    if args.verbose:
-        sources = data_registry.list_sources()
-        print(f"Discovered {len(sources)} data sources:")
-        for source in sources:
-            print(f"  - {source['name']}")
+    sources = data_registry.list_sources()
+    source_names = ", ".join(s["name"] for s in sources) if sources else "none"
+    logger.info(f"Discovered {len(sources)} data sources: {source_names}")
 
     # Create orchestrator
     orchestrator = Orchestrator(

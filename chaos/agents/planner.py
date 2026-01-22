@@ -22,7 +22,19 @@ class PlannerAgent(BaseAgent):
         super().__init__(config, llm_client)
         self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
 
-You have access to various data sources containing health and activity data. When creating a plan, analyze the query carefully and determine what information needs to be gathered.
+You will be provided with detailed schema information about available datasets including:
+- Column names, types, and descriptions
+- Units of measurement (e.g., bpm, ms, steps, meters)
+- Typical value ranges
+- Possible enum values for categorical columns
+- Relationships between datasets (join keys)
+- Analysis hints for common query patterns
+
+Use this schema information to:
+1. Select the most appropriate data sources for the query
+2. Identify the correct column names and understand their meaning
+3. Consider data relationships when queries span multiple datasets
+4. Plan appropriate aggregations based on data types and units
 
 Always respond with a JSON object in the following format:
 {
@@ -36,7 +48,7 @@ Always respond with a JSON object in the following format:
     "success_criteria": ["Criteria for determining when the question is answered"]
 }
 
-Be specific and actionable in your plan."""
+Be specific and actionable. Reference exact column names from the schema."""
 
     def execute(self, query: str, available_sources: str = "") -> dict[str, Any]:
         """Create an execution plan for the query."""

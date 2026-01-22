@@ -1,0 +1,436 @@
+# CHAOS Dataset Schema Descriptor
+# This schema describes the structure and semantics of all datasets
+# for LLM-based data understanding and transformation tasks.
+
+version: "1.0"
+description: |
+  Personal health and device activity datasets combining wearable data
+  from Garmin smartwatch and mobile data from iOS device. Used for
+  multi-modal health analytics and behavioral pattern analysis.
+
+common_fields:
+  _id:
+    type: string
+    description: MongoDB-style unique identifier for each record
+    example: "507f1f77bcf86cd799439011"
+  uid:
+    type: string
+    description: User identifier linking records across all datasets
+    example: "test004"
+  timestamp:
+    type: float
+    description: Unix timestamp in seconds when the data was recorded
+    example: 1756353610.123
+    note: Primary temporal reference for most datasets
+
+datasets:
+  # ============================================================
+  # GARMIN SMARTWATCH DATASETS
+  # ============================================================
+
+  garmin_hr:
+    description: |
+      Heart rate measurements from Garmin smartwatch. Records continuous
+      heart rate monitoring with status indicating sensor lock quality.
+    source: Garmin Smartwatch
+    category: health/cardiac
+    row_count: ~10700
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      event_id:
+        type: string
+        description: Session or event grouping identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of measurement
+      heart_rate:
+        type: integer
+        description: Heart rate in beats per minute (BPM)
+        unit: bpm
+        typical_range: [40, 200]
+      status:
+        type: string
+        description: Sensor status indicating measurement quality
+        values: ["LOCKED", "SEARCHING"]
+        note: LOCKED means reliable reading, SEARCHING means sensor adjusting
+
+  garmin_ibi:
+    description: |
+      Interbeat interval (IBI) data - time between consecutive heartbeats.
+      High-frequency cardiac data useful for HRV (heart rate variability) analysis.
+    source: Garmin Smartwatch
+    category: health/cardiac
+    row_count: ~131700
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of measurement
+      bbi:
+        type: integer
+        description: Beat-to-beat interval in milliseconds
+        unit: ms
+        typical_range: [300, 1500]
+        note: Also known as RR interval. Lower values = faster heart rate
+      event_id:
+        type: string
+        description: Session or event grouping identifier
+
+  garmin_steps:
+    description: |
+      Step count data from Garmin smartwatch with cumulative totals.
+      Records periodic step count updates with session tracking.
+    source: Garmin Smartwatch
+    category: health/activity
+    row_count: ~2900
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      event_id:
+        type: string
+        description: Session or event grouping identifier
+      timestamp:
+        type: float
+        description: Unix timestamp when record was created
+      start_timestamp:
+        type: float
+        description: Start of the measurement period
+      steps_timestamp:
+        type: float
+        description: Timestamp of the step measurement
+      steps:
+        type: integer
+        description: Steps counted in this interval
+        unit: steps
+      total_steps:
+        type: integer
+        description: Cumulative step count for the day/session
+        unit: steps
+
+  garmin_stress:
+    description: |
+      Stress level measurements from Garmin including body battery metric.
+      Combines heart rate data with proprietary stress algorithms.
+    source: Garmin Smartwatch
+    category: health/stress
+    row_count: ~17300
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      event_id:
+        type: string
+        description: Session or event grouping identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of measurement
+      heart_rate:
+        type: integer
+        description: Heart rate at time of stress measurement
+        unit: bpm
+      status:
+        type: string
+        description: Measurement status
+      average_stress_intensity:
+        type: float
+        description: Stress level score
+        typical_range: [0, 100]
+        nullable: true
+        note: Higher values indicate higher stress. May be null during certain states
+      body_battery:
+        type: integer
+        description: Garmin's energy reserve metric
+        typical_range: [0, 100]
+        note: Higher = more energy. Depletes with activity, recovers with rest
+      body_battery_status:
+        type: string
+        description: Current body battery state
+        values: ["DRAINING", "CHARGING", "STABLE"]
+
+  # ============================================================
+  # iOS PHONE DATASETS
+  # ============================================================
+
+  ios_activity:
+    description: |
+      Motion activity classification from iOS device sensors.
+      Detects user's physical activity state with confidence scores.
+    source: iOS Device
+    category: activity/motion
+    row_count: ~1700
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of detection
+      activity:
+        type: string
+        description: Detected activity type
+        values: ["stationary", "walking", "running", "automotive", "cycling", "unknown"]
+      confidence:
+        type: string
+        description: Confidence level of activity classification
+        values: ["low", "medium", "high"]
+
+  ios_battery:
+    description: |
+      Battery status from iOS device tracking charge level and state.
+    source: iOS Device
+    category: device/power
+    row_count: ~130
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of measurement
+      battery_left:
+        type: float
+        description: Battery percentage remaining
+        typical_range: [0, 100]
+        unit: percent
+      battery_state:
+        type: string
+        description: Current charging state
+        values: ["charging", "unplugged", "full"]
+
+  ios_brightness:
+    description: |
+      Screen brightness level from iOS device.
+      Can indicate user context (indoor/outdoor, time of day preferences).
+    source: iOS Device
+    category: device/display
+    row_count: ~1900
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of measurement
+      brightness:
+        type: float
+        description: Screen brightness level
+        typical_range: [0, 1]
+        note: 0 = minimum brightness, 1 = maximum brightness
+
+  ios_calllog:
+    description: |
+      Phone call logs from iOS device with call type and duration.
+    source: iOS Device
+    category: communication/calls
+    row_count: ~20
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp when record was logged
+      call_timestamp:
+        type: float
+        description: Unix timestamp when the call occurred
+      callId:
+        type: string
+        description: Unique identifier for the call
+      callType:
+        type: string
+        description: Type/state of the call
+        values: ["Dialing", "Connected", "Disconnected", "Incoming"]
+      duration:
+        type: float
+        description: Call duration in seconds
+        unit: seconds
+        note: 0 for unanswered or in-progress calls
+
+  ios_lock_unlock:
+    description: |
+      Phone lock/unlock events from iOS device.
+      Useful for detecting phone usage sessions and screen time patterns.
+    source: iOS Device
+    category: device/usage
+    row_count: ~670
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of lock/unlock event
+      lock_state:
+        type: string
+        description: Current lock state
+        values: ["locked", "unlocked"]
+
+  ios_steps:
+    description: |
+      Step counting from iOS device with distance and elevation data.
+      More detailed than Garmin steps with floors climbed metrics.
+    source: iOS Device
+    category: health/activity
+    row_count: ~1700
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      start_timestamp:
+        type: float
+        description: Start of measurement period
+      end_timestamp:
+        type: float
+        description: End of measurement period
+      steps:
+        type: integer
+        description: Number of steps in this period
+        unit: steps
+      distance:
+        type: float
+        description: Distance traveled
+        unit: meters
+      floors_ascended:
+        type: integer
+        description: Number of floors climbed up
+        unit: floors
+      floors_descended:
+        type: integer
+        description: Number of floors climbed down
+        unit: floors
+
+  ios_wifi:
+    description: |
+      WiFi connection events from iOS device.
+      Can indicate location context based on known network names.
+    source: iOS Device
+    category: connectivity/network
+    row_count: ~130
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      event_id:
+        type: string
+        description: Event grouping identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of connection event
+      ssid:
+        type: string
+        description: WiFi network name
+        note: Can indicate location (home, work, public places)
+      bssid:
+        type: string
+        description: MAC address of the WiFi access point
+
+  app_usage_logs:
+    description: |
+      Application usage events from mobile device.
+      Tracks app open/close events for usage pattern analysis.
+    source: iOS Device
+    category: device/apps
+    row_count: ~810
+    columns:
+      _id:
+        type: string
+        description: Unique record identifier
+      uid:
+        type: string
+        description: User identifier
+      timestamp:
+        type: float
+        description: Unix timestamp of app event
+      appName:
+        type: string
+        description: Name of the application
+        examples: ["WhatsApp", "Instagram", "iMessage", "Safari", "Settings"]
+      status:
+        type: string
+        description: App state change
+        values: ["opened", "closed"]
+
+# ============================================================
+# RELATIONSHIPS AND CROSS-DATASET NOTES
+# ============================================================
+
+relationships:
+  temporal_alignment:
+    description: |
+      All datasets share timestamp fields that can be used for temporal joins.
+      Use timestamp proximity (e.g., within 60 seconds) for cross-dataset analysis.
+    join_key: timestamp
+
+  user_linking:
+    description: |
+      All datasets contain uid field for user-level aggregation.
+      Currently single-user dataset (test004).
+    join_key: uid
+
+  event_sessions:
+    description: |
+      Garmin datasets and ios_wifi contain event_id for session grouping.
+      Can be used to analyze data within specific recording sessions.
+    join_key: event_id
+    datasets: [garmin_hr, garmin_ibi, garmin_steps, garmin_stress, ios_wifi]
+
+analysis_hints:
+  heart_rate_variability:
+    description: Calculate HRV metrics from garmin_ibi data
+    relevant_datasets: [garmin_ibi, garmin_hr]
+
+  activity_correlation:
+    description: Correlate physical activity with stress and heart rate
+    relevant_datasets: [garmin_steps, ios_steps, garmin_stress, garmin_hr, ios_activity]
+
+  phone_usage_patterns:
+    description: Analyze phone usage through lock events and app usage
+    relevant_datasets: [ios_lock_unlock, app_usage_logs, ios_brightness]
+
+  circadian_analysis:
+    description: Study daily patterns using timestamps across all datasets
+    relevant_datasets: all
+    note: Convert Unix timestamps to local time for meaningful analysis
+
+  location_context:
+    description: Infer location from WiFi networks
+    relevant_datasets: [ios_wifi]
+    note: SSID can indicate home, work, or public locations
