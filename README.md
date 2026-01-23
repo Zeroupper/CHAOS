@@ -85,6 +85,7 @@ CHAOS/
 │   ├── core/                   # Orchestration & config
 │   │   ├── config.py             # Configuration management
 │   │   ├── orchestrator.py       # Main pipeline orchestrator
+│   │   ├── interactive_orchestrator.py  # Human-in-the-loop orchestrator
 │   │   └── logger.py             # Logging infrastructure
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
@@ -101,8 +102,11 @@ CHAOS/
 │   │   ├── base.py               # Base data source (CSVDataSource)
 │   │   ├── registry.py           # Data source registry & auto-discovery
 │   │   └── schema.py             # Schema generation utilities
-│   └── memory/                 # Working memory
-│       └── memory.py             # Memory management
+│   ├── memory/                 # Working memory
+│   │   └── memory.py             # Memory management
+│   └── ui/                     # Interactive terminal UI
+│       ├── display.py            # Rich-based display components
+│       └── prompts.py            # Questionary-based prompts
 ├── datasets/                 # Place datasets here (auto-discovered)
 ├── tests/                    # Test suite
 ├── main.py                   # Entry point
@@ -172,6 +176,9 @@ uv run python main.py "Your query" --debug     # DEBUG level
 uv run python main.py "Your query" --model "anthropic/claude-3.5-sonnet"
 uv run python main.py "Your query" --model "deepseek/deepseek-chat"
 uv run python main.py "Your query" --model "openai/gpt-4o"
+
+# Human-in-the-loop interactive mode
+uv run python main.py "Your query" --interactive
 ```
 
 ### Command Line Options
@@ -185,6 +192,72 @@ uv run python main.py "Your query" --model "openai/gpt-4o"
 | `--log-level` | Explicit log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
 | `--no-color` | Disable ANSI colors in output | Off |
 | `--model` | LLM model to use | `openai/chatgpt-4o-latest` |
+| `--interactive`, `-i` | Enable human-in-the-loop interactive mode | Off |
+
+## Interactive Mode (Human-in-the-Loop)
+
+The `--interactive` flag enables a human-in-the-loop workflow where you can guide the analysis:
+
+```
+uv run python main.py "What is the average heart rate of test004?" --interactive
+```
+
+### Interaction Flow
+
+```
+User Query
+    |
+    v
++---------------------------+
+|      PLAN CREATION        |
+|   Planner creates plan    |
++-----------+---------------+
+            |
+            v
++---------------------------+
+|   HUMAN: Plan Review      |
+|  > Approve and execute    |<--+
+|    Modify plan steps      |   |
+|    Reject                 |   |
++-----------+---------------+   |
+            |                   |
+            v                   |
++---------------------------+   |
+|   AUTOMATIC EXECUTION     |   |
+|  Sensemaking loop runs    |   |
+|  (progress displayed)     |   |
++-----------+---------------+   |
+            |                   |
+            v                   |
++---------------------------+   |
+|      VERIFICATION         |   |
+|  Verifier checks answer   |   |
++-----------+---------------+   |
+            |                   |
+            v                   |
++---------------------------+   |
+|   HUMAN: Final Review     |   |
+|  > Accept answer          |   |
+|    Reject                 |   |
+|    Revise (fix a step) ---+---+
++---------------------------+
+```
+
+### Features
+
+1. **Plan Review** (before execution)
+   - **Approve**: Execute the plan as-is
+   - **Modify**: Edit individual plan steps (changes are tracked and emphasized during execution)
+   - **Reject**: Cancel and start over
+
+2. **Automatic Execution**
+   - Sensemaking runs without per-step approval
+   - Real-time progress display with code and results
+
+3. **Final Review** (after verification)
+   - **Accept**: Finalize the answer
+   - **Revise**: Go back and fix a specific step that went wrong
+   - **Reject**: Discard and start over
 
 ## Adding Data Sources
 
@@ -259,6 +332,8 @@ class MyTool(BaseTool):
 - **pandas** - Data manipulation
 - **numpy** - Numerical operations
 - **httpx** - HTTP client
+- **questionary** - Interactive terminal prompts (for `--interactive` mode)
+- **rich** - Terminal formatting and tables (for `--interactive` mode)
 
 ## License
 
