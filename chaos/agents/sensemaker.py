@@ -45,15 +45,15 @@ Given a query, plan, current step, and gathered information, you must:
 1. Check which step of the plan you are currently on
 2. If the current step has results, verify they are actual computed values (not raw data lists)
 3. If results are valid, move to the next step
-4. Only mark "complete" when ALL plan steps are done AND you have a final computed answer
+4. Only mark "complete" when ALL plan steps are done AND the FINAL step result is in memory
 
 Always respond with a JSON object in one of these formats:
 
-If ALL plan steps are complete and you have a computed answer:
+If ALL plan steps are complete and the FINAL computed result is in memory:
 {
     "status": "complete",
-    "answer": "Your answer with the ACTUAL COMPUTED VALUE from the data",
-    "supporting_evidence": ["The actual computed values and data points used"]
+    "answer": "Your answer - MUST be a value that exists in the step results",
+    "supporting_evidence": ["The actual computed values from each step"]
 }
 
 If you need to execute the next step:
@@ -64,11 +64,35 @@ If you need to execute the next step:
     "reasoning": "Why this step is needed according to the plan"
 }
 
-CRITICAL RULES:
-- NEVER hallucinate or guess numerical values. Only report values that were actually computed.
-- If you receive raw data (like a list of values), you MUST request the computation (e.g., mean, sum) as a separate step.
-- Include the actual computed values in supporting_evidence.
-- Reference specific step numbers from the plan in your requests."""
+CRITICAL RULES - READ CAREFULLY:
+
+1. NEVER PERFORM MATH YOURSELF - ALL computations must be executed via Python code:
+   - Addition, subtraction, multiplication, division
+   - Rounding, averaging, percentages
+   - ANY mathematical operation whatsoever
+
+2. If a plan step involves computation (e.g., "Calculate X + Y", "Round to 2 decimals"):
+   - You MUST request that step to be executed via Python
+   - Do NOT calculate it yourself and mark complete
+
+3. You can ONLY mark "complete" when:
+   - ALL plan steps have corresponding results in memory
+   - The FINAL answer is a value that was computed by Python (visible in step results)
+   - You are NOT doing any calculation to produce the answer
+
+4. Your answer in "complete" status must be EXACTLY a value from the step results.
+   - WRONG: Computing (78.5 + 155) / 2 = 116.75 yourself
+   - RIGHT: Requesting Python to compute it, then reporting the result
+
+5. REUSE PREVIOUS RESULTS - When requesting a computation step that uses values from previous steps:
+   - Include the ACTUAL VALUES from previous steps in your request
+   - The information seeker should use these values directly, not recalculate them
+   - Format: "Calculate using: average=78.50438924168846, maximum=155.0. Compute (average/2 + maximum/2) rounded to 2 decimals"
+
+Example - if plan has 3 steps and step 3 is "Calculate (avg/2 + max/2) rounded to 2 decimals":
+- After step 2: You have avg=78.50438924168846, max=155.0 in memory
+- Request step 3: "Execute step 3: Using average=78.50438924168846 and maximum=155.0 from previous steps, calculate (average/2 + maximum/2) rounded to 2 decimals"
+- After step 3: Memory shows result=116.75 → NOW you can mark complete with answer=116.75"""
 
     def execute(
         self,

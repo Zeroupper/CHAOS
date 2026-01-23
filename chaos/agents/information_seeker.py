@@ -40,31 +40,38 @@ You will be provided with detailed schema information about available datasets i
 
 You have access to a pandas DataFrame called `df`. Write code that computes the answer and stores it in a variable called `result`.
 
-IMPORTANT:
-- Use exact column names from the schema (e.g., 'heart_rate' not 'hr')
-- Consider column units when reporting results (e.g., bpm, ms, steps)
-- Always compute aggregated results (mean, sum, count, etc.), never return raw data
-- Store your final answer in the `result` variable
-- Keep results small and focused
-- Available: df (pandas DataFrame), pd (pandas), np (numpy)
+IMPORTANT RULES:
+
+1. USE PROVIDED VALUES FROM PREVIOUS STEPS:
+   - If the request includes values from previous steps (e.g., "Using average=78.5 and maximum=155.0")
+   - Use these values DIRECTLY in your code - do NOT recalculate them from the DataFrame
+   - Example: "result = round((78.5 / 2 + 155.0 / 2), 2)" NOT "result = round((df['x'].mean() / 2 + df['x'].max() / 2), 2)"
+
+2. For data extraction (no previous values provided):
+   - Use exact column names from the schema (e.g., 'heart_rate' not 'hr')
+   - Always compute aggregated results (mean, sum, count, etc.), never return raw data
+   - Keep results small and focused
+
+3. General:
+   - Store your final answer in the `result` variable
+   - Available: df (pandas DataFrame), pd (pandas), np (numpy)
 
 Examples:
+- Using previous values: result = round((78.50438924168846 / 2 + 155.0 / 2), 2)
 - Average: result = df['heart_rate'].mean()
+- Filtered average: result = df[df['uid'] == 'test004']['heart_rate'].mean()
 - Count: result = len(df)
 - Sum: result = df['steps'].sum()
-- Group stats: result = df.groupby('day')['steps'].mean().to_dict()
-- Filtered count: result = len(df[df['value'] > 100])
 - Multiple stats: result = {'mean': df['heart_rate'].mean(), 'max': df['heart_rate'].max()}
-- Time conversion: result = pd.to_datetime(df['timestamp'], unit='s').dt.hour.value_counts().to_dict()
 
 Respond with a JSON object:
 {
-    "source": "exact_dataset_name_from_schema",
+    "source": "dataset_name",
     "query_type": "exec",
-    "params": {"code": "result = df['exact_column_name'].mean()"}
+    "params": {"code": "result = ..."}
 }
 
-Be precise and use exact column names from the provided schema."""
+NOTE: For pure computations using provided values (no DataFrame access needed), still specify a source but the code won't use df."""
 
     def execute(
         self,
