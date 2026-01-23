@@ -73,20 +73,41 @@ Be critical but fair. A good answer should directly answer the query with suppor
         # Build evidence from memory entries (actual code executed and results)
         evidence_str = self._format_memory_evidence(context)
 
-        # Build context section with plan
+        # Build context section with plan (noting modified steps)
         context_str = ""
+        has_modified_steps = False
         if context:
             plan = context.get("plan")
             if plan is not None:
                 context_str += "\nPlan Steps:\n"
                 if isinstance(plan, Plan):
                     for step in plan.steps:
-                        context_str += f"  Step {step.step}: {step.action}\n"
+                        if step.modified:
+                            has_modified_steps = True
+                            context_str += f"  Step {step.step} [USER MODIFIED]: {step.action}\n"
+                        else:
+                            context_str += f"  Step {step.step}: {step.action}\n"
                 elif isinstance(plan, dict) and plan.get("steps"):
                     for step in plan["steps"]:
                         step_num = step.get("step", "?")
                         action = step.get("action", "Unknown")
-                        context_str += f"  Step {step_num}: {action}\n"
+                        modified = step.get("modified", False)
+                        if modified:
+                            has_modified_steps = True
+                            context_str += f"  Step {step_num} [USER MODIFIED]: {action}\n"
+                        else:
+                            context_str += f"  Step {step_num}: {action}\n"
+
+        # Add note about modified steps taking precedence
+        modified_note = ""
+        if has_modified_steps:
+            modified_note = """
+IMPORTANT: Some plan steps were MODIFIED BY THE USER. When verifying:
+- Steps marked [USER MODIFIED] represent the user's INTENDED computation
+- These modified steps OVERRIDE the original query requirements
+- Verify against the MODIFIED plan steps, NOT the original query text
+- If the execution matches the modified steps, it is CORRECT even if different from original query
+"""
 
         prompt = f"""Please verify the following answer to a query:
 
@@ -96,12 +117,13 @@ Answer: {answer}
 
 {evidence_str}
 {context_str}
-
+{modified_note}
 VERIFICATION CHECKLIST:
 1. Does the answer contain an ACTUAL COMPUTED VALUE (not a guess)?
 2. Do the step results show the computation was actually performed?
 3. Does the final answer match the computed results from the steps?
 4. Are there any signs of hallucinated or guessed values?
+5. If there are USER MODIFIED steps, verify against THOSE requirements, not the original query.
 
 Evaluate this answer and provide a verification report as JSON."""
 
