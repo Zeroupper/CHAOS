@@ -29,6 +29,7 @@ class PlanStep(BaseModel):
     step: int = Field(ge=1)
     action: str = Field(min_length=1)
     source: str = ""
+    modified: bool = False  # True if user modified this step in interactive mode
 
 
 class Plan(BaseModel):

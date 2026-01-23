@@ -52,7 +52,12 @@ IMPORTANT RULES:
    - Always compute aggregated results (mean, sum, count, etc.), never return raw data
    - Keep results small and focused
 
-3. General:
+3. FOLLOW EXACT PARAMETERS:
+   - If the request specifies "round to 5 decimal places", use round(..., 5), NOT round(..., 2)
+   - If the request specifies a specific format or precision, follow it exactly
+   - Pay close attention to numerical parameters in the request text
+
+4. General:
    - Store your final answer in the `result` variable
    - Available: df (pandas DataFrame), pd (pandas), np (numpy)
 

@@ -89,6 +89,11 @@ CRITICAL RULES - READ CAREFULLY:
    - The information seeker should use these values directly, not recalculate them
    - Format: "Calculate using: average=78.50438924168846, maximum=155.0. Compute (average/2 + maximum/2) rounded to 2 decimals"
 
+6. USER MODIFIED STEPS - Steps marked with [USER MODIFIED - FOLLOW EXACTLY] were explicitly changed by the user:
+   - Follow the EXACT wording of these steps, including specific numbers (like decimal places)
+   - Do NOT substitute your own values - if the user says "5 decimal places", use 5, not 2
+   - Copy the exact parameters from the modified step description into your request
+
 Example - if plan has 3 steps and step 3 is "Calculate (avg/2 + max/2) rounded to 2 decimals":
 - After step 2: You have avg=78.50438924168846, max=155.0 in memory
 - Request step 3: "Execute step 3: Using average=78.50438924168846 and maximum=155.0 from previous steps, calculate (average/2 + maximum/2) rounded to 2 decimals"
@@ -187,7 +192,14 @@ Respond with JSON indicating either 'complete' with the ACTUAL COMPUTED answer, 
         lines = []
         for step in plan.steps:
             source_str = f" (from {step.source})" if step.source else ""
-            lines.append(f"  Step {step.step}: {step.action}{source_str}")
+            if step.modified:
+                # Emphasize user-modified steps
+                lines.append(
+                    f"  Step {step.step} [USER MODIFIED - FOLLOW EXACTLY]: "
+                    f"{step.action}{source_str}"
+                )
+            else:
+                lines.append(f"  Step {step.step}: {step.action}{source_str}")
         return "\n".join(lines)
 
     def _format_step_progress(self, total_steps: int) -> str:

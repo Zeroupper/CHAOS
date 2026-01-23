@@ -65,6 +65,12 @@ def parse_args() -> argparse.Namespace:
         default="openai/chatgpt-4o-latest",
         help="LLM model to use (default: openai/chatgpt-4o-latest)",
     )
+    parser.add_argument(
+        "--interactive",
+        "-i",
+        action="store_true",
+        help="Enable interactive mode with human-in-the-loop",
+    )
     return parser.parse_args()
 
 
@@ -118,13 +124,23 @@ def main() -> None:
     source_names = ", ".join(s["name"] for s in sources) if sources else "none"
     logger.info(f"Discovered {len(sources)} data sources: {source_names}")
 
-    # Create orchestrator
-    orchestrator = Orchestrator(
-        config=config,
-        llm_client=llm_client,
-        tool_registry=tool_registry,
-        data_registry=data_registry,
-    )
+    # Create orchestrator (interactive or standard)
+    if args.interactive:
+        from chaos.core.interactive_orchestrator import InteractiveOrchestrator
+
+        orchestrator = InteractiveOrchestrator(
+            config=config,
+            llm_client=llm_client,
+            tool_registry=tool_registry,
+            data_registry=data_registry,
+        )
+    else:
+        orchestrator = Orchestrator(
+            config=config,
+            llm_client=llm_client,
+            tool_registry=tool_registry,
+            data_registry=data_registry,
+        )
 
     # Run interactive mode or single query
     if args.query:
