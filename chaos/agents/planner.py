@@ -35,34 +35,45 @@ Use this schema information to:
 3. Consider data relationships when queries span multiple datasets
 4. Plan appropriate aggregations based on data types and units
 
-CRITICAL: AVOID RETURNING RAW DATA LISTS
+STEP PLANNING RULES:
 
-When creating plans, follow these rules to prevent memory overflow:
+The key principle is: OPTIMIZE FOR RESULT SIZE, NOT STEP COUNT.
+- Steps that return small results (single values, small aggregations) are FINE as separate steps
+- Steps that return large results (filtered DataFrames, lists of values) must be combined with aggregation
 
-1. AGGREGATION QUERIES (average, sum, count, min, max, std):
-   - Create ONE step that computes the result directly
-   - Combine filtering with aggregation in a single step
-   - Example: "Compute average heart_rate where uid='test004'"
+1. SEPARATE STEPS ARE OK when each returns a small result:
+   - Each aggregation (mean, max, min, sum, count) returns a single value - these can be separate steps
+   - Final computation steps that combine previous results are separate steps
 
-2. NEVER create intermediate steps that return:
-   - Filtered DataFrames (can be millions of rows)
-   - Lists of values (can be millions of items)
-   - Raw record extractions
+2. COMBINE STEPS when intermediate results would be large:
+   - Filtering + aggregation should be ONE step (filter returns millions of rows)
+   - Don't create a step that just filters data without aggregating
 
-3. ONLY return individual records when:
-   - User explicitly asks for "list all", "show me each", etc.
-   - The query is about specific individual items
-   - You limit results (e.g., "first 10 records")
+3. NEVER create steps that return:
+   - Filtered DataFrames without aggregation (can be millions of rows)
+   - Lists of raw values (can be millions of items)
+   - Raw record extractions (unless explicitly limited)
 
-4. For multiple statistics, compute them in ONE step:
-   - Example: "Compute min, max, and average heart_rate where uid='test004'"
+EXAMPLES:
 
-BAD PLAN for "What is the average heart rate of test004?":
-  Step 1: Filter records where uid='test004'  <- Returns potentially millions of rows!
-  Step 2: Extract heart_rate column           <- Returns list of millions of values!
+Query: "What is the average and max heart rate of test004, then compute (avg/2 + max/2) rounded to 2 decimals"
+
+BAD PLAN (combines everything unnecessarily):
+  Step 1: Compute average, max, and final formula all at once
+
+GOOD PLAN (logical separation, each step returns small result):
+  Step 1: Compute average heart_rate where uid='test004'  <- Returns single value
+  Step 2: Compute maximum heart_rate where uid='test004'  <- Returns single value
+  Step 3: Calculate (average/2 + maximum/2) rounded to 2 decimals  <- Final computation
+
+Query: "What is the average heart rate of test004?"
+
+BAD PLAN (intermediate steps return large data):
+  Step 1: Filter records where uid='test004'  <- Returns millions of rows!
+  Step 2: Extract heart_rate column           <- Returns millions of values!
   Step 3: Compute average                     <- Finally computes
 
-GOOD PLAN:
+GOOD PLAN (filter + aggregate combined):
   Step 1: Compute average heart_rate where uid='test004'  <- Single value result
 
 Always respond with a JSON object in the following format:
