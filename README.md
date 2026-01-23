@@ -42,7 +42,7 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Planner Agent                            │
 │                 Creates execution plan from query               │
-│                 Returns: Plan (validated Pydantic model)        │
+│              Returns: Plan (validated Pydantic model)           │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -67,7 +67,7 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Verifier Agent                           │
 │                Validates answer, creates report                 │
-│                Returns: Verification (validated model)          │
+│             Returns: Verification (validated model)             │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
