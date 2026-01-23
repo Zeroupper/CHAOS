@@ -11,7 +11,7 @@ from chaos.core.config import Config, LogConfig
 from chaos.core.logger import get_logger, setup_logging
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
-from chaos.llm import LLMClient
+from chaos.llm import StructuredLLMClient
 from chaos.tools.registry import ToolRegistry
 
 
@@ -100,7 +100,7 @@ def main() -> None:
 
     # Initialize LLM client
     try:
-        llm_client = LLMClient(config.llm)
+        llm_client = StructuredLLMClient(config.llm)
     except ValueError as e:
         print(f"Error: {e}")
         print("\nPlease set your OpenRouter API key:")
@@ -130,10 +130,9 @@ def main() -> None:
     if args.query:
         result = orchestrator.run(args.query)
         print(f"\n{'='*60}")
-        print("ANSWER:")
+        print("ANSWER: ", result.get("answer", "No answer generated"))
         print(f"{'='*60}")
-        print(result.get("answer", "No answer generated"))
-        print(f"\nConfidence: {result.get('confidence', 0.0):.2f}")
+        print(f"\nConfidence: {result.get('confidence', 0.0):.2f}\n")
     else:
         # Interactive mode
         print("CHAOS - Multi-agent Sensemaking System")
@@ -149,11 +148,9 @@ def main() -> None:
 
                 result = orchestrator.run(query)
                 print(f"\n{'='*60}")
-                print("ANSWER:")
+                print("ANSWER: ", result.get("answer", "No answer generated"))
                 print(f"{'='*60}")
-                print(result.get("answer", "No answer generated"))
-                print(f"\nConfidence: {result.get('confidence', 0.0):.2f}")
-                print()
+                print(f"\nConfidence: {result.get('confidence', 0.0):.2f}\n")
             except KeyboardInterrupt:
                 break
 

@@ -1,8 +1,14 @@
 """Memory management for the sensemaking process."""
 
+import logging
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
+
+logger = logging.getLogger(__name__)
+
+# Default maximum characters per memory entry
+DEFAULT_ENTRY_SIZE_LIMIT = 2000
 
 
 @dataclass
@@ -11,6 +17,7 @@ class MemoryEntry:
 
     content: Any
     timestamp: datetime = field(default_factory=datetime.now)
+    truncated: bool = False
 
 
 class Memory:
@@ -21,9 +28,10 @@ class Memory:
     and provides methods for retrieval and summarization.
     """
 
-    def __init__(self) -> None:
+    def __init__(self, entry_size_limit: int = DEFAULT_ENTRY_SIZE_LIMIT) -> None:
         self._entries: list[MemoryEntry] = []
         self._summary: str = ""
+        self._entry_size_limit = entry_size_limit
 
     def update(self, info: dict[str, Any]) -> None:
         """
@@ -32,7 +40,27 @@ class Memory:
         Args:
             info: Information dict with 'content'.
         """
-        entry = MemoryEntry(content=info.get("content"))
+        content = info.get("content")
+        truncated = False
+
+        # Apply size limit if content is a string
+        if isinstance(content, str) and len(content) > self._entry_size_limit:
+            logger.warning(
+                f"Memory entry truncated from {len(content)} to {self._entry_size_limit} chars"
+            )
+            content = content[: self._entry_size_limit] + "...[truncated]"
+            truncated = True
+        elif not isinstance(content, str):
+            # Convert to string and check size
+            content_str = str(content)
+            if len(content_str) > self._entry_size_limit:
+                logger.warning(
+                    f"Memory entry truncated from {len(content_str)} to {self._entry_size_limit} chars"
+                )
+                content = content_str[: self._entry_size_limit] + "...[truncated]"
+                truncated = True
+
+        entry = MemoryEntry(content=content, truncated=truncated)
         self._entries.append(entry)
         self._update_summary()
 
@@ -98,6 +126,7 @@ class Memory:
                 {
                     "content": entry.content,
                     "timestamp": entry.timestamp.isoformat(),
+                    "truncated": entry.truncated,
                 }
                 for entry in self._entries
             ],

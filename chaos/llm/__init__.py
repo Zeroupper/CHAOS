@@ -1,5 +1,5 @@
 """LLM client module for CHAOS."""
 
-from .client import LLMClient
+from .structured_client import StructuredLLMClient
 
-__all__ = ["LLMClient"]
+__all__ = ["StructuredLLMClient"]

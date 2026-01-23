@@ -6,8 +6,9 @@ from typing import Any
 from ..core.config import Config
 from ..core.logger import format_code, format_result, get_logger
 from ..data.registry import DataRegistry
-from ..llm import LLMClient
+from ..llm.structured_client import StructuredLLMClient
 from ..tools.registry import ToolRegistry
+from ..types import ExecutionResult, InfoSeekerResult, QueryDecision
 from .base import BaseAgent
 
 
@@ -25,7 +26,7 @@ class InformationSeekingAgent(BaseAgent):
     def __init__(
         self,
         config: Config,
-        llm_client: LLMClient,
+        llm_client: StructuredLLMClient,
         tool_registry: ToolRegistry,
         data_registry: DataRegistry,
     ) -> None:
@@ -69,7 +70,7 @@ Be precise and use exact column names from the provided schema."""
         self,
         info_request: str,
         context: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    ) -> InfoSeekerResult:
         """
         Seek information based on request.
 
@@ -78,7 +79,7 @@ Be precise and use exact column names from the provided schema."""
             context: Additional context from sensemaker.
 
         Returns:
-            Retrieved information and metadata.
+            InfoSeekerResult with retrieved information.
         """
         return self.seek(info_request, context)
 
@@ -86,7 +87,7 @@ Be precise and use exact column names from the provided schema."""
         self,
         info_request: str,
         context: dict[str, Any] | None = None,
-    ) -> dict[str, Any]:
+    ) -> InfoSeekerResult:
         """Seek information from available sources."""
         self._logger.debug(f"Seeking: {info_request}")
 
@@ -96,21 +97,10 @@ Be precise and use exact column names from the provided schema."""
         # Ask LLM what to query
         query_decision = self._decide_query(info_request, sources_info, context)
 
-        if "error" in query_decision:
-            self._logger.error(
-                f"Failed to decide query: {query_decision.get('error', 'Unknown')}"
-            )
-            return {
-                "request": info_request,
-                "success": False,
-                "error": query_decision.get("error", "Failed to decide query"),
-                "results": [],
-            }
-
         # Execute the query
-        source_name = query_decision.get("source", "")
-        query_type = query_decision.get("query_type", "")
-        params = query_decision.get("params", {})
+        source_name = query_decision.source
+        query_type = query_decision.query_type
+        params = query_decision.params
 
         # Log code execution
         if query_type == "exec" and "code" in params:
@@ -120,23 +110,30 @@ Be precise and use exact column names from the provided schema."""
         else:
             self._logger.debug(f"Querying {source_name} with {query_type}")
 
-        result = self._execute_query(source_name, query_type, params)
+        exec_result = self._execute_query(source_name, query_type, params)
 
         # Log results
-        if "error" in result:
-            self._logger.error(f"Query failed: {result['error']}")
+        if exec_result.error:
+            self._logger.error(f"Query failed: {exec_result.error}")
+            return InfoSeekerResult(
+                request=info_request,
+                source=source_name,
+                query_type=query_type,
+                params=params,
+                results=exec_result.error,
+                success=False,
+            )
         else:
-            result_value = result.get("result", result)
-            self._logger.info(f"Result: {format_result(result_value)}")
-
-        return {
-            "request": info_request,
-            "source": source_name,
-            "query_type": query_type,
-            "params": params,
-            "results": result,
-            "success": "error" not in result,
-        }
+            result_str = exec_result.result or ""
+            self._logger.info(f"Result: {format_result(result_str)}")
+            return InfoSeekerResult(
+                request=info_request,
+                source=source_name,
+                query_type=query_type,
+                params=params,
+                results=result_str,
+                success=True,
+            )
 
     def _get_sources_info(self) -> str:
         """Get formatted information about available data sources."""
@@ -163,7 +160,7 @@ Be precise and use exact column names from the provided schema."""
         info_request: str,
         sources_info: str,
         context: dict[str, Any] | None,
-    ) -> dict[str, Any]:
+    ) -> QueryDecision:
         """Use LLM to decide which query to execute."""
         context_str = ""
         if context:
@@ -179,22 +176,20 @@ Be precise and use exact column names from the provided schema."""
 What query should I execute? Respond with JSON specifying the source, query_type, and params."""
 
         messages = [{"role": "user", "content": prompt}]
-        response = self._call_llm(messages)
-        return self._parse_response(response)
+        return self._call_llm(messages, QueryDecision)
 
     def _execute_query(
         self, source_name: str, query_type: str, params: dict[str, Any]
-    ) -> dict[str, Any]:
+    ) -> ExecutionResult:
         """Execute a query on a data source."""
         source = self.data_registry.get(source_name)
         if source is None:
-            return {"error": f"Data source '{source_name}' not found"}
+            return ExecutionResult(error=f"Data source '{source_name}' not found")
 
         try:
-            result = source.query(query_type, **params)
-            return result
+            return source.query(query_type, **params)
         except Exception as e:
-            return {"error": str(e)}
+            return ExecutionResult(error=str(e))
 
     def get_available_sources(self) -> list[dict[str, Any]]:
         """Get list of available data sources and tools."""

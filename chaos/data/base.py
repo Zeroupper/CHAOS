@@ -6,6 +6,8 @@ from typing import Any
 
 import pandas as pd
 
+from ..types import ExecutionResult
+
 
 class BaseDataSource(ABC):
     """
@@ -52,7 +54,7 @@ class BaseDataSource(ABC):
         ...
 
     @abstractmethod
-    def query(self, query: str, **kwargs: Any) -> Any:
+    def query(self, query: str, **kwargs: Any) -> ExecutionResult:
         """
         Execute a query against this data source.
 
@@ -61,7 +63,7 @@ class BaseDataSource(ABC):
             **kwargs: Additional query parameters.
 
         Returns:
-            Query results.
+            ExecutionResult with result or error.
         """
         ...
 
@@ -135,7 +137,7 @@ class CSVDataSource(BaseDataSource):
             f"exec(code=\"result = df.describe().to_dict()\") - Get statistical summary",
         ]
 
-    def query(self, query: str, **kwargs: Any) -> Any:
+    def query(self, query: str, **kwargs: Any) -> ExecutionResult:
         """
         Execute query on CSV data.
 
@@ -144,11 +146,11 @@ class CSVDataSource(BaseDataSource):
             **kwargs: Query parameters. For "exec", pass code="<python code>".
 
         Returns:
-            Query results as dict.
+            ExecutionResult with result or error.
         """
         self.connect()
         if self._data is None:
-            return {"error": "Data not loaded"}
+            return ExecutionResult(error="Data not loaded")
 
         try:
             if query == "exec":
@@ -158,9 +160,9 @@ class CSVDataSource(BaseDataSource):
 
                 code = kwargs.get("code", "")
                 if not code:
-                    return {"error": "No code provided"}
+                    return ExecutionResult(error="No code provided")
 
-                # Create restricted namespace with DataFrame and common libraries
+                # Create namespace with DataFrame and common libraries
                 namespace = {
                     "df": self._data.copy(),
                     "pd": pd,
@@ -169,8 +171,8 @@ class CSVDataSource(BaseDataSource):
                 }
 
                 try:
-                    # Execute code with restricted builtins
-                    exec(code, {"__builtins__": {}}, namespace)
+                    # Execute code with full Python builtins access
+                    exec(code, namespace)
 
                     # Get the result
                     result = namespace.get("result")
@@ -193,17 +195,16 @@ class CSVDataSource(BaseDataSource):
                         result_str = result_str[:max_chars]
                         truncated = True
 
-                    return {
-                        "result": result_str,
-                        "truncated": truncated,
-                    }
+                    return ExecutionResult(result=result_str, truncated=truncated)
 
                 except Exception as e:
-                    return {"error": f"Code execution failed: {e}"}
+                    return ExecutionResult(error=f"Code execution failed: {e}")
 
             else:
-                return {"error": f"Unknown query type '{query}'. Use 'exec' with code parameter."}
+                return ExecutionResult(
+                    error=f"Unknown query type '{query}'. Use 'exec' with code parameter."
+                )
 
         except Exception as e:
-            return {"error": str(e)}
+            return ExecutionResult(error=str(e))
 

@@ -1,18 +1,20 @@
 """Base agent class for all CHAOS agents."""
 
-import json
-import re
 from abc import ABC, abstractmethod
-from typing import Any
+from typing import Any, TypeVar
+
+from pydantic import BaseModel
 
 from ..core.config import Config
-from ..llm import LLMClient
+from ..llm.structured_client import StructuredLLMClient
+
+T = TypeVar("T", bound=BaseModel)
 
 
 class BaseAgent(ABC):
     """Abstract base class for all agents."""
 
-    def __init__(self, config: Config, llm_client: LLMClient) -> None:
+    def __init__(self, config: Config, llm_client: StructuredLLMClient) -> None:
         self.config = config
         self.llm_client = llm_client
         self._system_prompt: str = ""
@@ -32,44 +34,23 @@ class BaseAgent(ABC):
         """Execute the agent's main task."""
         ...
 
-    def _call_llm(self, messages: list[dict[str, str]]) -> str:
+    def _call_llm(
+        self,
+        messages: list[dict[str, str]],
+        response_model: type[T],
+    ) -> T:
         """
-        Call the LLM with the given messages.
+        Call the LLM and get a validated Pydantic model response.
 
         Args:
             messages: List of message dicts with 'role' and 'content'.
+            response_model: Pydantic model class for response validation.
 
         Returns:
-            The LLM response text.
+            Validated Pydantic model instance.
         """
-        return self.llm_client.chat(messages, system=self._system_prompt)
-
-    def _parse_response(self, response: str) -> dict[str, Any]:
-        """
-        Parse LLM response into structured format.
-
-        Handles responses that may contain JSON in markdown code blocks.
-
-        Args:
-            response: Raw LLM response text.
-
-        Returns:
-            Parsed dictionary from JSON content.
-        """
-        # Try to extract JSON from markdown code blocks
-        json_match = re.search(r"```(?:json)?\s*\n?([\s\S]*?)\n?```", response)
-        if json_match:
-            json_str = json_match.group(1).strip()
-        else:
-            # Try to find raw JSON object
-            json_match = re.search(r"\{[\s\S]*\}", response)
-            if json_match:
-                json_str = json_match.group(0)
-            else:
-                # Return response as plain text in a dict
-                return {"raw_response": response}
-
-        try:
-            return json.loads(json_str)
-        except json.JSONDecodeError:
-            return {"raw_response": response, "parse_error": True}
+        return self.llm_client.chat(
+            messages,
+            response_model,
+            system=self._system_prompt,
+        )

@@ -29,6 +29,7 @@ class Config:
     llm: LLMConfig = field(default_factory=LLMConfig)
     log: LogConfig = field(default_factory=LogConfig)
     max_iterations: int = 5
+    max_retries: int = 3
     datasets_dir: Path = field(default_factory=lambda: Path("datasets"))
 
     @classmethod

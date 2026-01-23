@@ -1,9 +1,8 @@
 """Planner agent - creates execution plans from user queries."""
 
-from typing import Any
-
 from ..core.config import Config
-from ..llm import LLMClient
+from ..llm.structured_client import StructuredLLMClient
+from ..types import Plan
 from .base import BaseAgent
 
 
@@ -18,7 +17,7 @@ class PlannerAgent(BaseAgent):
     - Success criteria
     """
 
-    def __init__(self, config: Config, llm_client: LLMClient) -> None:
+    def __init__(self, config: Config, llm_client: StructuredLLMClient) -> None:
         super().__init__(config, llm_client)
         self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
 
@@ -36,6 +35,36 @@ Use this schema information to:
 3. Consider data relationships when queries span multiple datasets
 4. Plan appropriate aggregations based on data types and units
 
+CRITICAL: AVOID RETURNING RAW DATA LISTS
+
+When creating plans, follow these rules to prevent memory overflow:
+
+1. AGGREGATION QUERIES (average, sum, count, min, max, std):
+   - Create ONE step that computes the result directly
+   - Combine filtering with aggregation in a single step
+   - Example: "Compute average heart_rate where uid='test004'"
+
+2. NEVER create intermediate steps that return:
+   - Filtered DataFrames (can be millions of rows)
+   - Lists of values (can be millions of items)
+   - Raw record extractions
+
+3. ONLY return individual records when:
+   - User explicitly asks for "list all", "show me each", etc.
+   - The query is about specific individual items
+   - You limit results (e.g., "first 10 records")
+
+4. For multiple statistics, compute them in ONE step:
+   - Example: "Compute min, max, and average heart_rate where uid='test004'"
+
+BAD PLAN for "What is the average heart rate of test004?":
+  Step 1: Filter records where uid='test004'  <- Returns potentially millions of rows!
+  Step 2: Extract heart_rate column           <- Returns list of millions of values!
+  Step 3: Compute average                     <- Finally computes
+
+GOOD PLAN:
+  Step 1: Compute average heart_rate where uid='test004'  <- Single value result
+
 Always respond with a JSON object in the following format:
 {
     "query_understanding": "Your interpretation of what the user is asking",
@@ -50,13 +79,11 @@ Always respond with a JSON object in the following format:
 
 Be specific and actionable. Reference exact column names from the schema."""
 
-    def execute(self, query: str, available_sources: str = "") -> dict[str, Any]:
+    def execute(self, query: str, available_sources: str = "") -> Plan:
         """Create an execution plan for the query."""
         return self.create_plan(query, available_sources)
 
-    def create_plan(
-        self, query: str, available_sources: str = ""
-    ) -> dict[str, Any]:
+    def create_plan(self, query: str, available_sources: str = "") -> Plan:
         """
         Create an execution plan for the given query.
 
@@ -65,7 +92,7 @@ Be specific and actionable. Reference exact column names from the schema."""
             available_sources: Description of available data sources.
 
         Returns:
-            Structured plan dictionary.
+            Plan object with steps and metadata.
         """
         prompt = f"""Create an execution plan for the following query:
 
@@ -76,15 +103,6 @@ Query: {query}
 Respond with a JSON plan."""
 
         messages = [{"role": "user", "content": prompt}]
-        response = self._call_llm(messages)
-        plan = self._parse_response(response)
-
-        # Ensure required fields exist
-        plan.setdefault("query", query)
-        plan.setdefault("query_understanding", "")
-        plan.setdefault("required_info", [])
-        plan.setdefault("data_sources", [])
-        plan.setdefault("steps", [])
-        plan.setdefault("success_criteria", [])
-
+        plan = self._call_llm(messages, Plan)
+        plan.query = query  # Set the original query
         return plan

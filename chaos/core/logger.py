@@ -134,38 +134,61 @@ def get_logger(component: str) -> ComponentLogger:
     return ComponentLogger(_logger, component)
 
 
-def format_plan(plan: dict[str, Any]) -> str:
+def format_plan(plan: Any) -> str:
     """
     Format an execution plan for logging.
 
     Args:
-        plan: Plan dictionary from the planner agent.
+        plan: Plan object or dictionary from the planner agent.
 
     Returns:
         Formatted multi-line string representation.
     """
+    from ..types import Plan
+
     lines = ["Plan created:"]
 
-    if plan.get("query_understanding"):
-        lines.append(f"  Understanding: {plan['query_understanding']}")
+    # Handle both Plan object and dict
+    if isinstance(plan, Plan):
+        if plan.query_understanding:
+            lines.append(f"  Understanding: {plan.query_understanding}")
 
-    if plan.get("data_sources"):
-        sources = ", ".join(plan["data_sources"])
-        lines.append(f"  Data Sources: {sources}")
+        if plan.data_sources:
+            sources = ", ".join(plan.data_sources)
+            lines.append(f"  Data Sources: {sources}")
 
-    if plan.get("steps"):
-        lines.append("  Steps:")
-        for step in plan["steps"]:
-            step_num = step.get("step", "?")
-            action = step.get("action", "Unknown action")
-            source = step.get("source", "")
-            source_str = f" (from {source})" if source else ""
-            lines.append(f"    {step_num}. {action}{source_str}")
+        if plan.steps:
+            lines.append("  Steps:")
+            for step in plan.steps:
+                source_str = f" (from {step.source})" if step.source else ""
+                lines.append(f"    {step.step}. {step.action}{source_str}")
 
-    if plan.get("success_criteria"):
-        lines.append("  Success Criteria:")
-        for criterion in plan["success_criteria"]:
-            lines.append(f"    - {criterion}")
+        if plan.success_criteria:
+            lines.append("  Success Criteria:")
+            for criterion in plan.success_criteria:
+                lines.append(f"    - {criterion}")
+    else:
+        # Fallback for dict (backward compatibility)
+        if plan.get("query_understanding"):
+            lines.append(f"  Understanding: {plan['query_understanding']}")
+
+        if plan.get("data_sources"):
+            sources = ", ".join(plan["data_sources"])
+            lines.append(f"  Data Sources: {sources}")
+
+        if plan.get("steps"):
+            lines.append("  Steps:")
+            for step in plan["steps"]:
+                step_num = step.get("step", "?")
+                action = step.get("action", "Unknown action")
+                source = step.get("source", "")
+                source_str = f" (from {source})" if source else ""
+                lines.append(f"    {step_num}. {action}{source_str}")
+
+        if plan.get("success_criteria"):
+            lines.append("  Success Criteria:")
+            for criterion in plan["success_criteria"]:
+                lines.append(f"    - {criterion}")
 
     return "\n".join(lines)
 
@@ -207,18 +230,32 @@ def format_memory_state(memory_export: dict[str, Any]) -> str:
     for i, entry in enumerate(entries[-5:], 1):  # Show last 5 entries
         content = entry.get("content", {})
         if isinstance(content, dict):
-            # Extract key info from the content
+            # New format: {step, source, success, code, result/error}
+            step = content.get("step", "?")
             source = content.get("source", "unknown")
-            results = content.get("results", {})
-            if isinstance(results, dict) and "result" in results:
-                result_val = results["result"]
-                # Truncate long results
-                result_str = str(result_val)
-                if len(result_str) > 100:
-                    result_str = result_str[:100] + "..."
-                lines.append(f"  [{i}] {source}: {result_str}")
+            success = content.get("success", False)
+
+            if "code" in content:
+                # Truncate code for display
+                code = content["code"]
+                code_short = code.replace("\n", " ")[:60]
+                if len(code) > 60:
+                    code_short += "..."
+
+                if success and "result" in content:
+                    result_str = str(content["result"])
+                    if len(result_str) > 80:
+                        result_str = result_str[:80] + "..."
+                    lines.append(f"  [{step}] {source}: `{code_short}` → {result_str}")
+                elif "error" in content:
+                    error_str = str(content["error"])[:80]
+                    lines.append(f"  [{step}] {source}: `{code_short}` → ERROR: {error_str}")
+                else:
+                    lines.append(f"  [{step}] {source}: `{code_short}`")
             else:
-                lines.append(f"  [{i}] {source}: {results}")
+                # Fallback for other entry types (e.g., error_recovery)
+                entry_type = content.get("type", "info")
+                lines.append(f"  [{i}] {entry_type}: {source}")
         else:
             content_str = str(content)
             if len(content_str) > 100:
