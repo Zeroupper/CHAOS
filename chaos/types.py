@@ -40,7 +40,6 @@ class Plan(BaseModel):
     required_info: list[str] = Field(default_factory=list)
     data_sources: list[str] = Field(default_factory=list)
     steps: list[PlanStep] = Field(default_factory=list)
-    success_criteria: list[str] = Field(default_factory=list)
 
 
 # === Memory Types ===

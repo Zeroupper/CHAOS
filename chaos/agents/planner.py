@@ -84,8 +84,7 @@ Always respond with a JSON object in the following format:
     "steps": [
         {"step": 1, "action": "Description of action", "source": "data_source_name"},
         {"step": 2, "action": "Description of action", "source": "data_source_name"}
-    ],
-    "success_criteria": ["Criteria for determining when the question is answered"]
+    ]
 }
 
 Be specific and actionable. Reference exact column names from the schema."""

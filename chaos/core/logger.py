@@ -163,10 +163,6 @@ def format_plan(plan: Any) -> str:
                 source_str = f" (from {step.source})" if step.source else ""
                 lines.append(f"    {step.step}. {step.action}{source_str}")
 
-        if plan.success_criteria:
-            lines.append("  Success Criteria:")
-            for criterion in plan.success_criteria:
-                lines.append(f"    - {criterion}")
     else:
         # Fallback for dict (backward compatibility)
         if plan.get("query_understanding"):
@@ -184,11 +180,6 @@ def format_plan(plan: Any) -> str:
                 source = step.get("source", "")
                 source_str = f" (from {source})" if source else ""
                 lines.append(f"    {step_num}. {action}{source_str}")
-
-        if plan.get("success_criteria"):
-            lines.append("  Success Criteria:")
-            for criterion in plan["success_criteria"]:
-                lines.append(f"    - {criterion}")
 
     return "\n".join(lines)
 

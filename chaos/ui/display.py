@@ -22,14 +22,6 @@ def display_plan(plan: Plan) -> None:
 
     console.print(Panel(f"[bold]Understanding:[/bold] {plan.query_understanding}"))
     console.print(table)
-    if plan.success_criteria:
-        console.print(
-            Panel(
-                "\n".join(f"* {c}" for c in plan.success_criteria),
-                title="Success Criteria",
-            )
-        )
-
 
 def display_memory(memory: dict, step: int, total: int) -> None:
     """Display current memory state and progress."""
