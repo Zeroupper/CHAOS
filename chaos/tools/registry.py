@@ -1,6 +1,5 @@
 """Tool registry for managing available tools."""
 
-from pathlib import Path
 from typing import Any
 
 from .base import BaseTool
@@ -24,10 +23,6 @@ class ToolRegistry:
             tool: Tool instance to register.
         """
         self._tools[tool.name] = tool
-
-    def unregister(self, name: str) -> None:
-        """Remove a tool from the registry."""
-        self._tools.pop(name, None)
 
     def get(self, name: str) -> BaseTool | None:
         """Get a tool by name."""
@@ -59,25 +54,3 @@ class ToolRegistry:
             raise ValueError(f"Invalid parameters for tool '{name}'")
 
         return tool.execute(**kwargs)
-
-    def auto_discover(self, tools_dir: Path) -> None:
-        """
-        Auto-discover and register tools from a directory.
-
-        Looks for Python files with classes inheriting from BaseTool.
-
-        Args:
-            tools_dir: Directory containing tool modules.
-        """
-        # TODO: Implement auto-discovery
-        pass
-
-    def get_tools_prompt(self) -> str:
-        """Generate a prompt describing available tools for LLM."""
-        if not self._tools:
-            return "No tools available."
-
-        lines = ["Available tools:"]
-        for tool in self._tools.values():
-            lines.append(f"\n- {tool.name}: {tool.description}")
-        return "\n".join(lines)

@@ -2,7 +2,6 @@
 
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
 
 
 @dataclass
@@ -31,18 +30,3 @@ class Config:
     max_iterations: int = 5
     max_retries: int = 3
     datasets_dir: Path = field(default_factory=lambda: Path("datasets"))
-
-    @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "Config":
-        """Create config from dictionary."""
-        llm_data = data.pop("llm", {})
-        llm_config = LLMConfig(**llm_data)
-        log_data = data.pop("log", {})
-        log_config = LogConfig(**log_data)
-        return cls(llm=llm_config, log=log_config, **data)
-
-    @classmethod
-    def from_file(cls, path: Path) -> "Config":
-        """Load config from YAML/JSON file."""
-        # TODO: Implement file loading
-        raise NotImplementedError

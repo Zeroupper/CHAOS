@@ -23,10 +23,6 @@ class DataRegistry:
         """Register a data source."""
         self._sources[source.name] = source
 
-    def unregister(self, name: str) -> None:
-        """Remove a data source from the registry."""
-        self._sources.pop(name, None)
-
     def get(self, name: str) -> BaseDataSource | None:
         """Get a data source by name."""
         return self._sources.get(name)
@@ -34,26 +30,6 @@ class DataRegistry:
     def list_sources(self) -> list[dict[str, Any]]:
         """List all registered data sources with their info."""
         return [source.info for source in self._sources.values()]
-
-    def query_source(self, name: str, query: str, **kwargs: Any) -> Any:
-        """
-        Query a data source by name.
-
-        Args:
-            name: Data source name.
-            query: Query string.
-            **kwargs: Additional query parameters.
-
-        Returns:
-            Query results.
-
-        Raises:
-            KeyError: If data source not found.
-        """
-        source = self._sources.get(name)
-        if source is None:
-            raise KeyError(f"Data source '{name}' not found in registry")
-        return source.query(query, **kwargs)
 
     def auto_discover(self, datasets_dir: Path) -> None:
         """
@@ -129,25 +105,4 @@ class DataRegistry:
             schema = source.get_schema()
             if schema.get("columns"):
                 lines.append(f"  Columns: {', '.join(schema['columns'])}")
-        return "\n".join(lines)
-
-    def get_compact_sources_prompt(self) -> str:
-        """
-        Generate a compact prompt for space-constrained contexts.
-
-        Returns:
-            Compact formatted string.
-        """
-        if self._schema_loader.is_loaded:
-            return self._schema_loader.format_compact_for_prompt()
-
-        # Fallback
-        if not self._sources:
-            return "No data sources available."
-
-        lines = []
-        for source in self._sources.values():
-            schema = source.get_schema()
-            cols = schema.get("columns", [])
-            lines.append(f"- {source.name}: {', '.join(cols[:10])}")
         return "\n".join(lines)

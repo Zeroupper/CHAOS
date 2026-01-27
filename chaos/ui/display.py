@@ -1,11 +1,13 @@
 """Rich-based display components for CHAOS."""
 
+from typing import Any
+
 from rich.console import Console
 from rich.panel import Panel
 from rich.syntax import Syntax
 from rich.table import Table
 
-from ..types import Plan, Verification
+from ..types import Plan, StepState, Verification
 
 console = Console()
 
@@ -23,29 +25,57 @@ def display_plan(plan: Plan) -> None:
     console.print(Panel(f"[bold]Understanding:[/bold] {plan.query_understanding}"))
     console.print(table)
 
-def display_memory(memory: dict, step: int, total: int) -> None:
-    """Display current memory state and progress."""
-    console.print(Panel(f"[bold cyan]Progress: Step {step}/{total}[/bold cyan]"))
-
+def display_memory_table(memory: dict) -> None:
+    """Display memory state as a formatted table showing executed code and results."""
     entries = memory.get("entries", [])
-    if entries:
-        table = Table(title="Memory State", show_header=True)
-        table.add_column("Step", width=6)
-        table.add_column("Source", width=15)
-        table.add_column("Status", width=8)
-        table.add_column("Result", overflow="fold")
+    if not entries:
+        console.print("[dim]Memory: empty[/dim]")
+        return
 
-        for entry in entries[-5:]:  # Last 5 entries
-            content = entry.get("content", {})
-            status = "[green]Y[/green]" if content.get("success") else "[red]X[/red]"
-            result = content.get("result", content.get("error", ""))[:100]
-            table.add_row(
-                str(content.get("step", "?")),
-                content.get("source", "-"),
-                status,
-                result,
-            )
-        console.print(table)
+    table = Table(title="Memory State", show_header=True, expand=True)
+    table.add_column("Step", style="cyan", width=5, justify="center")
+    table.add_column("Code", style="dim", overflow="fold")
+    table.add_column("Result", max_width=60, overflow="fold")
+
+    for entry in entries:
+        content = entry.get("content", {})
+        if isinstance(content, dict) and "step" in content:
+            step = str(content.get("step", "?"))
+            success = content.get("success", False)
+
+            code = content.get("code", "-")
+
+            result = content.get("result") if success else content.get("error", "")
+            if result:
+                result = str(result)
+            else:
+                result = "-"
+
+            table.add_row(step, code, result)
+
+    console.print(table)
+
+
+def display_step_states(step_states: dict[int, StepState], plan: Plan | None = None) -> None:
+    """Display step states as a formatted table showing step descriptions."""
+    if not step_states:
+        return
+
+    table = Table(title="Step States", show_header=True, expand=True)
+    table.add_column("Step", style="cyan", width=5, justify="center")
+    table.add_column("Description", overflow="fold")
+
+    # Build step descriptions from plan
+    step_descriptions: dict[int, str] = {}
+    if plan:
+        for step in plan.steps:
+            step_descriptions[step.step] = step.action
+
+    for step_num in sorted(step_states.keys()):
+        description = step_descriptions.get(step_num, "-")
+        table.add_row(str(step_num), description)
+
+    console.print(table)
 
 
 def display_execution_progress(
@@ -101,3 +131,29 @@ def display_verification(verification: Verification, answer: str) -> None:
                 border_style="red",
             )
         )
+
+
+def display_tool_execution(
+    tool_name: str,
+    params: dict[str, Any] | None = None,
+    result: dict[str, Any] | None = None,
+    success: bool = True
+) -> None:
+    """Display tool execution status."""
+    status_icon = "[green]✓[/green]" if success else "[red]✗[/red]"
+    console.print(
+        f"{status_icon} Tool: [cyan]{tool_name}[/cyan]"
+    )
+
+    if params:
+        # Show key params (not all)
+        key_params = {k: v for k, v in params.items() if k in ["query", "url", "max_results"]}
+        if key_params:
+            params_str = ", ".join(f"{k}={repr(v)[:30]}" for k, v in key_params.items())
+            console.print(f"   Params: [dim]{params_str}[/dim]")
+
+    if result and not success:
+        error = result.get("error", "Unknown error")
+        console.print(f"   [red]Error: {error}[/red]")
+
+    console.print()

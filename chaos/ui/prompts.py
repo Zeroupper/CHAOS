@@ -25,7 +25,7 @@ def approve_plan(plan: Plan) -> str | None:
         choices=[
             Choice("Approve and execute", value="approve"),
             Choice("Modify plan steps", value="modify"),
-            Choice("Reject and start over", value="reject"),
+            Choice("Reject", value="reject"),
         ],
         style=custom_style,
     ).ask()
@@ -44,10 +44,11 @@ def final_review(recommendation: str, has_steps: bool = True) -> str | None:
     """Prompt user for final action based on verification."""
     choices = [
         Choice("Accept answer", value="accept"),
-        Choice("Reject (start over)", value="reject"),
+        Choice("Reject", value="reject"),
     ]
     if has_steps:
         choices.insert(1, Choice("Revise (fix a step)", value="revise"))
+        choices.insert(2, Choice("Replan (fresh start with learnings)", value="replan"))
 
     return questionary.select(
         "Final review - what would you like to do?",
@@ -56,20 +57,31 @@ def final_review(recommendation: str, has_steps: bool = True) -> str | None:
     ).ask()
 
 
-def select_step_to_revise(steps: list[dict]) -> int | None:
-    """Let user select which step to revise."""
-    choices = [
-        Choice(
-            f"Step {s['step']}: {s['action'][:60]}... -> {s.get('result', 'No result')[:30]}",
-            value=s["step"],
+def select_step_to_revise(steps: list[dict]) -> int | str | None:
+    """Let user select which step to revise or add a new step."""
+    choices = [Choice("➕ Add new step", value="add_new")]
+    for s in steps:
+        action = s["action"][:70]
+        status = "✓" if s.get("success") else "✗"
+        choices.append(
+            Choice(
+                f"Step {s['step']} [{status}]: {action}",
+                value=s["step"],
+            )
         )
-        for s in steps
-    ]
     choices.append(Choice("Cancel", value=None))
 
     return questionary.select(
-        "Which step would you like to revise?",
+        "Select an action:",
         choices=choices,
+        style=custom_style,
+    ).ask()
+
+
+def get_new_step_action() -> str | None:
+    """Get user's action for a new step."""
+    return questionary.text(
+        "Enter the action for the new step:",
         style=custom_style,
     ).ask()
 
@@ -83,6 +95,9 @@ def get_revised_request(original: str) -> str | None:
     ).ask()
 
 
-def confirm_action(message: str, default: bool = True) -> bool | None:
-    """Simple yes/no confirmation."""
-    return questionary.confirm(message, default=default, style=custom_style).ask()
+def get_replan_suggestion() -> str | None:
+    """Get user's suggested fix to guide the planner in creating a new plan."""
+    return questionary.text(
+        "Enter a suggested fix to guide the new plan (leave empty to auto-replan):",
+        style=custom_style,
+    ).ask()

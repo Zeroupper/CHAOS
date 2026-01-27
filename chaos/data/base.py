@@ -163,12 +163,17 @@ class CSVDataSource(BaseDataSource):
                     return ExecutionResult(error="No code provided")
 
                 # Create namespace with DataFrame and common libraries
-                namespace = {
+                namespace: dict[str, Any] = {
                     "df": self._data.copy(),
                     "pd": pd,
                     "np": np,
                     "result": None,
                 }
+
+                # Inject all data sources for multi-source queries
+                all_sources = kwargs.get("all_sources", {})
+                for source_name, source_df in all_sources.items():
+                    namespace[source_name] = source_df
 
                 try:
                     # Execute code with full Python builtins access

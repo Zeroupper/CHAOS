@@ -40,6 +40,12 @@ Respond with a JSON object:
     "recommendation": "approve" | "reject" | "needs_review"
 }
 
+CRITICAL CONSISTENCY RULES:
+- If "gaps" is NOT empty, then "is_complete" MUST be false
+- If "issues" is NOT empty, then "is_accurate" MUST be false
+- If "is_complete" is false OR "is_accurate" is false, then "recommendation" MUST be "reject" or "needs_review"
+- "confidence_score" should reflect the severity of gaps/issues (more gaps/issues = lower score)
+
 Be critical but fair. A good answer should directly answer the query with supporting evidence."""
 
     def execute(
@@ -102,11 +108,13 @@ Be critical but fair. A good answer should directly answer the query with suppor
         modified_note = ""
         if has_modified_steps:
             modified_note = """
-IMPORTANT: Some plan steps were MODIFIED BY THE USER. When verifying:
-- Steps marked [USER MODIFIED] represent the user's INTENDED computation
-- These modified steps OVERRIDE the original query requirements
-- Verify against the MODIFIED plan steps, NOT the original query text
-- If the execution matches the modified steps, it is CORRECT even if different from original query
+CRITICAL: Some plan steps were ADDED or MODIFIED BY THE USER. When verifying:
+- Steps marked [USER MODIFIED] represent CORRECTIONS the user made to fix issues
+- User-added steps are AUTHORITATIVE - they override previous results
+- The FINAL user-modified step's result should be used as the answer
+- Previous steps may have produced incorrect results that the user corrected
+- Verify the answer against the LATEST user-modified step result
+- If the user added a step to correct a calculation, THAT step's result is correct
 """
 
         prompt = f"""Please verify the following answer to a query:
@@ -123,7 +131,11 @@ VERIFICATION CHECKLIST:
 2. Do the step results show the computation was actually performed?
 3. Does the final answer match the computed results from the steps?
 4. Are there any signs of hallucinated or guessed values?
-5. If there are USER MODIFIED steps, verify against THOSE requirements, not the original query.
+5. If there are USER MODIFIED steps:
+   - These are CORRECTIONS added by the user to fix previous errors
+   - The result from the LAST user-modified step should be the answer
+   - User-modified steps OVERRIDE earlier step results
+   - If user added step N to correct step M's result, use step N's result
 
 Evaluate this answer and provide a verification report as JSON."""
 
@@ -149,6 +161,17 @@ Evaluate this answer and provide a verification report as JSON."""
         if not entries:
             return "Evidence: No computations were executed"
 
+        # Get modified step numbers from plan
+        modified_steps: set[int] = set()
+        plan = context.get("plan")
+        if plan is not None:
+            if isinstance(plan, Plan):
+                modified_steps = {s.step for s in plan.steps if s.modified}
+            elif isinstance(plan, dict) and plan.get("steps"):
+                modified_steps = {
+                    s.get("step") for s in plan["steps"] if s.get("modified")
+                }
+
         lines = ["Evidence (executed computations):"]
         for entry in entries:
             content = entry.get("content", {})
@@ -158,33 +181,22 @@ Evaluate this answer and provide a verification report as JSON."""
                 code = content.get("code", "")
                 success = content.get("success", False)
 
-                lines.append(f"\n  Step {step} on '{source}':")
+                # Mark user-modified steps prominently
+                if step in modified_steps:
+                    lines.append(f"\n  Step {step} [USER ADDED/MODIFIED - AUTHORITATIVE] on '{source}':")
+                else:
+                    lines.append(f"\n  Step {step} on '{source}':")
                 lines.append(f"    Code executed: {code}")
 
                 if success and "result" in content:
                     result_str = str(content["result"])
                     if len(result_str) > 500:
                         result_str = result_str[:500] + "..."
-                    lines.append(f"    Result: {result_str}")
+                    if step in modified_steps:
+                        lines.append(f"    Result: {result_str} ← USE THIS (user correction)")
+                    else:
+                        lines.append(f"    Result: {result_str}")
                 elif "error" in content:
                     lines.append(f"    Error: {content['error']}")
 
         return "\n".join(lines)
-
-    def generate_report(self, verification: Verification) -> str:
-        """Generate human-readable report."""
-        gaps = verification.gaps
-        issues = verification.issues
-
-        return f"""
-=== Verification Report ===
-Completeness: {'Yes' if verification.is_complete else 'No'}
-Accuracy: {'Yes' if verification.is_accurate else 'No'}
-Confidence: {verification.confidence_score:.2f}
-
-Gaps: {', '.join(gaps) if gaps else 'None identified'}
-Issues: {', '.join(issues) if issues else 'None identified'}
-
-Summary: {verification.summary or 'No summary provided'}
-Recommendation: {verification.recommendation.upper()}
-"""

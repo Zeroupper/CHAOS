@@ -1,13 +1,15 @@
 """Information seeking agent - retrieves data from sources."""
 
 import json
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 from ..core.config import Config
-from ..core.logger import format_code, format_result, get_logger
+from ..core.logger import format_code, format_result
 from ..data.registry import DataRegistry
 from ..llm.structured_client import StructuredLLMClient
-from ..tools.registry import ToolRegistry
 from ..types import ExecutionResult, InfoSeekerResult, QueryDecision
 from .base import BaseAgent
 
@@ -27,18 +29,21 @@ class InformationSeekingAgent(BaseAgent):
         self,
         config: Config,
         llm_client: StructuredLLMClient,
-        tool_registry: ToolRegistry,
         data_registry: DataRegistry,
     ) -> None:
         super().__init__(config, llm_client)
-        self.tool_registry = tool_registry
         self.data_registry = data_registry
-        self._logger = get_logger("InfoSeeker")
         self._system_prompt = """You are an information seeking agent. Write Python code to extract the needed information from datasets.
 
 You will be provided with detailed schema information about available datasets including column names, types, units, and value ranges. Use this information to write accurate queries.
 
-You have access to a pandas DataFrame called `df`. Write code that computes the answer and stores it in a variable called `result`.
+AVAILABLE VARIABLES:
+- `df`: The primary data source DataFrame (specified in "source" field)
+- ALL data sources are also available by name (e.g., `garmin_ibi`, `garmin_stress`, `garmin_hr`)
+- `pd`: pandas library
+- `np`: numpy library
+
+This means you can join multiple data sources in a single query!
 
 IMPORTANT RULES:
 
@@ -57,9 +62,13 @@ IMPORTANT RULES:
    - If the request specifies a specific format or precision, follow it exactly
    - Pay close attention to numerical parameters in the request text
 
-4. General:
+4. MULTI-SOURCE QUERIES:
+   - You can access any data source directly by its name (e.g., `garmin_ibi`, `garmin_stress`)
+   - For joins: use pd.merge(garmin_ibi, garmin_stress, on='uid')
+   - The "source" field should be the primary source you're working with
+
+5. General:
    - Store your final answer in the `result` variable
-   - Available: df (pandas DataFrame), pd (pandas), np (numpy)
 
 Examples:
 - Using previous values: result = round((78.50438924168846 / 2 + 155.0 / 2), 2)
@@ -68,10 +77,11 @@ Examples:
 - Count: result = len(df)
 - Sum: result = df['steps'].sum()
 - Multiple stats: result = {'mean': df['heart_rate'].mean(), 'max': df['heart_rate'].max()}
+- Multi-source join: result = pd.merge(garmin_ibi, garmin_stress, on=['uid', 'timestamp'])
 
 Respond with a JSON object:
 {
-    "source": "dataset_name",
+    "source": "primary_dataset_name",
     "query_type": "exec",
     "params": {"code": "result = ..."}
 }
@@ -107,7 +117,18 @@ NOTE: For pure computations using provided values (no DataFrame access needed), 
         sources_info = self._get_sources_info()
 
         # Ask LLM what to query
-        query_decision = self._decide_query(info_request, sources_info, context)
+        try:
+            query_decision = self._decide_query(info_request, sources_info, context)
+        except Exception as e:
+            self._logger.error(f"Failed to decide query: {e}")
+            return InfoSeekerResult(
+                request=info_request,
+                source="unknown",
+                query_type="exec",
+                params={},
+                results=f"LLM failed to generate query: {e}",
+                success=False,
+            )
 
         # Execute the query
         source_name = query_decision.source
@@ -124,6 +145,9 @@ NOTE: For pure computations using provided values (no DataFrame access needed), 
 
         exec_result = self._execute_query(source_name, query_type, params)
 
+        # Filter params to only include string values (exclude internal params like all_sources)
+        filtered_params = {k: v for k, v in params.items() if isinstance(v, str)}
+
         # Log results
         if exec_result.error:
             self._logger.error(f"Query failed: {exec_result.error}")
@@ -131,7 +155,7 @@ NOTE: For pure computations using provided values (no DataFrame access needed), 
                 request=info_request,
                 source=source_name,
                 query_type=query_type,
-                params=params,
+                params=filtered_params,
                 results=exec_result.error,
                 success=False,
             )
@@ -142,7 +166,7 @@ NOTE: For pure computations using provided values (no DataFrame access needed), 
                 request=info_request,
                 source=source_name,
                 query_type=query_type,
-                params=params,
+                params=filtered_params,
                 results=result_str,
                 success=True,
             )
@@ -191,21 +215,41 @@ What query should I execute? Respond with JSON specifying the source, query_type
         return self._call_llm(messages, QueryDecision)
 
     def _execute_query(
-        self, source_name: str, query_type: str, params: dict[str, Any]
+        self, source_name: str, query_type: str, params: dict[str, str]
     ) -> ExecutionResult:
         """Execute a query on a data source."""
-        source = self.data_registry.get(source_name)
+        # Handle multi-source references (e.g., "garmin_ibi + garmin_stress")
+        # Use the first source as primary, but inject all sources
+        primary_source_name = source_name.split("+")[0].split(",")[0].strip()
+
+        source = self.data_registry.get(primary_source_name)
         if source is None:
-            return ExecutionResult(error=f"Data source '{source_name}' not found")
+            return ExecutionResult(error=f"Data source '{primary_source_name}' not found")
 
         try:
-            return source.query(query_type, **params)
+            # Collect all data sources to inject into execution namespace
+            all_sources = self._get_all_source_dataframes()
+
+            # Create execution params (don't modify original params dict)
+            exec_params: dict[str, Any] = {**params, "all_sources": all_sources}
+
+            return source.query(query_type, **exec_params)
         except Exception as e:
             return ExecutionResult(error=str(e))
 
-    def get_available_sources(self) -> list[dict[str, Any]]:
-        """Get list of available data sources and tools."""
-        sources = []
-        sources.extend(self.data_registry.list_sources())
-        sources.extend(self.tool_registry.list_tools())
-        return sources
+    def _get_all_source_dataframes(self) -> dict[str, Any]:
+        """Get all data source DataFrames for multi-source queries."""
+        all_sources: dict[str, Any] = {}
+
+        for source_info in self.data_registry.list_sources():
+            source_name = source_info["name"]
+            source = self.data_registry.get(source_name)
+            if source is not None:
+                try:
+                    source.connect()
+                    if hasattr(source, "_data") and source._data is not None:
+                        all_sources[source_name] = source._data
+                except Exception as e:
+                    self._logger.warning(f"Failed to load source '{source_name}': {e}")
+
+        return all_sources

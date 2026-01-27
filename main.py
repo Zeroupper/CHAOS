@@ -12,7 +12,6 @@ from chaos.core.logger import get_logger, setup_logging
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
 from chaos.llm import StructuredLLMClient
-from chaos.tools.registry import ToolRegistry
 
 
 def parse_args() -> argparse.Namespace:
@@ -65,12 +64,6 @@ def parse_args() -> argparse.Namespace:
         default="openai/chatgpt-4o-latest",
         help="LLM model to use (default: openai/chatgpt-4o-latest)",
     )
-    parser.add_argument(
-        "--interactive",
-        "-i",
-        action="store_true",
-        help="Enable interactive mode with human-in-the-loop",
-    )
     return parser.parse_args()
 
 
@@ -113,8 +106,7 @@ def main() -> None:
         print("  export OPENROUTER_API_KEY=your_key_here")
         sys.exit(1)
 
-    # Initialize registries
-    tool_registry = ToolRegistry()
+    # Initialize data registry
     data_registry = DataRegistry()
 
     # Auto-discover data sources
@@ -124,23 +116,12 @@ def main() -> None:
     source_names = ", ".join(s["name"] for s in sources) if sources else "none"
     logger.info(f"Discovered {len(sources)} data sources: {source_names}")
 
-    # Create orchestrator (interactive or standard)
-    if args.interactive:
-        from chaos.core.interactive_orchestrator import InteractiveOrchestrator
-
-        orchestrator = InteractiveOrchestrator(
-            config=config,
-            llm_client=llm_client,
-            tool_registry=tool_registry,
-            data_registry=data_registry,
-        )
-    else:
-        orchestrator = Orchestrator(
-            config=config,
-            llm_client=llm_client,
-            tool_registry=tool_registry,
-            data_registry=data_registry,
-        )
+    # Create orchestrator
+    orchestrator = Orchestrator(
+        config=config,
+        llm_client=llm_client,
+        data_registry=data_registry,
+    )
 
     # Run interactive mode or single query
     if args.query:

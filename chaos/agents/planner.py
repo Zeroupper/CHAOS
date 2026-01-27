@@ -2,6 +2,7 @@
 
 from ..core.config import Config
 from ..llm.structured_client import StructuredLLMClient
+from ..tools.base import BaseTool
 from ..types import Plan
 from .base import BaseAgent
 
@@ -14,11 +15,20 @@ class PlannerAgent(BaseAgent):
     - What information is needed
     - Which data sources to query
     - What steps to take
-    - Success criteria
+
+    If web search tools are available, the planner will autonomously
+    conduct a research phase - deciding whether to search, fetch URLs,
+    or stop based on the accumulated context.
     """
 
-    def __init__(self, config: Config, llm_client: StructuredLLMClient) -> None:
-        super().__init__(config, llm_client)
+    def __init__(
+        self,
+        config: Config,
+        llm_client: StructuredLLMClient,
+        tools: list[BaseTool] | None = None,
+    ) -> None:
+        super().__init__(config, llm_client, tools)
+
         self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
 
 You will be provided with detailed schema information about available datasets including:
@@ -53,28 +63,6 @@ The key principle is: OPTIMIZE FOR RESULT SIZE, NOT STEP COUNT.
    - Filtered DataFrames without aggregation (can be millions of rows)
    - Lists of raw values (can be millions of items)
    - Raw record extractions (unless explicitly limited)
-
-EXAMPLES:
-
-Query: "What is the average and max heart rate of test004, then compute (avg/2 + max/2) rounded to 2 decimals"
-
-BAD PLAN (combines everything unnecessarily):
-  Step 1: Compute average, max, and final formula all at once
-
-GOOD PLAN (logical separation, each step returns small result):
-  Step 1: Compute average heart_rate where uid='test004'  <- Returns single value
-  Step 2: Compute maximum heart_rate where uid='test004'  <- Returns single value
-  Step 3: Calculate (average/2 + maximum/2) rounded to 2 decimals  <- Final computation
-
-Query: "What is the average heart rate of test004?"
-
-BAD PLAN (intermediate steps return large data):
-  Step 1: Filter records where uid='test004'  <- Returns millions of rows!
-  Step 2: Extract heart_rate column           <- Returns millions of values!
-  Step 3: Compute average                     <- Finally computes
-
-GOOD PLAN (filter + aggregate combined):
-  Step 1: Compute average heart_rate where uid='test004'  <- Single value result
 
 Always respond with a JSON object in the following format:
 {
@@ -114,5 +102,5 @@ Respond with a JSON plan."""
 
         messages = [{"role": "user", "content": prompt}]
         plan = self._call_llm(messages, Plan)
-        plan.query = query  # Set the original query
+        plan.query = query
         return plan

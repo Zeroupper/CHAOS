@@ -84,8 +84,7 @@ CHAOS/
 │   ├── types.py                # Pydantic models for all data structures
 │   ├── core/                   # Orchestration & config
 │   │   ├── config.py             # Configuration management
-│   │   ├── orchestrator.py       # Main pipeline orchestrator
-│   │   ├── interactive_orchestrator.py  # Human-in-the-loop orchestrator
+│   │   ├── orchestrator.py       # Main pipeline orchestrator (with human-in-the-loop)
 │   │   └── logger.py             # Logging infrastructure
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
@@ -177,8 +176,6 @@ uv run python main.py "Your query" --model "anthropic/claude-3.5-sonnet"
 uv run python main.py "Your query" --model "deepseek/deepseek-chat"
 uv run python main.py "Your query" --model "openai/gpt-4o"
 
-# Human-in-the-loop interactive mode
-uv run python main.py "Your query" --interactive
 ```
 
 ### Command Line Options
@@ -192,14 +189,13 @@ uv run python main.py "Your query" --interactive
 | `--log-level` | Explicit log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
 | `--no-color` | Disable ANSI colors in output | Off |
 | `--model` | LLM model to use | `openai/chatgpt-4o-latest` |
-| `--interactive`, `-i` | Enable human-in-the-loop interactive mode | Off |
 
-## Interactive Mode (Human-in-the-Loop)
+## Human-in-the-Loop Mode
 
-The `--interactive` flag enables a human-in-the-loop workflow where you can guide the analysis:
+CHAOS includes a human-in-the-loop workflow where you can guide the analysis:
 
 ```
-uv run python main.py "What is the average heart rate of test004?" --interactive
+uv run python main.py "What is the average heart rate of test004?"
 ```
 
 ### Interaction Flow

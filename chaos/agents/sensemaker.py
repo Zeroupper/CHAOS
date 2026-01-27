@@ -14,6 +14,7 @@ from ..types import (
     Plan,
     RecoveryGuidance,
     SensemakerResponse,
+    StepState,
 )
 from .base import BaseAgent
 
@@ -28,6 +29,7 @@ class SensemakerAgent(BaseAgent):
     - Track plan step progress
     - Synthesize understanding
     - Decide when task is COMPLETE
+    - Detect and diagnose data quality issues
     """
 
     def __init__(
@@ -36,68 +38,46 @@ class SensemakerAgent(BaseAgent):
         super().__init__(config, llm_client)
         self.memory = memory
         self._current_step = 0  # Track which plan step we're on
-        self._step_results: dict[int, Any] = {}  # Store results per step
+        self._step_states: dict[int, StepState] = {}  # Track state per step
         self._system_prompt = """You are a sensemaking agent. Your task is to execute a plan step-by-step and synthesize the results.
 
-IMPORTANT: You must follow the plan steps IN ORDER. Do not skip steps or mark complete until ALL steps have been executed with actual computed results.
+You will be given step states that track the progress of each step:
+- "pending": Step has not been executed yet
+- "completed": Step executed successfully with valid result
+- "needs_clarification": Step returned suspicious result, clarification was requested
+- "failed": Clarification confirmed data is missing/unavailable
 
-Given a query, plan, current step, and gathered information, you must:
-1. Check which step of the plan you are currently on
-2. If the current step has results, verify they are actual computed values (not raw data lists)
-3. If results are valid, move to the next step
-4. Only mark "complete" when ALL plan steps are done AND the FINAL step result is in memory
+Based on the step states and results, respond with JSON in one of these formats:
 
-Always respond with a JSON object in one of these formats:
-
-If ALL plan steps are complete and the FINAL computed result is in memory:
+If ALL steps are "completed" with valid results:
 {
     "status": "complete",
-    "answer": "Your answer - MUST be a value that exists in the step results",
-    "supporting_evidence": ["The actual computed values from each step"]
+    "answer": "The computed answer from the step results",
+    "supporting_evidence": ["Values from each completed step"]
 }
 
-If you need to execute the next step:
+If you need to execute a step or request clarification:
 {
     "status": "needs_info",
-    "current_step": 1,
-    "request": "Execute step N: [exact step description from plan]. Use the data source X and compute Y.",
-    "reasoning": "Why this step is needed according to the plan"
+    "current_step": <step number>,
+    "request": "What to execute or clarify",
+    "reasoning": "Why this is needed"
 }
 
-CRITICAL RULES - READ CAREFULLY:
+If any step is "failed" (clarification confirmed missing data):
+{
+    "status": "complete",
+    "answer": "Cannot complete: [explanation]. Successfully computed: [what worked].",
+    "supporting_evidence": ["Evidence of what succeeded and what failed"]
+}
 
-1. NEVER PERFORM MATH YOURSELF - ALL computations must be executed via Python code:
-   - Addition, subtraction, multiplication, division
-   - Rounding, averaging, percentages
-   - ANY mathematical operation whatsoever
-
-2. If a plan step involves computation (e.g., "Calculate X + Y", "Round to 2 decimals"):
-   - You MUST request that step to be executed via Python
-   - Do NOT calculate it yourself and mark complete
-
-3. You can ONLY mark "complete" when:
-   - ALL plan steps have corresponding results in memory
-   - The FINAL answer is a value that was computed by Python (visible in step results)
-   - You are NOT doing any calculation to produce the answer
-
-4. Your answer in "complete" status must be EXACTLY a value from the step results.
-   - WRONG: Computing (78.5 + 155) / 2 = 116.75 yourself
-   - RIGHT: Requesting Python to compute it, then reporting the result
-
-5. REUSE PREVIOUS RESULTS - When requesting a computation step that uses values from previous steps:
-   - Include the ACTUAL VALUES from previous steps in your request
-   - The information seeker should use these values directly, not recalculate them
-   - Format: "Calculate using: average=78.50438924168846, maximum=155.0. Compute (average/2 + maximum/2) rounded to 2 decimals"
-
-6. USER MODIFIED STEPS - Steps marked with [USER MODIFIED - FOLLOW EXACTLY] were explicitly changed by the user:
-   - Follow the EXACT wording of these steps, including specific numbers (like decimal places)
-   - Do NOT substitute your own values - if the user says "5 decimal places", use 5, not 2
-   - Copy the exact parameters from the modified step description into your request
-
-Example - if plan has 3 steps and step 3 is "Calculate (avg/2 + max/2) rounded to 2 decimals":
-- After step 2: You have avg=78.50438924168846, max=155.0 in memory
-- Request step 3: "Execute step 3: Using average=78.50438924168846 and maximum=155.0 from previous steps, calculate (average/2 + maximum/2) rounded to 2 decimals"
-- After step 3: Memory shows result=116.75 → NOW you can mark complete with answer=116.75"""
+RULES:
+1. NEVER do math yourself - all computations via Python
+2. Execute steps IN ORDER - don't skip ahead
+3. For computations, include actual values from previous steps in your request
+4. When a step shows "needs_clarification", wait for clarification result before proceeding
+5. When a step shows "failed", provide a clear explanation of what could not be completed
+6. USER MODIFIED steps must be followed EXACTLY as written"""
 
     def execute(
         self,
@@ -125,23 +105,20 @@ Example - if plan has 3 steps and step 3 is "Calculate (avg/2 + max/2) rounded t
         new_info: InfoSeekerResult | None = None,
     ) -> SensemakerResponse:
         """Process new information and update memory."""
-        # Store new information in memory and track step results
+        # Store new information in memory and update step states
         if new_info:
             # Use typed conversion to memory entry
             memory_entry = new_info.to_memory_entry(self._current_step)
             self.memory.update({"content": memory_entry.model_dump()})
 
-            # Store result for current step (only on success)
+            # Update step state based on result
             if new_info.success:
-                self._step_results[self._current_step] = new_info.results
+                self._update_step_state(self._current_step, new_info.results)
 
         # Build context for LLM
         memory_context = self.memory.get_context_for_llm()
         plan_steps = self._format_plan_steps(plan)
-        total_steps = len(plan.steps)
-
-        # Format step progress
-        step_progress = self._format_step_progress(total_steps)
+        step_states_str = self._format_step_states(plan)
 
         # Format new info if available
         new_info_str = ""
@@ -152,27 +129,22 @@ Example - if plan has 3 steps and step 3 is "Calculate (avg/2 + max/2) rounded t
                 "success": new_info.success,
                 "results": new_info.results,
             }
-            new_info_str = f"\nResult from previous request:\n{json.dumps(info_dict, indent=2, default=str)}"
+            new_info_str = f"\nLatest result:\n{json.dumps(info_dict, indent=2, default=str)}"
 
         prompt = f"""Query: {query}
 
 Plan Steps:
 {plan_steps}
 
-{step_progress}
+Step States:
+{step_states_str}
 
 {memory_context}
 {new_info_str}
 
-Based on the plan and results so far:
-1. Have ALL plan steps been executed with actual computed results?
-2. If not, what is the NEXT step that needs to be executed?
-3. If you have raw data but need a computation (like average), request that computation explicitly.
-
-Respond with JSON indicating either 'complete' with the ACTUAL COMPUTED answer, or 'needs_info' with the specific next step to execute."""
+Based on the step states, decide what to do next."""
 
         messages = [{"role": "user", "content": prompt}]
-        # Use discriminated union - Instructor handles this via the 'status' field
         result = self._call_llm(messages, Union[CompleteResponse, NeedsInfoResponse])
 
         # Update current step tracking for needs_info responses
@@ -183,6 +155,79 @@ Respond with JSON indicating either 'complete' with the ACTUAL COMPUTED answer, 
                 self._current_step += 1
 
         return result
+
+    def _update_step_state(self, step: int, result: str) -> None:
+        """Update step state based on result."""
+        current_state = self._step_states.get(step)
+
+        # Check if result is suspicious (NaN, null, empty)
+        is_suspicious = self._is_suspicious_result(result)
+
+        if current_state and current_state.status == "needs_clarification":
+            # This is a clarification response
+            if is_suspicious or self._confirms_missing_data(result):
+                # Clarification confirms data is missing
+                self._step_states[step] = StepState(
+                    step=step,
+                    status="failed",
+                    result=current_state.result,
+                    clarification_request=current_state.clarification_request,
+                    clarification_response=result,
+                    failure_reason=f"Clarification confirmed: {result}",
+                )
+            else:
+                # Clarification shows data exists - mark completed
+                self._step_states[step] = StepState(
+                    step=step,
+                    status="completed",
+                    result=result,
+                    clarification_request=current_state.clarification_request,
+                    clarification_response=result,
+                )
+        elif is_suspicious:
+            # First suspicious result - needs clarification
+            self._step_states[step] = StepState(
+                step=step,
+                status="needs_clarification",
+                result=result,
+            )
+        else:
+            # Valid result - completed
+            self._step_states[step] = StepState(
+                step=step,
+                status="completed",
+                result=result,
+            )
+
+    def _is_suspicious_result(self, result: str) -> bool:
+        """Check if result appears suspicious (NaN, null, empty)."""
+        if not result:
+            return True
+
+        result_lower = result.strip().lower()
+
+        # Check if entire result is a null-like value
+        if result_lower in ["nan", "null", "none", "n/a", ""]:
+            return True
+
+        # Check if result contains NaN values in JSON
+        # Common patterns: "NaN", ": NaN", ": null"
+        suspicious_patterns = [": nan", ":nan", '"nan"', ": null", ":null", '"null"', ": none", '"none"']
+        for pattern in suspicious_patterns:
+            if pattern in result_lower:
+                return True
+
+        return False
+
+    def _confirms_missing_data(self, result: str) -> bool:
+        """Check if clarification result confirms missing data."""
+        # A result of "0" or empty for count queries indicates no data
+        result_stripped = result.strip()
+        if result_stripped == "0":
+            return True
+        if result_stripped.lower() in ["[]", "{}", "empty", "no data"]:
+            return True
+        return False
 
     def _format_plan_steps(self, plan: Plan) -> str:
         """Format plan steps for the prompt."""
@@ -202,37 +247,77 @@ Respond with JSON indicating either 'complete' with the ACTUAL COMPUTED answer, 
                 lines.append(f"  Step {step.step}: {step.action}{source_str}")
         return "\n".join(lines)
 
-    def _format_step_progress(self, total_steps: int) -> str:
-        """Format current step progress."""
-        if not self._step_results:
-            return f"Progress: No steps completed yet. Current step: 1/{total_steps}"
+    def _format_step_states(self, plan: Plan) -> str:
+        """Format step states for the prompt."""
+        if not plan.steps:
+            return "No steps defined."
 
-        lines = [f"Progress: {len(self._step_results)}/{total_steps} steps completed."]
-        lines.append("Completed step results:")
-        for step_num, result in self._step_results.items():
-            # Truncate long results for display
-            result_str = str(result)
-            if len(result_str) > 200:
-                result_str = result_str[:200] + "..."
-            lines.append(f"  Step {step_num}: {result_str}")
-        lines.append(f"Next step to execute: {len(self._step_results) + 1}")
+        lines = []
+        for plan_step in plan.steps:
+            step_num = plan_step.step
+            state = self._step_states.get(step_num)
+
+            if not state:
+                lines.append(f"  Step {step_num}: [pending] - Not yet executed")
+            elif state.status == "completed":
+                result_str = state.result or ""
+                if len(result_str) > 100:
+                    result_str = result_str[:100] + "..."
+                lines.append(f"  Step {step_num}: [completed] result={result_str}")
+            elif state.status == "needs_clarification":
+                lines.append(
+                    f"  Step {step_num}: [needs_clarification] "
+                    f"suspicious_result={state.result} - ASK FOR VERIFICATION"
+                )
+            elif state.status == "failed":
+                lines.append(
+                    f"  Step {step_num}: [failed] "
+                    f"reason={state.failure_reason}"
+                )
+
         return "\n".join(lines)
 
     def reset(self) -> None:
         """Reset step tracking for a new query."""
         self._current_step = 0
-        self._step_results = {}
+        self._step_states = {}
 
-    def _summarize_plan(self, plan: Plan) -> str:
-        """Create a brief summary of the plan."""
-        lines = []
-        if plan.query_understanding:
-            lines.append(f"Understanding: {plan.query_understanding}")
-        if plan.required_info:
-            lines.append(f"Required info: {', '.join(plan.required_info[:5])}")
-        if plan.data_sources:
-            lines.append(f"Data sources: {', '.join(plan.data_sources)}")
-        return "\n".join(lines) if lines else "No plan details available"
+    def mark_step_completed(
+        self, step: int, result: str | None, error: str | None = None
+    ) -> None:
+        """
+        Manually mark a step as completed (used for user-added steps).
+
+        Args:
+            step: Step number to mark.
+            result: The result if successful.
+            error: The error if failed.
+        """
+        if error:
+            self._step_states[step] = StepState(
+                step=step,
+                status="failed",
+                error=error,
+                failure_reason=error,
+            )
+        else:
+            self._step_states[step] = StepState(
+                step=step,
+                status="completed",
+                result=result,
+            )
+        # Update current step to be at or past this step
+        if step >= self._current_step:
+            self._current_step = step
+
+    @property
+    def step_results(self) -> dict[int, str]:
+        """Get step results for backward compatibility."""
+        return {
+            step: state.result
+            for step, state in self._step_states.items()
+            if state.result is not None
+        }
 
     def get_answer(self) -> FinalAnswer:
         """Generate final answer from accumulated knowledge."""

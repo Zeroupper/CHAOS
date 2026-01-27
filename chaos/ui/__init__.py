@@ -2,13 +2,13 @@
 
 from .display import (
     display_execution_progress,
-    display_memory,
+    display_memory_table,
     display_plan,
+    display_step_states,
     display_verification,
 )
 from .prompts import (
     approve_plan,
-    confirm_action,
     final_review,
     get_revised_request,
     modify_plan_step,
@@ -18,7 +18,8 @@ from .prompts import (
 __all__ = [
     # Display components
     "display_plan",
-    "display_memory",
+    "display_memory_table",
+    "display_step_states",
     "display_execution_progress",
     "display_verification",
     # Prompt components
@@ -27,5 +28,4 @@ __all__ = [
     "final_review",
     "select_step_to_revise",
     "get_revised_request",
-    "confirm_action",
 ]

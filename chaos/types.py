@@ -56,6 +56,21 @@ class StepMemoryEntry(BaseModel):
     error: str | None = None
 
 
+# === Step State Types ===
+
+
+class StepState(BaseModel):
+    """State tracking for a plan step."""
+
+    step: int
+    status: Literal["pending", "completed", "needs_clarification", "failed"] = "pending"
+    result: str | None = None
+    error: str | None = None
+    clarification_request: str | None = None  # What clarification was asked
+    clarification_response: str | None = None  # What the clarification revealed
+    failure_reason: str | None = None  # Why the step failed (after clarification)
+
+
 # === Information Seeker Types ===
 
 
