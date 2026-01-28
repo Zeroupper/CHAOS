@@ -3,10 +3,13 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-@dataclass
-class LLMConfig:
-    """LLM provider configuration."""
+
+class LLMConfig(BaseSettings):
+    """LLM provider configuration with automatic env loading."""
+
+    model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
     provider: str = "openrouter"
     model: str = "openai/chatgpt-4o-latest"

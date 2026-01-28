@@ -38,20 +38,12 @@ def display_memory_table(memory: dict) -> None:
     table.add_column("Result", max_width=60, overflow="fold")
 
     for entry in entries:
-        content = entry.get("content", {})
-        if isinstance(content, dict) and "step" in content:
-            step = str(content.get("step", "?"))
-            success = content.get("success", False)
-
-            code = content.get("code", "-")
-
-            result = content.get("result") if success else content.get("error", "")
-            if result:
-                result = str(result)
-            else:
-                result = "-"
-
-            table.add_row(step, code, result)
+        step = str(entry.get("step", "?"))
+        success = entry.get("success", False)
+        code = entry.get("code") or "-"
+        result = entry.get("result") if success else entry.get("error")
+        result = str(result) if result else "-"
+        table.add_row(step, code, result)
 
     console.print(table)
 

@@ -1,124 +1,53 @@
-"""Logging infrastructure for CHAOS."""
+"""Logging infrastructure for CHAOS using loguru."""
 
-import logging
 import sys
 from typing import Any
 
+from loguru import logger
 
-# ANSI color codes for terminal output
-class Colors:
-    """ANSI color codes for terminal formatting."""
-
-    RESET = "\033[0m"
-    BOLD = "\033[1m"
-    DIM = "\033[2m"
-
-    # Component colors
-    ORCHESTRATOR = "\033[94m"  # Blue
-    PLANNER = "\033[95m"  # Magenta
-    SENSEMAKER = "\033[96m"  # Cyan
-    INFOSEEKER = "\033[93m"  # Yellow
-    VERIFIER = "\033[92m"  # Green
-    MEMORY = "\033[90m"  # Gray
-
-    # Level colors
-    DEBUG = "\033[90m"  # Gray
-    INFO = "\033[97m"  # White
-    WARNING = "\033[93m"  # Yellow
-    ERROR = "\033[91m"  # Red
-
-
-# Map component names to colors
+# Component colors for loguru format
 COMPONENT_COLORS = {
-    "Orchestrator": Colors.ORCHESTRATOR,
-    "Planner": Colors.PLANNER,
-    "Sensemaker": Colors.SENSEMAKER,
-    "InfoSeeker": Colors.INFOSEEKER,
-    "Verifier": Colors.VERIFIER,
-    "Memory": Colors.MEMORY,
+    "Orchestrator": "blue",
+    "Planner": "magenta",
+    "Sensemaker": "cyan",
+    "InfoSeeker": "yellow",
+    "Verifier": "green",
+    "Memory": "white",
 }
 
-
-class CHAOSFormatter(logging.Formatter):
-    """Custom formatter for CHAOS logging with component tags and colors."""
-
-    def __init__(self, use_colors: bool = True) -> None:
-        super().__init__()
-        self.use_colors = use_colors
-
-    def format(self, record: logging.LogRecord) -> str:
-        component = getattr(record, "component", "CHAOS")
-        message = record.getMessage()
-
-        if self.use_colors:
-            color = COMPONENT_COLORS.get(component, Colors.INFO)
-            level_color = getattr(Colors, record.levelname, Colors.INFO)
-
-            # Format multi-line messages with proper indentation
-            lines = message.split("\n")
-            if len(lines) > 1:
-                indent = " " * (len(component) + 3)
-                formatted_lines = [lines[0]] + [indent + line for line in lines[1:]]
-                message = "\n".join(formatted_lines)
-
-            return f"{color}[{component}]{Colors.RESET} {message}"
-        else:
-            # Plain text formatting
-            lines = message.split("\n")
-            if len(lines) > 1:
-                indent = " " * (len(component) + 3)
-                formatted_lines = [lines[0]] + [indent + line for line in lines[1:]]
-                message = "\n".join(formatted_lines)
-
-            return f"[{component}] {message}"
-
-
-class ComponentLogger(logging.LoggerAdapter):
-    """Logger adapter that adds component context."""
-
-    def __init__(self, logger: logging.Logger, component: str) -> None:
-        super().__init__(logger, {"component": component})
-
-    def process(
-        self, msg: str, kwargs: dict[str, Any]
-    ) -> tuple[str, dict[str, Any]]:
-        kwargs["extra"] = kwargs.get("extra", {})
-        kwargs["extra"]["component"] = self.extra["component"]
-        return msg, kwargs
-
-
-# Global logger instance
-_logger: logging.Logger | None = None
-_use_colors: bool = True
+# Global state
+_configured = False
 
 
 def setup_logging(level: str = "WARNING", use_colors: bool = True) -> None:
     """
-    Configure CHAOS logging.
+    Configure CHAOS logging with loguru.
 
     Args:
         level: Log level (DEBUG, INFO, WARNING, ERROR).
         use_colors: Whether to use ANSI colors in output.
     """
-    global _logger, _use_colors
-    _use_colors = use_colors
+    global _configured
 
-    _logger = logging.getLogger("chaos")
-    _logger.setLevel(getattr(logging, level.upper(), logging.WARNING))
+    # Remove default handler
+    logger.remove()
 
-    # Remove existing handlers
-    _logger.handlers.clear()
+    # Build format string
+    if use_colors:
+        fmt = "<level>[{extra[component]}]</level> {message}"
+    else:
+        fmt = "[{extra[component]}] {message}"
 
-    # Add console handler with custom formatter
-    handler = logging.StreamHandler(sys.stderr)
-    handler.setFormatter(CHAOSFormatter(use_colors=use_colors))
-    _logger.addHandler(handler)
+    logger.add(
+        sys.stderr,
+        format=fmt,
+        level=level.upper(),
+        colorize=use_colors,
+    )
+    _configured = True
 
-    # Prevent propagation to root logger
-    _logger.propagate = False
 
-
-def get_logger(component: str) -> ComponentLogger:
+def get_logger(component: str) -> Any:
     """
     Get a component-specific logger.
 
@@ -126,12 +55,12 @@ def get_logger(component: str) -> ComponentLogger:
         component: Component name (e.g., 'Orchestrator', 'Planner').
 
     Returns:
-        ComponentLogger instance with component context.
+        Logger instance bound to component.
     """
-    global _logger
-    if _logger is None:
+    global _configured
+    if not _configured:
         setup_logging()
-    return ComponentLogger(_logger, component)
+    return logger.bind(component=component)
 
 
 def format_plan(plan: Any) -> str:
@@ -148,7 +77,6 @@ def format_plan(plan: Any) -> str:
 
     lines = ["Plan created:"]
 
-    # Handle both Plan object and dict
     if isinstance(plan, Plan):
         if plan.query_understanding:
             lines.append(f"  Understanding: {plan.query_understanding}")
@@ -162,7 +90,6 @@ def format_plan(plan: Any) -> str:
             for step in plan.steps:
                 source_str = f" (from {step.source})" if step.source else ""
                 lines.append(f"    {step.step}. {step.action}{source_str}")
-
     else:
         # Fallback for dict (backward compatibility)
         if plan.get("query_understanding"):
@@ -221,13 +148,11 @@ def format_memory_state(memory_export: dict[str, Any]) -> str:
     for i, entry in enumerate(entries[-5:], 1):  # Show last 5 entries
         content = entry.get("content", {})
         if isinstance(content, dict):
-            # New format: {step, source, success, code, result/error}
             step = content.get("step", "?")
             source = content.get("source", "unknown")
             success = content.get("success", False)
 
             if "code" in content:
-                # Truncate code for display
                 code = content["code"]
                 code_short = code.replace("\n", " ")[:60]
                 if len(code) > 60:
@@ -237,14 +162,13 @@ def format_memory_state(memory_export: dict[str, Any]) -> str:
                     result_str = str(content["result"])
                     if len(result_str) > 80:
                         result_str = result_str[:80] + "..."
-                    lines.append(f"  [{step}] {source}: `{code_short}` → {result_str}")
+                    lines.append(f"  [{step}] {source}: `{code_short}` -> {result_str}")
                 elif "error" in content:
                     error_str = str(content["error"])[:80]
-                    lines.append(f"  [{step}] {source}: `{code_short}` → ERROR: {error_str}")
+                    lines.append(f"  [{step}] {source}: `{code_short}` -> ERROR: {error_str}")
                 else:
                     lines.append(f"  [{step}] {source}: `{code_short}`")
             else:
-                # Fallback for other entry types (e.g., error_recovery)
                 entry_type = content.get("type", "info")
                 lines.append(f"  [{i}] {entry_type}: {source}")
         else:

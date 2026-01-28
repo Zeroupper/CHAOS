@@ -12,22 +12,33 @@ from ..data.registry import DataRegistry
 from ..llm.structured_client import StructuredLLMClient
 from ..memory import Memory
 from ..tools.base import BaseTool
-from ..types import InfoSeekerResult, Plan, PlanStep, Verification
+from ..types import (
+    CANCELLED_RESULT,
+    REJECTED_RESULT,
+    InfoSeekerResult,
+    Plan,
+    PlanStep,
+    Verification,
+)
 from ..ui.display import (
     console,
     display_execution_progress,
     display_memory_table,
     display_plan,
     display_step_states,
+    display_tool_execution,
     display_verification,
 )
+from ..ui.export import RunLog, export_run_to_markdown, generate_run_filename
 from ..ui.prompts import (
+    approve_correction,
     approve_plan,
     final_review,
     get_new_step_action,
     get_replan_suggestion,
     get_revised_request,
     modify_plan_step,
+    prompt_export_run,
     select_step_to_revise,
 )
 from .config import Config
@@ -63,15 +74,33 @@ class Orchestrator:
         self._sensemaker_logger = get_logger("Sensemaker")
 
         # Initialize agents
-        self.planner = PlannerAgent(config, llm_client, tools=planner_tools)
+        self.planner = PlannerAgent(
+            config, llm_client, tools=planner_tools, on_tool_execute=display_tool_execution
+        )
         self.sensemaker = SensemakerAgent(config, llm_client, self.memory)
         self.info_seeker = InformationSeekingAgent(config, llm_client, self.data_registry)
         self.verifier = VerifierAgent(config, llm_client)
 
-    def run(self, query: str) -> dict[str, Any]:
-        """Execute pipeline with human interaction."""
+        # Initialize run log (will be reset in run())
+        self._run_log = RunLog()
+
+    def run(self, query: str, export_dir: str | None = None) -> dict[str, Any]:
+        """
+        Execute pipeline with human interaction.
+
+        Args:
+            query: User query to process.
+            export_dir: Optional directory for run exports. If provided, user will
+                        be prompted to export at the end.
+
+        Returns:
+            Result dictionary with answer, verification, etc.
+        """
         self.memory.clear()
         self.sensemaker.reset()
+
+        # Initialize run log for export
+        self._run_log = RunLog(query=query)
 
         console.print(f"\n[bold cyan]Processing:[/bold cyan] {query}\n")
 
@@ -88,12 +117,15 @@ class Orchestrator:
                 break
             elif decision == "reject":
                 console.print("[yellow]Plan rejected.[/yellow]")
-                return {"answer": None, "status": "rejected"}
+                return REJECTED_RESULT
             elif decision == "modify":
                 plan = self._modify_plan(plan)
             elif decision is None:
                 console.print("[yellow]Operation cancelled.[/yellow]")
-                return {"answer": None, "status": "cancelled"}
+                return CANCELLED_RESULT
+
+        # Log the approved plan
+        self._run_log.set_plan(plan)
 
         # Step 2: Execute sensemaking loop
         console.print("\n[bold]Starting execution...[/bold]\n")
@@ -115,10 +147,13 @@ class Orchestrator:
             final_decision = final_review(verification.recommendation, bool(step_history))
 
             if final_decision == "accept":
-                return self._finalize(result, verification, plan)
+                final_result = self._finalize(result, verification, plan)
+                self._offer_export(query, result, verification, export_dir)
+                return final_result
             elif final_decision == "reject":
                 console.print("[yellow]Answer rejected.[/yellow]")
-                return {"answer": None, "status": "rejected"}
+                self._offer_export(query, result, verification, export_dir)
+                return REJECTED_RESULT
             elif final_decision == "revise":
                 revised = self._handle_revision(query, plan, step_history)
                 if revised:
@@ -129,10 +164,12 @@ class Orchestrator:
                 if replan_result:
                     result = replan_result["result"]
                     plan = replan_result["plan"]
+                    # Update run log with new plan
+                    self._run_log.set_plan(plan)
                     verification = None
             elif final_decision is None:
                 console.print("[yellow]Operation cancelled.[/yellow]")
-                return {"answer": None, "status": "cancelled"}
+                return CANCELLED_RESULT
 
     def _modify_plan(self, plan: Plan) -> Plan:
         """Allow user to modify plan steps."""
@@ -152,19 +189,46 @@ class Orchestrator:
             iteration += 1
             console.print(f"\n[bold cyan]═══ Iteration {iteration}/{self.config.max_iterations} ═══[/bold cyan]")
 
-            # Show current step states
+            # Process new info and update step states
+            sensemaker_result = self.sensemaker.process(query, plan, new_info)
+
+            # Show current step states (after they've been updated)
             if self.sensemaker._step_states:
                 display_step_states(self.sensemaker._step_states, plan)
-
-            sensemaker_result = self.sensemaker.process(query, plan, new_info)
 
             if sensemaker_result.status == "complete":
                 console.print("\n[bold green]✓ Analysis complete![/bold green]")
                 display_memory_table(self.memory.export())
+                # Log completion
+                self._run_log.add_entry("sensemaker", "complete", {
+                    "answer": sensemaker_result.answer,
+                    "supporting_evidence": sensemaker_result.supporting_evidence,
+                })
+                self._run_log.final_answer = sensemaker_result.answer
                 return {
                     "answer": sensemaker_result.answer,
                     "supporting_evidence": sensemaker_result.supporting_evidence,
                 }
+
+            # Handle data quality correction proposal
+            if sensemaker_result.status == "needs_correction":
+                correction_result = self._handle_correction(
+                    query, plan, sensemaker_result
+                )
+                if correction_result is not None:
+                    new_info = correction_result
+                    continue
+                else:
+                    # User skipped correction, continue without new info
+                    new_info = None
+                    continue
+
+            # Log sensemaker request
+            self._run_log.add_entry("sensemaker", "request", {
+                "current_step": sensemaker_result.current_step,
+                "request": sensemaker_result.request,
+                "reasoning": sensemaker_result.reasoning,
+            })
 
             # Show what sensemaker is requesting
             console.print(f"\n[bold]Sensemaker Request:[/bold] {sensemaker_result.request}")
@@ -173,6 +237,14 @@ class Orchestrator:
 
             # Execute information seeking
             new_info = self._seek_with_retries(query, sensemaker_result.request)
+
+            # Log info seeker response
+            self._run_log.add_entry("info_seeker", "response", {
+                "source": new_info.source,
+                "code": new_info.params.get("code", ""),
+                "result": new_info.results,
+                "success": new_info.success,
+            })
 
             # Display execution result
             display_execution_progress(
@@ -232,46 +304,121 @@ class Orchestrator:
 
         self._orch_logger.error(f"InfoSeeker failed after {self.config.max_retries} attempts")
 
-        # Store failure in memory
-        self.memory.update({
-            "content": {
-                "type": "execution_failure",
-                "original_request": info_request,
-                "attempts": self.config.max_retries,
-                "errors": [e["error"] for e in error_history],
-            }
+        assert new_info is not None
+        return new_info
+
+    def _handle_correction(
+        self,
+        query: str,
+        plan: Plan,
+        correction: Any,  # NeedsCorrectionResponse
+    ) -> InfoSeekerResult | None:
+        """
+        Handle a data quality correction proposal from the sensemaker.
+
+        Shows the correction to the user, gets approval/modification,
+        and executes the corrected request.
+
+        Args:
+            query: Original user query.
+            plan: Current execution plan.
+            correction: NeedsCorrectionResponse from sensemaker.
+
+        Returns:
+            InfoSeekerResult from executing the correction, or None if skipped.
+        """
+        from ..types import NeedsCorrectionResponse
+
+        if not isinstance(correction, NeedsCorrectionResponse):
+            return None
+
+        # Log correction proposal
+        self._run_log.add_entry("correction", "proposed", {
+            "affected_step": correction.affected_step,
+            "issue_description": correction.issue_description,
+            "proposed_correction": correction.proposed_correction,
+            "reasoning": correction.reasoning,
         })
 
-        assert new_info is not None
+        # Show correction proposal to user and get decision
+        decision, modified_request = approve_correction(
+            step=correction.affected_step,
+            issue=correction.issue_description,
+            proposed_fix=correction.proposed_correction,
+        )
+
+        # Log user decision
+        self._run_log.add_entry("user", "correction_decision", {
+            "decision": decision,
+            "modified_request": modified_request,
+        })
+
+        if decision == "skip":
+            console.print("[yellow]Skipping correction, continuing with original data.[/yellow]")
+            return None
+
+        # Determine the request to execute
+        if decision == "approve":
+            request = correction.proposed_correction
+        else:  # modify
+            request = modified_request or correction.proposed_correction
+
+        console.print(f"\n[cyan]Executing corrected request for step {correction.affected_step}...[/cyan]")
+        console.print(f"[dim]Request: {request}[/dim]\n")
+
+        # Reset the step state so it can be re-executed
+        self.sensemaker.reset_step(correction.affected_step)
+
+        # Execute the corrected request
+        new_info = self._seek_with_retries(query, request)
+
+        # Log corrected info seeker response
+        self._run_log.add_entry("info_seeker", "response", {
+            "source": new_info.source,
+            "code": new_info.params.get("code", ""),
+            "result": new_info.results,
+            "success": new_info.success,
+            "is_correction": True,
+        })
+
+        # Display execution result
+        display_execution_progress(
+            step=correction.affected_step,
+            total=len(plan.steps),
+            code=new_info.params.get("code", ""),
+            result=new_info.results,
+            source=new_info.source,
+            success=new_info.success,
+        )
+
         return new_info
 
     def _build_step_history(self, plan: Plan) -> list[dict]:
         """Build list of plan steps with their execution results."""
-        memory = self.memory.export()
-        step_executions: dict[int, dict] = {}
-
-        for entry in memory.get("entries", []):
-            content = entry.get("content", {})
-            if isinstance(content, dict) and "step" in content:
-                step_num = content.get("step")
-                step_executions[step_num] = {
-                    "code": content.get("code", ""),
-                    "result": content.get("result") or content.get("error", ""),
-                    "success": content.get("success", False),
-                    "source": content.get("source"),
-                }
+        step_executions = self.memory.get_step_executions()
 
         history = []
         for plan_step in plan.steps:
-            execution = step_executions.get(plan_step.step, {})
-            history.append({
-                "step": plan_step.step,
-                "action": plan_step.action,
-                "source": execution.get("source", plan_step.source),
-                "code": execution.get("code", ""),
-                "result": execution.get("result", "Not executed"),
-                "success": execution.get("success", False),
-            })
+            entry = step_executions.get(plan_step.step)
+            if entry:
+                result = entry.result if entry.success else entry.error or "Not executed"
+                history.append({
+                    "step": plan_step.step,
+                    "action": plan_step.action,
+                    "source": plan_step.source,
+                    "code": entry.code,
+                    "result": result,
+                    "success": entry.success,
+                })
+            else:
+                history.append({
+                    "step": plan_step.step,
+                    "action": plan_step.action,
+                    "source": plan_step.source,
+                    "code": "",
+                    "result": "Not executed",
+                    "success": False,
+                })
         return history
 
     def _build_step_context_for_info_seeker(self, plan: Plan) -> dict[str, Any]:
@@ -281,18 +428,15 @@ class Orchestrator:
         This allows user-added steps to reference previous results like
         "subtract 10 from step 3 result".
         """
+        step_executions = self.memory.get_step_executions()
         step_results = {}
-        memory = self.memory.export()
 
-        for entry in memory.get("entries", []):
-            content = entry.get("content", {})
-            if isinstance(content, dict) and "step" in content:
-                step_num = content.get("step")
-                if content.get("success"):
-                    step_results[f"step_{step_num}"] = {
-                        "result": content.get("result"),
-                        "action": None,  # Will fill from plan
-                    }
+        for step_num, entry in step_executions.items():
+            if entry.success:
+                step_results[f"step_{step_num}"] = {
+                    "result": entry.result,
+                    "action": None,  # Will fill from plan
+                }
 
         # Add action descriptions from plan
         for plan_step in plan.steps:
@@ -373,8 +517,13 @@ class Orchestrator:
         )
 
         # Store result in memory so sensemaker knows this step was executed
-        memory_entry = new_info.to_memory_entry(new_step_num)
-        self.memory.update({"content": memory_entry.model_dump()})
+        self.memory.add(
+            code=new_info.params.get("code", ""),
+            result=new_info.results if new_info.success else None,
+            success=new_info.success,
+            error=new_info.results if not new_info.success else None,
+            step=new_step_num,
+        )
 
         # Mark step as completed in sensemaker's state
         self.sensemaker.mark_step_completed(
@@ -509,3 +658,40 @@ class Orchestrator:
             "step_results": self.sensemaker.step_results,
             "memory": self.memory.export(),
         }
+
+    def _offer_export(
+        self,
+        query: str,
+        result: dict[str, Any],
+        verification: Verification | None,
+        export_dir: str | None,
+    ) -> None:
+        """
+        Offer to export the run to a markdown file.
+
+        Args:
+            query: Original user query.
+            result: The result dictionary.
+            verification: Verification result if available.
+            export_dir: Directory for exports. Defaults to current directory if None.
+        """
+        # Update run log with final data
+        if not self._run_log.final_answer:
+            self._run_log.final_answer = result.get("answer", "")
+        if verification:
+            self._run_log.set_verification(verification)
+
+        # Use exported_runs directory if no export_dir specified
+        output_dir = export_dir or "exported_runs"
+
+        # Generate default filename
+        default_path = str(generate_run_filename(query, output_dir))
+
+        # Prompt user
+        export_path = prompt_export_run(default_path)
+        if export_path:
+            try:
+                output = export_run_to_markdown(self._run_log, export_path)
+                console.print(f"\n[green]Run exported to:[/green] {output}")
+            except Exception as e:
+                console.print(f"\n[red]Failed to export run:[/red] {e}")

@@ -84,25 +84,9 @@ Be critical but fair. A good answer should directly answer the query with suppor
         has_modified_steps = False
         if context:
             plan = context.get("plan")
-            if plan is not None:
-                context_str += "\nPlan Steps:\n"
-                if isinstance(plan, Plan):
-                    for step in plan.steps:
-                        if step.modified:
-                            has_modified_steps = True
-                            context_str += f"  Step {step.step} [USER MODIFIED]: {step.action}\n"
-                        else:
-                            context_str += f"  Step {step.step}: {step.action}\n"
-                elif isinstance(plan, dict) and plan.get("steps"):
-                    for step in plan["steps"]:
-                        step_num = step.get("step", "?")
-                        action = step.get("action", "Unknown")
-                        modified = step.get("modified", False)
-                        if modified:
-                            has_modified_steps = True
-                            context_str += f"  Step {step_num} [USER MODIFIED]: {action}\n"
-                        else:
-                            context_str += f"  Step {step_num}: {action}\n"
+            if isinstance(plan, Plan):
+                context_str += "\nPlan Steps:\n" + plan.format_steps() + "\n"
+                has_modified_steps = any(s.modified for s in plan.steps)
 
         # Add note about modified steps taking precedence
         modified_note = ""
@@ -164,39 +148,31 @@ Evaluate this answer and provide a verification report as JSON."""
         # Get modified step numbers from plan
         modified_steps: set[int] = set()
         plan = context.get("plan")
-        if plan is not None:
-            if isinstance(plan, Plan):
-                modified_steps = {s.step for s in plan.steps if s.modified}
-            elif isinstance(plan, dict) and plan.get("steps"):
-                modified_steps = {
-                    s.get("step") for s in plan["steps"] if s.get("modified")
-                }
+        if isinstance(plan, Plan):
+            modified_steps = {s.step for s in plan.steps if s.modified}
 
         lines = ["Evidence (executed computations):"]
         for entry in entries:
-            content = entry.get("content", {})
-            if isinstance(content, dict) and "code" in content:
-                step = content.get("step", "?")
-                source = content.get("source", "unknown")
-                code = content.get("code", "")
-                success = content.get("success", False)
+            step = entry.get("step", "?")
+            code = entry.get("code", "")
+            success = entry.get("success", False)
 
-                # Mark user-modified steps prominently
+            # Mark user-modified steps prominently
+            if step in modified_steps:
+                lines.append(f"\n  Step {step} [USER ADDED/MODIFIED - AUTHORITATIVE]:")
+            else:
+                lines.append(f"\n  Step {step}:")
+            lines.append(f"    Code executed: {code}")
+
+            if success and entry.get("result") is not None:
+                result_str = str(entry["result"])
+                if len(result_str) > 500:
+                    result_str = result_str[:500] + "..."
                 if step in modified_steps:
-                    lines.append(f"\n  Step {step} [USER ADDED/MODIFIED - AUTHORITATIVE] on '{source}':")
+                    lines.append(f"    Result: {result_str} ← USE THIS (user correction)")
                 else:
-                    lines.append(f"\n  Step {step} on '{source}':")
-                lines.append(f"    Code executed: {code}")
-
-                if success and "result" in content:
-                    result_str = str(content["result"])
-                    if len(result_str) > 500:
-                        result_str = result_str[:500] + "..."
-                    if step in modified_steps:
-                        lines.append(f"    Result: {result_str} ← USE THIS (user correction)")
-                    else:
-                        lines.append(f"    Result: {result_str}")
-                elif "error" in content:
-                    lines.append(f"    Error: {content['error']}")
+                    lines.append(f"    Result: {result_str}")
+            elif entry.get("error"):
+                lines.append(f"    Error: {entry['error']}")
 
         return "\n".join(lines)

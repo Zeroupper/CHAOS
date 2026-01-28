@@ -5,6 +5,12 @@ from typing import Literal
 from pydantic import BaseModel, Field
 
 
+# === Result Constants ===
+
+REJECTED_RESULT: dict[str, str | None] = {"answer": None, "status": "rejected"}
+CANCELLED_RESULT: dict[str, str | None] = {"answer": None, "status": "cancelled"}
+
+
 # === Execution Results ===
 
 
@@ -41,19 +47,28 @@ class Plan(BaseModel):
     data_sources: list[str] = Field(default_factory=list)
     steps: list[PlanStep] = Field(default_factory=list)
 
+    def format_steps(self, show_modified: bool = True, prefix: str = "  ") -> str:
+        """
+        Format plan steps as a string.
 
-# === Memory Types ===
+        Args:
+            show_modified: Whether to show [USER MODIFIED] prefix for modified steps.
+            prefix: Prefix for each line.
 
+        Returns:
+            Formatted string of steps.
+        """
+        if not self.steps:
+            return f"{prefix}No specific steps in plan."
 
-class StepMemoryEntry(BaseModel):
-    """Memory entry for a completed step."""
-
-    step: int
-    source: str
-    success: bool
-    code: str | None = None
-    result: str | None = None
-    error: str | None = None
+        lines = []
+        for step in self.steps:
+            source_str = f" (from {step.source})" if step.source else ""
+            if step.modified and show_modified:
+                lines.append(f"{prefix}Step {step.step} [USER MODIFIED]: {step.action}{source_str}")
+            else:
+                lines.append(f"{prefix}Step {step.step}: {step.action}{source_str}")
+        return "\n".join(lines)
 
 
 # === Step State Types ===
@@ -69,6 +84,31 @@ class StepState(BaseModel):
     clarification_request: str | None = None  # What clarification was asked
     clarification_response: str | None = None  # What the clarification revealed
     failure_reason: str | None = None  # Why the step failed (after clarification)
+
+    @classmethod
+    def from_result(
+        cls,
+        step: int,
+        status: Literal["pending", "completed", "needs_clarification", "failed"],
+        result: str | None = None,
+        previous: "StepState | None" = None,
+        **kwargs: str | None,
+    ) -> "StepState":
+        """
+        Factory method to create StepState with optional inheritance from previous state.
+
+        Args:
+            step: Step number.
+            status: New status.
+            result: Result string.
+            previous: Previous state to inherit clarification fields from.
+            **kwargs: Additional fields (failure_reason, error, etc.)
+        """
+        base: dict[str, int | str | None] = {"step": step, "status": status, "result": result}
+        if previous:
+            base["clarification_request"] = previous.clarification_request
+            base["clarification_response"] = previous.clarification_response
+        return cls(**{**base, **kwargs})
 
 
 # === Information Seeker Types ===
@@ -92,17 +132,6 @@ class InfoSeekerResult(BaseModel):
     results: str  # JSON string or error message
     success: bool
 
-    def to_memory_entry(self, step: int) -> StepMemoryEntry:
-        """Convert to memory entry for sensemaker."""
-        return StepMemoryEntry(
-            step=step,
-            source=self.source,
-            success=self.success,
-            code=self.params.get("code"),
-            result=self.results if self.success else None,
-            error=self.results if not self.success else None,
-        )
-
 
 # === Sensemaker Response Types ===
 
@@ -124,8 +153,18 @@ class NeedsInfoResponse(BaseModel):
     reasoning: str = ""
 
 
+class NeedsCorrectionResponse(BaseModel):
+    """Response when sensemaker detects data quality issue and proposes fix."""
+
+    status: Literal["needs_correction"] = "needs_correction"
+    affected_step: int = Field(ge=1)
+    issue_description: str = ""
+    proposed_correction: str = ""
+    reasoning: str = ""
+
+
 # Discriminated union - Instructor handles this automatically
-SensemakerResponse = CompleteResponse | NeedsInfoResponse
+SensemakerResponse = CompleteResponse | NeedsInfoResponse | NeedsCorrectionResponse
 
 
 # === Verifier Types ===

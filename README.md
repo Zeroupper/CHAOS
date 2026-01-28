@@ -46,22 +46,24 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Sensemaking Loop                             │
+│                       Sensemaking Loop                          │
 │  ┌──────────────────┐         ┌───────────────────────────┐     │
 │  │  Sensemaker      │◄───────►│  Information Seeking      │     │
 │  │  Agent           │         │  Agent                    │     │
-│  │  - Updates memory│         │  - Queries data sources   │     │
-│  │  - Synthesizes   │         │  - Executes Python code   │     │
-│  │  - Returns:      │         │  - Returns:               │     │
-│  │    Complete |    │         │    QueryDecision          │     │
-│  │    NeedsInfo     │         │    InfoSeekerResult       │     │
-│  └──────────────────┘         └─────────────┬─────────────┘     │
-│                                             │                   │
-│                                             ▼                   │
-│                               ┌───────────────────────────┐     │
-│                               │  Data Sources & Tools     │     │
-│                               │  (Registry-based)         │     │
-│                               └───────────────────────────┘     │
+│  │                  │         │  - Queries data sources   │     │
+│  │  Returns:        │         │  - Executes Python code   │     │
+│  │  - Complete      │         │  - Returns:               │     │
+│  │  - NeedsInfo     │         │    InfoSeekerResult       │     │
+│  │  - NeedsCorrect  │         │                           │     │
+│  └────────┬─────────┘         └─────────────┬─────────────┘     │
+│           │                                 │                   │
+│           │ NeedsCorrection?                ▼                   │
+│           │                   ┌───────────────────────────┐     │
+│           ▼                   │  Data Sources & Tools     │     │
+│  ┌──────────────────┐         │  (Registry-based)         │     │
+│  │  Human Approval  │         └───────────────────────────┘     │
+│  │  for Correction  │                                           │
+│  └──────────────────┘                                           │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -73,6 +75,7 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 ┌─────────────────────────────────────────────────────────────────┐
 │                         Final Result                            │
 │           Answer, confidence score, supporting evidence         │
+│                    + Optional Run Export                        │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -89,7 +92,7 @@ CHAOS/
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
 │   │   ├── planner.py            # Creates execution plans → Plan
-│   │   ├── sensemaker.py         # Synthesizes information → Complete|NeedsInfo
+│   │   ├── sensemaker.py         # Synthesizes info → Complete|NeedsInfo|NeedsCorrection
 │   │   ├── information_seeker.py # Retrieves data → InfoSeekerResult
 │   │   └── verifier.py           # Validates answers → Verification
 │   ├── llm/                    # LLM client
@@ -105,8 +108,10 @@ CHAOS/
 │   │   └── memory.py             # Memory management
 │   └── ui/                     # Interactive terminal UI
 │       ├── display.py            # Rich-based display components
-│       └── prompts.py            # Questionary-based prompts
+│       ├── prompts.py            # Questionary-based prompts
+│       └── export.py             # Run export to markdown
 ├── datasets/                 # Place datasets here (auto-discovered)
+├── exported_runs/            # Exported run logs (markdown)
 ├── tests/                    # Test suite
 ├── main.py                   # Entry point
 └── pyproject.toml            # Project configuration
@@ -124,14 +129,22 @@ Plan, PlanStep
 QueryDecision, InfoSeekerResult
 
 # Sensemaker response (discriminated union)
-CompleteResponse | NeedsInfoResponse
+CompleteResponse | NeedsInfoResponse | NeedsCorrectionResponse
 
 # Verifier types
 Verification
 
 # Execution types
-ExecutionResult, StepMemoryEntry
+ExecutionResult, StepState
 ```
+
+### Sensemaker Response Types
+
+| Response | When Used |
+|----------|-----------|
+| `CompleteResponse` | All steps completed, final answer ready |
+| `NeedsInfoResponse` | Need to execute a step or request clarification |
+| `NeedsCorrectionResponse` | Data quality issue detected, proposes a fix |
 
 ## Installation
 
@@ -202,41 +215,59 @@ uv run python main.py "What is the average heart rate of test004?"
 
 ```
 User Query
-    |
-    v
-+---------------------------+
-|      PLAN CREATION        |
-|   Planner creates plan    |
-+-----------+---------------+
-            |
-            v
-+---------------------------+
-|   HUMAN: Plan Review      |
-|  > Approve and execute    |<--+
-|    Modify plan steps      |   |
-|    Reject                 |   |
-+-----------+---------------+   |
-            |                   |
-            v                   |
-+---------------------------+   |
-|   AUTOMATIC EXECUTION     |   |
-|  Sensemaking loop runs    |   |
-|  (progress displayed)     |   |
-+-----------+---------------+   |
-            |                   |
-            v                   |
-+---------------------------+   |
-|      VERIFICATION         |   |
-|  Verifier checks answer   |   |
-+-----------+---------------+   |
-            |                   |
-            v                   |
-+---------------------------+   |
-|   HUMAN: Final Review     |   |
-|  > Accept answer          |   |
-|    Reject                 |   |
-|    Revise (fix a step) ---+---+
-+---------------------------+
+    │
+    ▼
+┌───────────────────────────┐
+│      PLAN CREATION        │
+│   Planner creates plan    │
+└───────────┬───────────────┘
+            │
+            ▼
+┌───────────────────────────┐
+│   HUMAN: Plan Review      │
+│  > Approve and execute    │◄──┐
+│    Modify plan steps      │   │
+│    Reject                 │   │
+└───────────┬───────────────┘   │
+            │                   │
+            ▼                   │
+┌───────────────────────────┐   │
+│   AUTOMATIC EXECUTION     │   │
+│  Sensemaking loop runs    │   │
+│  (progress displayed)     │   │
+└───────────┬───────────────┘   │
+            │                   │
+            ▼                   │
+┌───────────────────────────┐   │
+│  DATA QUALITY ISSUE?      │   │
+│  (e.g., -1 placeholder)   │   │
+│                           │   │
+│  > Approve correction     │   │
+│    Modify correction      │   │
+│    Skip                   │   │
+└───────────┬───────────────┘   │
+            │                   │
+            ▼                   │
+┌───────────────────────────┐   │
+│      VERIFICATION         │   │
+│  Verifier checks answer   │   │
+└───────────┬───────────────┘   │
+            │                   │
+            ▼                   │
+┌───────────────────────────┐   │
+│   HUMAN: Final Review     │   │
+│  > Accept answer          │   │
+│    Reject                 │   │
+│    Revise (fix a step)  ──┼───┤
+│    Replan (fresh start) ──┼───┘
+└───────────┬───────────────┘
+            │
+            ▼
+┌───────────────────────────┐
+│      RUN EXPORT           │
+│  Export to markdown?      │
+│  (saved to exported_runs/)│
+└───────────────────────────┘
 ```
 
 ### Features
@@ -250,10 +281,22 @@ User Query
    - Sensemaking runs without per-step approval
    - Real-time progress display with code and results
 
-3. **Final Review** (after verification)
+3. **Data Quality Correction** (during execution)
+   - When suspicious data is detected (e.g., -1 as placeholder for missing values)
+   - Sensemaker proposes a fix (e.g., "exclude -1 values")
+   - Human can **Approve**, **Modify**, or **Skip** the correction
+   - Corrected query is re-executed automatically
+
+4. **Final Review** (after verification)
    - **Accept**: Finalize the answer
    - **Revise**: Go back and fix a specific step that went wrong
+   - **Replan**: Start fresh with learnings from the failed attempt
    - **Reject**: Discard and start over
+
+5. **Run Export**
+   - After accepting or rejecting, export the full run to markdown
+   - Includes: query, plan, all agent exchanges, corrections, final answer, verification
+   - Saved to `exported_runs/` directory by default
 
 ## Adding Data Sources
 

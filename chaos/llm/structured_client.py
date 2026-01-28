@@ -1,6 +1,5 @@
 """Instructor-based LLM client for structured outputs."""
 
-import os
 from typing import TypeVar
 
 import instructor
@@ -25,7 +24,8 @@ class StructuredLLMClient:
     def __init__(self, config: LLMConfig, max_retries: int = 3) -> None:
         self.config = config
         self.max_retries = max_retries
-        self._api_key = config.api_key or os.environ.get("OPENROUTER_API_KEY")
+        # LLMConfig (pydantic-settings) auto-loads OPENROUTER_API_KEY from environment
+        self._api_key = config.api_key
 
         if not self._api_key:
             raise ValueError(

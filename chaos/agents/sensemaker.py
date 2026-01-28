@@ -10,6 +10,7 @@ from ..types import (
     CompleteResponse,
     FinalAnswer,
     InfoSeekerResult,
+    NeedsCorrectionResponse,
     NeedsInfoResponse,
     Plan,
     RecoveryGuidance,
@@ -64,7 +65,16 @@ If you need to execute a step or request clarification:
     "reasoning": "Why this is needed"
 }
 
-If any step is "failed" (clarification confirmed missing data):
+If clarification reveals a DATA QUALITY ISSUE that can be fixed (e.g., placeholder values like -1, missing data markers, etc.):
+{
+    "status": "needs_correction",
+    "affected_step": <step number with the issue>,
+    "issue_description": "Clear description of the data quality problem",
+    "proposed_correction": "A corrected query/request that avoids the issue",
+    "reasoning": "Why this correction will fix the issue"
+}
+
+If any step is "failed" and CANNOT be corrected (data truly missing/unavailable):
 {
     "status": "complete",
     "answer": "Cannot complete: [explanation]. Successfully computed: [what worked].",
@@ -76,8 +86,9 @@ RULES:
 2. Execute steps IN ORDER - don't skip ahead
 3. For computations, include actual values from previous steps in your request
 4. When a step shows "needs_clarification", wait for clarification result before proceeding
-5. When a step shows "failed", provide a clear explanation of what could not be completed
-6. USER MODIFIED steps must be followed EXACTLY as written"""
+5. When clarification reveals FIXABLE data quality issues (placeholders, sentinel values like -1, etc.), use "needs_correction" to propose a fix
+6. Only mark as "failed" when data is truly missing and cannot be fixed
+7. USER MODIFIED steps must be followed EXACTLY as written"""
 
     def execute(
         self,
@@ -107,9 +118,13 @@ RULES:
         """Process new information and update memory."""
         # Store new information in memory and update step states
         if new_info:
-            # Use typed conversion to memory entry
-            memory_entry = new_info.to_memory_entry(self._current_step)
-            self.memory.update({"content": memory_entry.model_dump()})
+            self.memory.add(
+                code=new_info.params.get("code", ""),
+                result=new_info.results if new_info.success else None,
+                success=new_info.success,
+                error=new_info.results if not new_info.success else None,
+                step=self._current_step,
+            )
 
             # Update step state based on result
             if new_info.success:
@@ -145,7 +160,9 @@ Step States:
 Based on the step states, decide what to do next."""
 
         messages = [{"role": "user", "content": prompt}]
-        result = self._call_llm(messages, Union[CompleteResponse, NeedsInfoResponse])
+        result = self._call_llm(
+            messages, Union[CompleteResponse, NeedsInfoResponse, NeedsCorrectionResponse]
+        )
 
         # Update current step tracking for needs_info responses
         if result.status == "needs_info":
@@ -159,45 +176,25 @@ Based on the step states, decide what to do next."""
     def _update_step_state(self, step: int, result: str) -> None:
         """Update step state based on result."""
         current_state = self._step_states.get(step)
-
-        # Check if result is suspicious (NaN, null, empty)
         is_suspicious = self._is_suspicious_result(result)
 
         if current_state and current_state.status == "needs_clarification":
             # This is a clarification response
             if is_suspicious or self._confirms_missing_data(result):
-                # Clarification confirms data is missing
-                self._step_states[step] = StepState(
-                    step=step,
-                    status="failed",
-                    result=current_state.result,
-                    clarification_request=current_state.clarification_request,
+                self._step_states[step] = StepState.from_result(
+                    step, "failed", current_state.result, current_state,
                     clarification_response=result,
                     failure_reason=f"Clarification confirmed: {result}",
                 )
             else:
-                # Clarification shows data exists - mark completed
-                self._step_states[step] = StepState(
-                    step=step,
-                    status="completed",
-                    result=result,
-                    clarification_request=current_state.clarification_request,
+                self._step_states[step] = StepState.from_result(
+                    step, "completed", result, current_state,
                     clarification_response=result,
                 )
         elif is_suspicious:
-            # First suspicious result - needs clarification
-            self._step_states[step] = StepState(
-                step=step,
-                status="needs_clarification",
-                result=result,
-            )
+            self._step_states[step] = StepState.from_result(step, "needs_clarification", result)
         else:
-            # Valid result - completed
-            self._step_states[step] = StepState(
-                step=step,
-                status="completed",
-                result=result,
-            )
+            self._step_states[step] = StepState.from_result(step, "completed", result)
 
     def _is_suspicious_result(self, result: str) -> bool:
         """Check if result appears suspicious (NaN, null, empty)."""
@@ -231,6 +228,7 @@ Based on the step states, decide what to do next."""
 
     def _format_plan_steps(self, plan: Plan) -> str:
         """Format plan steps for the prompt."""
+        # Use Plan.format_steps() but customize modified step text
         if not plan.steps:
             return "No specific steps in plan."
 
@@ -238,7 +236,6 @@ Based on the step states, decide what to do next."""
         for step in plan.steps:
             source_str = f" (from {step.source})" if step.source else ""
             if step.modified:
-                # Emphasize user-modified steps
                 lines.append(
                     f"  Step {step.step} [USER MODIFIED - FOLLOW EXACTLY]: "
                     f"{step.action}{source_str}"
@@ -281,6 +278,14 @@ Based on the step states, decide what to do next."""
         """Reset step tracking for a new query."""
         self._current_step = 0
         self._step_states = {}
+
+    def reset_step(self, step: int) -> None:
+        """Reset a specific step to pending state (used after correction)."""
+        if step in self._step_states:
+            del self._step_states[step]
+        # Reset current step to re-execute from this step
+        if step <= self._current_step:
+            self._current_step = step - 1
 
     def mark_step_completed(
         self, step: int, result: str | None, error: str | None = None
@@ -381,17 +386,4 @@ Respond with JSON:
 }}"""
 
         messages = [{"role": "user", "content": prompt}]
-        recovery = self._call_llm(messages, RecoveryGuidance)
-
-        # Store recovery attempt in memory
-        self.memory.update({
-            "content": {
-                "type": "error_recovery",
-                "original_request": original_request,
-                "errors": errors_str,
-                "summary": recovery.summary,
-                "revised_approach": recovery.revised_request,
-            }
-        })
-
-        return recovery
+        return self._call_llm(messages, RecoveryGuidance)

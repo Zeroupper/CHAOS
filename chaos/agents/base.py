@@ -1,6 +1,7 @@
 """Base agent class for all CHAOS agents."""
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from typing import Any, TypeVar
 
 from pydantic import BaseModel
@@ -9,9 +10,18 @@ from ..core.config import Config
 from ..core.logger import get_logger
 from ..llm.structured_client import StructuredLLMClient
 from ..tools.base import BaseTool
-from ..ui.display import display_tool_execution
 
 T = TypeVar("T", bound=BaseModel)
+
+# Type alias for tool execution callback
+ToolExecutionCallback = Callable[[str, dict[str, Any], Any, bool], None]
+
+
+def _default_tool_callback(
+    tool_name: str, params: dict[str, Any], result: Any, success: bool
+) -> None:
+    """Default no-op callback for tool execution."""
+    pass
 
 
 class BaseAgent(ABC):
@@ -22,12 +32,14 @@ class BaseAgent(ABC):
         config: Config,
         llm_client: StructuredLLMClient,
         tools: list[BaseTool] | None = None,
+        on_tool_execute: ToolExecutionCallback | None = None,
     ) -> None:
         self.config = config
         self.llm_client = llm_client
         self._system_prompt: str = ""
         self._tools: dict[str, BaseTool] = {}
         self._logger = get_logger(self.__class__.__name__)
+        self._on_tool_execute = on_tool_execute or _default_tool_callback
 
         # Register provided tools
         if tools:
@@ -84,9 +96,9 @@ class BaseAgent(ABC):
 
         result = tool.execute(**kwargs)
 
-        # UI: Show tool execution
+        # Notify via callback
         success = result.get("success", True) if isinstance(result, dict) else True
-        display_tool_execution(tool_name, kwargs, result, success)
+        self._on_tool_execute(tool_name, kwargs, result, success)
 
         self._logger.debug(f"Tool result: {result}")
         return result

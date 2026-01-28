@@ -4,7 +4,7 @@ from ..core.config import Config
 from ..llm.structured_client import StructuredLLMClient
 from ..tools.base import BaseTool
 from ..types import Plan
-from .base import BaseAgent
+from .base import BaseAgent, ToolExecutionCallback
 
 
 class PlannerAgent(BaseAgent):
@@ -26,8 +26,9 @@ class PlannerAgent(BaseAgent):
         config: Config,
         llm_client: StructuredLLMClient,
         tools: list[BaseTool] | None = None,
+        on_tool_execute: ToolExecutionCallback | None = None,
     ) -> None:
-        super().__init__(config, llm_client, tools)
+        super().__init__(config, llm_client, tools, on_tool_execute)
 
         self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
 
