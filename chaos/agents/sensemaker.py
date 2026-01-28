@@ -50,7 +50,7 @@ You will be given step states that track the progress of each step:
 
 Based on the step states and results, respond with JSON in one of these formats:
 
-If ALL steps are "completed" with valid results:
+If ALL steps in the plan are "completed" (no "pending" steps remain):
 {
     "status": "complete",
     "answer": "The computed answer from the step results",
@@ -82,13 +82,15 @@ If any step is "failed" and CANNOT be corrected (data truly missing/unavailable)
 }
 
 RULES:
-1. NEVER do math yourself - all computations via Python
+1. NEVER do math yourself - all computations via Python. Even simple subtraction/addition must be executed via Python.
 2. Execute steps IN ORDER - don't skip ahead
-3. For computations, include actual values from previous steps in your request
+3. For computations, include actual values from previous steps in your request (e.g., "Compute 155.0 - (-1.0)")
 4. When a step shows "needs_clarification", wait for clarification result before proceeding
 5. When clarification reveals FIXABLE data quality issues (placeholders, sentinel values like -1, etc.), use "needs_correction" to propose a fix
 6. Only mark as "failed" when data is truly missing and cannot be fixed
-7. USER MODIFIED steps must be followed EXACTLY as written"""
+7. USER MODIFIED steps must be followed EXACTLY as written
+8. NEVER propose corrections for steps marked "(USER ACCEPTED - do not propose corrections)" - the user has explicitly chosen to use the original value
+9. NEVER return "complete" if ANY step is still "pending" - you MUST execute all steps in order first"""
 
     def execute(
         self,
@@ -260,7 +262,11 @@ Based on the step states, decide what to do next."""
                 result_str = state.result or ""
                 if len(result_str) > 100:
                     result_str = result_str[:100] + "..."
-                lines.append(f"  Step {step_num}: [completed] result={result_str}")
+                # Include acknowledgment note if user accepted a suspicious value
+                if state.clarification_response and "acknowledged" in state.clarification_response.lower():
+                    lines.append(f"  Step {step_num}: [completed] result={result_str} (USER ACCEPTED - do not propose corrections)")
+                else:
+                    lines.append(f"  Step {step_num}: [completed] result={result_str}")
             elif state.status == "needs_clarification":
                 lines.append(
                     f"  Step {step_num}: [needs_clarification] "

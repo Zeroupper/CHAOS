@@ -18,6 +18,7 @@ from ..types import (
     InfoSeekerResult,
     Plan,
     PlanStep,
+    StepState,
     Verification,
 )
 from ..ui.display import (
@@ -355,6 +356,19 @@ class Orchestrator:
 
         if decision == "skip":
             console.print("[yellow]Skipping correction, continuing with original data.[/yellow]")
+            # Mark the step as completed with acknowledgment so sensemaker moves on
+            # and doesn't propose the same correction again
+            step_state = self.sensemaker._step_states.get(correction.affected_step)
+            if step_state:
+                self.sensemaker._step_states[correction.affected_step] = StepState(
+                    step=correction.affected_step,
+                    status="completed",
+                    result=step_state.result,
+                    clarification_response="User acknowledged suspicious value and chose to continue with original data",
+                )
+                # Update current step tracking
+                if correction.affected_step >= self.sensemaker._current_step:
+                    self.sensemaker._current_step = correction.affected_step
             return None
 
         # Determine the request to execute
