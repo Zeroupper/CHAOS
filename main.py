@@ -31,10 +31,10 @@ def parse_args() -> argparse.Namespace:
         help="Directory containing datasets",
     )
     parser.add_argument(
-        "--max-iterations",
+        "--max-step-attempts",
         type=int,
         default=5,
-        help="Maximum sensemaking iterations",
+        help="Maximum attempts per step",
     )
     parser.add_argument(
         "--verbose", "-v",
@@ -91,7 +91,7 @@ def main() -> None:
     # Initialize configuration
     log_config = LogConfig(level=log_level, use_colors=use_colors)
     config = Config(
-        max_iterations=args.max_iterations,
+        max_step_attempts=args.max_step_attempts,
         datasets_dir=args.datasets_dir,
         log=log_config,
     )

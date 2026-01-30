@@ -1,6 +1,6 @@
 """Base agent class for all CHAOS agents."""
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections.abc import Callable
 from typing import Any, TypeVar
 
@@ -56,10 +56,6 @@ class BaseAgent(ABC):
         """Set the agent's system prompt."""
         self._system_prompt = value
 
-    @abstractmethod
-    def execute(self, *args: Any, **kwargs: Any) -> Any:
-        """Execute the agent's main task."""
-        ...
 
     def get_tool(self, tool_name: str) -> BaseTool | None:
         """Get a tool by name."""

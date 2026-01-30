@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING, Any
 
 from ..agents import InformationSeekingAgent, PlannerAgent, SensemakerAgent
 from ..data.registry import DataRegistry
-from ..memory import Memory
 from ..types import Plan, PlanStep
 from ..ui.display import console, display_execution_progress, display_plan
 from ..ui.export import RunLog
@@ -19,6 +18,7 @@ from ..ui.prompts import (
 if TYPE_CHECKING:
     from .context import ContextBuilder
     from .execution import ExecutionEngine
+    from .state import ExecutionState
 
 
 class InteractionHandler:
@@ -30,7 +30,7 @@ class InteractionHandler:
         info_seeker: InformationSeekingAgent,
         sensemaker: SensemakerAgent,
         planner: PlannerAgent,
-        memory: Memory,
+        state: "ExecutionState",
         data_registry: DataRegistry,
         context_builder: "ContextBuilder",
         run_log: RunLog,
@@ -39,7 +39,7 @@ class InteractionHandler:
         self.info_seeker = info_seeker
         self.sensemaker = sensemaker
         self.planner = planner
-        self.memory = memory
+        self.state = state
         self.data_registry = data_registry
         self.context = context_builder
         self.run_log = run_log
@@ -108,13 +108,13 @@ class InteractionHandler:
             success=new_info.success,
         )
 
-        # Store result in memory so sensemaker knows this step was executed
-        self.memory.add(
+        # Store result in state so sensemaker knows this step was executed
+        self.state.record_result(
+            step=new_step_num,
             code=new_info.params.get("code", ""),
             result=new_info.results if new_info.success else None,
             success=new_info.success,
             error=new_info.results if not new_info.success else None,
-            step=new_step_num,
         )
 
         # Mark step as completed in sensemaker's state
@@ -151,7 +151,7 @@ class InteractionHandler:
 
         console.print("\n[cyan]Creating new plan with learnings from previous attempt...[/cyan]\n")
 
-        # Build replan context from memory and step history
+        # Build replan context from state and step history
         replan_context = self.context.build_replan_context(step_history, suggested_fix)
 
         # Get available sources and append replan context
@@ -177,9 +177,8 @@ class InteractionHandler:
                 console.print("[yellow]Operation cancelled.[/yellow]")
                 return None
 
-        # Clear memory for fresh start (learnings are in the plan context)
-        self.memory.clear()
-        self.sensemaker.reset()
+        # Reset state for fresh start (learnings are in the plan context)
+        self.state.reset()
 
         # Execute the new plan
         console.print("\n[bold]Executing revised plan...[/bold]\n")

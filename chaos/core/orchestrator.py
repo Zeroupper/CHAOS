@@ -10,7 +10,6 @@ from ..agents import (
 )
 from ..data.registry import DataRegistry
 from ..llm.structured_client import StructuredLLMClient
-from ..memory import Memory
 from ..tools.base import BaseTool
 from ..types import (
     CANCELLED_RESULT,
@@ -31,6 +30,7 @@ from .config import Config
 from .context import ContextBuilder
 from .execution import ExecutionEngine
 from .interaction import InteractionHandler
+from .state import ExecutionState
 
 
 class Orchestrator:
@@ -55,13 +55,13 @@ class Orchestrator:
         self.config = config
         self.llm_client = llm_client
         self.data_registry = data_registry or DataRegistry()
-        self.memory = Memory()
+        self.state = ExecutionState()
 
         # Initialize agents
         self.planner = PlannerAgent(
             config, llm_client, tools=planner_tools, on_tool_execute=display_tool_execution
         )
-        self.sensemaker = SensemakerAgent(config, llm_client, self.memory)
+        self.sensemaker = SensemakerAgent(config, llm_client, self.state)
         self.info_seeker = InformationSeekingAgent(config, llm_client, self.data_registry)
         self.verifier = VerifierAgent(config, llm_client)
 
@@ -69,12 +69,12 @@ class Orchestrator:
         self._run_log = RunLog()
 
         # Initialize helpers
-        self._context = ContextBuilder(self.memory)
+        self._context = ContextBuilder(self.state)
         self._execution = ExecutionEngine(
             config=config,
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
-            memory=self.memory,
+            state=self.state,
             data_registry=self.data_registry,
             run_log=self._run_log,
         )
@@ -83,7 +83,7 @@ class Orchestrator:
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
             planner=self.planner,
-            memory=self.memory,
+            state=self.state,
             data_registry=self.data_registry,
             context_builder=self._context,
             run_log=self._run_log,
@@ -101,8 +101,7 @@ class Orchestrator:
         Returns:
             Result dictionary with answer, verification, etc.
         """
-        self.memory.clear()
-        self.sensemaker.reset()
+        self.state.reset()
 
         # Initialize run log for export
         self._run_log = RunLog(query=query)
@@ -147,7 +146,7 @@ class Orchestrator:
                 verification_context = {
                     "plan": plan,
                     "step_results": self.sensemaker.step_results,
-                    "memory": self.memory.export(),
+                    "memory": self.state.export(),
                 }
                 with agent_status("verifier", "Verifying answer..."):
                     verification = self.verifier.verify(query, result, verification_context)
@@ -206,5 +205,5 @@ class Orchestrator:
             "verification": verification.model_dump(),
             "plan": plan.model_dump() if plan else None,
             "step_results": self.sensemaker.step_results,
-            "memory": self.memory.export(),
+            "memory": self.state.export(),
         }

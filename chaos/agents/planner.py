@@ -78,10 +78,6 @@ Always respond with a JSON object in the following format:
 
 Be specific and actionable. Reference exact column names from the schema."""
 
-    def execute(self, query: str, available_sources: str = "") -> Plan:
-        """Create an execution plan for the query."""
-        return self.create_plan(query, available_sources)
-
     def create_plan(self, query: str, available_sources: str = "") -> Plan:
         """
         Create an execution plan for the given query.

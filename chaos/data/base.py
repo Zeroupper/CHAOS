@@ -1,4 +1,4 @@
-"""Base data source class."""
+"""Data source classes."""
 
 from abc import ABC, abstractmethod
 from pathlib import Path
@@ -10,15 +10,10 @@ from ..types import ExecutionResult
 
 
 class BaseDataSource(ABC):
-    """
-    Abstract base class for data sources.
+    """Abstract base class for data sources."""
 
-    Data sources provide access to datasets that agents can query.
-    Examples: CSV files, databases, APIs, etc.
-    """
-
-    name: str = "base_source"
-    description: str = "Base data source description"
+    name: str
+    description: str
 
     @property
     def info(self) -> dict[str, Any]:
@@ -32,39 +27,17 @@ class BaseDataSource(ABC):
 
     @abstractmethod
     def get_schema(self) -> dict[str, Any]:
-        """
-        Get the schema of this data source.
-
-        Returns:
-            Dictionary describing available fields/columns, including:
-            - columns: list of column names
-            - types: dict mapping column names to their types
-            - column_descriptions: dict mapping column names to descriptions
-        """
+        """Get the schema of this data source."""
         ...
 
     @abstractmethod
     def get_example_queries(self) -> list[str]:
-        """
-        Get example queries for this data source.
-
-        Returns:
-            List of example query strings.
-        """
+        """Get example queries for this data source."""
         ...
 
     @abstractmethod
     def query(self, query: str, **kwargs: Any) -> ExecutionResult:
-        """
-        Execute a query against this data source.
-
-        Args:
-            query: Query string or structured query.
-            **kwargs: Additional query parameters.
-
-        Returns:
-            ExecutionResult with result or error.
-        """
+        """Execute a query against this data source."""
         ...
 
     @abstractmethod
@@ -76,13 +49,6 @@ class BaseDataSource(ABC):
     def disconnect(self) -> None:
         """Close connection to the data source."""
         ...
-
-    def __enter__(self) -> "BaseDataSource":
-        self.connect()
-        return self
-
-    def __exit__(self, *args: Any) -> None:
-        self.disconnect()
 
 
 class CSVDataSource(BaseDataSource):
@@ -123,7 +89,6 @@ class CSVDataSource(BaseDataSource):
             "column_descriptions": self.column_descriptions,
         }
 
-        # Include rich column metadata if available
         if self.column_metadata:
             schema["column_metadata"] = self.column_metadata
 
@@ -134,20 +99,10 @@ class CSVDataSource(BaseDataSource):
             f"exec(code=\"result = df['column'].mean()\") - Compute average of a column in {self.name}",
             f"exec(code=\"result = len(df)\") - Count rows in {self.name}",
             f"exec(code=\"result = df.groupby('col')['val'].sum().to_dict()\") - Group and aggregate",
-            f"exec(code=\"result = df.describe().to_dict()\") - Get statistical summary",
         ]
 
     def query(self, query: str, **kwargs: Any) -> ExecutionResult:
-        """
-        Execute query on CSV data.
-
-        Args:
-            query: Query type to execute. Use "exec" to run Python code.
-            **kwargs: Query parameters. For "exec", pass code="<python code>".
-
-        Returns:
-            ExecutionResult with result or error.
-        """
+        """Execute query on CSV data."""
         self.connect()
         if self._data is None:
             return ExecutionResult(error="Data not loaded")
@@ -155,14 +110,12 @@ class CSVDataSource(BaseDataSource):
         try:
             if query == "exec":
                 import json as _json
-
                 import numpy as np
 
                 code = kwargs.get("code", "")
                 if not code:
                     return ExecutionResult(error="No code provided")
 
-                # Create namespace with DataFrame and common libraries
                 namespace: dict[str, Any] = {
                     "df": self._data.copy(),
                     "pd": pd,
@@ -176,13 +129,9 @@ class CSVDataSource(BaseDataSource):
                     namespace[source_name] = source_df
 
                 try:
-                    # Execute code with full Python builtins access
                     exec(code, namespace)
-
-                    # Get the result
                     result = namespace.get("result")
 
-                    # Serialize result to string for size control
                     try:
                         if hasattr(result, "to_dict"):
                             result_str = _json.dumps(result.to_dict())
@@ -193,12 +142,10 @@ class CSVDataSource(BaseDataSource):
                     except (TypeError, ValueError):
                         result_str = str(result)
 
-                    # Truncate if too large
                     max_chars = 5000
-                    truncated = False
-                    if len(result_str) > max_chars:
+                    truncated = len(result_str) > max_chars
+                    if truncated:
                         result_str = result_str[:max_chars]
-                        truncated = True
 
                     return ExecutionResult(result=result_str, truncated=truncated)
 
@@ -212,4 +159,3 @@ class CSVDataSource(BaseDataSource):
 
         except Exception as e:
             return ExecutionResult(error=str(e))
-

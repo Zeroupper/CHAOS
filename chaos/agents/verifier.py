@@ -48,15 +48,6 @@ CRITICAL CONSISTENCY RULES:
 
 Be critical but fair. A good answer should directly answer the query with supporting evidence."""
 
-    def execute(
-        self,
-        query: str,
-        result: dict[str, Any],
-        context: dict[str, Any] | None = None,
-    ) -> Verification:
-        """Verify the result."""
-        return self.verify(query, result, context)
-
     def verify(
         self,
         query: str,

@@ -78,37 +78,30 @@ class StepState(BaseModel):
     """State tracking for a plan step."""
 
     step: int
-    status: Literal["pending", "completed", "needs_clarification", "failed"] = "pending"
+    status: Literal["pending", "completed", "failed"] = "pending"
     result: str | None = None
     error: str | None = None
-    clarification_request: str | None = None  # What clarification was asked
-    clarification_response: str | None = None  # What the clarification revealed
-    failure_reason: str | None = None  # Why the step failed (after clarification)
+    failure_reason: str | None = None  # Why the step failed
+    user_accepted: bool = False  # User explicitly accepted a suspicious value
 
     @classmethod
     def from_result(
         cls,
         step: int,
-        status: Literal["pending", "completed", "needs_clarification", "failed"],
+        status: Literal["pending", "completed", "failed"],
         result: str | None = None,
-        previous: "StepState | None" = None,
-        **kwargs: str | None,
+        **kwargs: str | None | bool,
     ) -> "StepState":
         """
-        Factory method to create StepState with optional inheritance from previous state.
+        Factory method to create StepState.
 
         Args:
             step: Step number.
             status: New status.
             result: Result string.
-            previous: Previous state to inherit clarification fields from.
-            **kwargs: Additional fields (failure_reason, error, etc.)
+            **kwargs: Additional fields (failure_reason, error, user_accepted, etc.)
         """
-        base: dict[str, int | str | None] = {"step": step, "status": status, "result": result}
-        if previous:
-            base["clarification_request"] = previous.clarification_request
-            base["clarification_response"] = previous.clarification_response
-        return cls(**{**base, **kwargs})
+        return cls(step=step, status=status, result=result, **kwargs)
 
 
 # === Information Seeker Types ===
@@ -182,20 +175,3 @@ class Verification(BaseModel):
     recommendation: Literal["approve", "reject", "needs_review"] = "needs_review"
 
 
-class RecoveryGuidance(BaseModel):
-    """Guidance for recovering from query execution errors."""
-
-    summary: str = ""
-    analysis: str = ""
-    revised_request: str = ""
-    guidance: str = ""
-
-
-# === Sensemaker Get Answer Types ===
-
-
-class FinalAnswer(BaseModel):
-    """Final answer from sensemaker when get_answer is called."""
-
-    answer: str = ""
-    supporting_evidence: list[str] = Field(default_factory=list)

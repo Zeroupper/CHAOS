@@ -4,7 +4,6 @@ from typing import Any
 
 from ..agents import InformationSeekingAgent, SensemakerAgent
 from ..data.registry import DataRegistry
-from ..memory import Memory
 from ..types import InfoSeekerResult, Plan, StepState
 from ..ui.display import (
     agent_status,
@@ -17,6 +16,7 @@ from ..ui.export import RunLog
 from ..ui.prompts import approve_correction
 from .config import Config
 from .logger import get_logger
+from .state import ExecutionState
 
 
 class ExecutionEngine:
@@ -27,19 +27,18 @@ class ExecutionEngine:
         config: Config,
         info_seeker: InformationSeekingAgent,
         sensemaker: SensemakerAgent,
-        memory: Memory,
+        state: ExecutionState,
         data_registry: DataRegistry,
         run_log: RunLog,
     ) -> None:
         self.config = config
         self.info_seeker = info_seeker
         self.sensemaker = sensemaker
-        self.memory = memory
+        self.state = state
         self.data_registry = data_registry
         self.run_log = run_log
 
-        self._orch_logger = get_logger("Orchestrator")
-        self._sensemaker_logger = get_logger("Sensemaker")
+        self._logger = get_logger("Orchestrator")
 
     def execute_plan(self, query: str, plan: Plan) -> dict[str, Any]:
         """Run sensemaking loop with progress display."""
@@ -63,9 +62,9 @@ class ExecutionEngine:
                 else:
                     # Same step, increment retry counter
                     step_retries += 1
-                    if step_retries >= self.config.max_iterations:
-                        console.print(f"[yellow]Max retries ({self.config.max_iterations}) reached for step {current_step}, getting best answer...[/yellow]")
-                        display_memory_table(self.memory.export())
+                    if step_retries >= self.config.max_step_attempts:
+                        console.print(f"[yellow]Max retries ({self.config.max_step_attempts}) reached for step {current_step}, getting best answer...[/yellow]")
+                        display_memory_table(self.state.export())
                         final_answer = self.sensemaker.get_answer()
                         return {
                             "answer": final_answer.answer,
@@ -73,12 +72,12 @@ class ExecutionEngine:
                         }
 
             # Show current step states (after they've been updated)
-            if self.sensemaker._step_states:
-                display_step_states(self.sensemaker._step_states, plan)
+            if self.state.step_states:
+                display_step_states(self.state.step_states, plan)
 
             if sensemaker_result.status == "complete":
                 console.print("\n[bold green]* Analysis complete![/bold green]")
-                display_memory_table(self.memory.export())
+                display_memory_table(self.state.export())
                 # Log completion
                 self.run_log.add_entry("sensemaker", "complete", {
                     "answer": sensemaker_result.answer,
@@ -137,44 +136,30 @@ class ExecutionEngine:
             )
 
     def _seek_with_retries(self, query: str, info_request: str) -> InfoSeekerResult:
-        """Seek information with retry logic and sensemaker guidance on failure."""
-        error_history: list[dict[str, Any]] = []
-        current_request = info_request
+        """Seek information with retry logic. Info-seeker handles error recovery via prompt."""
+        error_history: list[str] = []
         new_info: InfoSeekerResult | None = None
 
-        for attempt in range(self.config.max_retries):
+        for attempt in range(self.config.max_code_retries):
+            # Build request with error context for retries
+            if error_history:
+                error_context = "\n".join(f"- Attempt {i+1}: {e}" for i, e in enumerate(error_history))
+                request_with_context = f"{info_request}\n\nPrevious errors:\n{error_context}"
+            else:
+                request_with_context = info_request
+
             with agent_status("info_seeker", "Seeking information..."):
-                new_info = self.info_seeker.seek(current_request)
+                new_info = self.info_seeker.seek(request_with_context)
 
             if new_info.success:
                 return new_info
 
-            error_entry = {
-                "attempt": attempt + 1,
-                "request": current_request,
-                "error": new_info.results,
-            }
-            error_history.append(error_entry)
-
-            self._orch_logger.warning(
-                f"InfoSeeker attempt {attempt + 1}/{self.config.max_retries} failed: {error_entry['error']}"
+            error_history.append(new_info.results)
+            self._logger.warning(
+                f"InfoSeeker attempt {attempt + 1}/{self.config.max_code_retries} failed: {new_info.results}"
             )
 
-            # Get guidance from sensemaker for retry
-            if attempt < self.config.max_retries - 1:
-                self._sensemaker_logger.debug("Consulting sensemaker for recovery guidance...")
-                available_sources = self.data_registry.get_sources_prompt()
-                recovery = self.sensemaker.guide_recovery(
-                    query=query,
-                    original_request=info_request,
-                    error_history=error_history,
-                    available_sources=available_sources,
-                )
-                self._sensemaker_logger.info(f"Recovery summary: {recovery.summary}")
-                self._sensemaker_logger.info(f"Revised request: {recovery.revised_request}")
-                current_request = recovery.revised_request or current_request
-
-        self._orch_logger.error(f"InfoSeeker failed after {self.config.max_retries} attempts")
+        self._logger.error(f"InfoSeeker failed after {self.config.max_code_retries} attempts")
 
         assert new_info is not None
         return new_info
@@ -227,19 +212,22 @@ class ExecutionEngine:
 
         if decision == "skip":
             console.print("[yellow]Skipping correction, continuing with original data.[/yellow]")
-            # Mark the step as completed with acknowledgment so sensemaker moves on
+            # Mark the step as completed with user_accepted so sensemaker moves on
             # and doesn't propose the same correction again
-            step_state = self.sensemaker._step_states.get(correction.affected_step)
+            step_state = self.state.get_step_state(correction.affected_step)
             if step_state:
-                self.sensemaker._step_states[correction.affected_step] = StepState(
-                    step=correction.affected_step,
-                    status="completed",
-                    result=step_state.result,
-                    clarification_response="User acknowledged suspicious value and chose to continue with original data",
+                self.state.set_step_state(
+                    correction.affected_step,
+                    StepState(
+                        step=correction.affected_step,
+                        status="completed",
+                        result=step_state.result,
+                        user_accepted=True,
+                    ),
                 )
                 # Update current step tracking
-                if correction.affected_step >= self.sensemaker._current_step:
-                    self.sensemaker._current_step = correction.affected_step
+                if correction.affected_step >= self.state.current_step:
+                    self.state.current_step = correction.affected_step
             return None
 
         # Determine the request to execute
@@ -254,7 +242,7 @@ class ExecutionEngine:
         # Reset the step state so it can be re-executed
         self.sensemaker.reset_step(correction.affected_step)
         # Set current step to the affected step so the result is recorded correctly
-        self.sensemaker._current_step = correction.affected_step
+        self.state.current_step = correction.affected_step
 
         # Execute the corrected request
         new_info = self._seek_with_retries(query, request)

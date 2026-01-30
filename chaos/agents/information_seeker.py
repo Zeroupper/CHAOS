@@ -70,6 +70,13 @@ IMPORTANT RULES:
 5. General:
    - Store your final answer in the `result` variable
 
+RETRY HANDLING:
+If previous attempts failed (error history provided in context):
+- Check column names against schema - use exact names
+- Simplify complex queries - break into simpler operations
+- Try alternative approaches - different aggregation methods, different joins
+- Verify data types match expected operations
+
 Examples:
 - Using previous values: result = round((78.50438924168846 / 2 + 155.0 / 2), 2)
 - Average: result = df['heart_rate'].mean()
@@ -87,23 +94,6 @@ Respond with a JSON object:
 }
 
 NOTE: For pure computations using provided values (no DataFrame access needed), still specify a source but the code won't use df."""
-
-    def execute(
-        self,
-        info_request: str,
-        context: dict[str, Any] | None = None,
-    ) -> InfoSeekerResult:
-        """
-        Seek information based on request.
-
-        Args:
-            info_request: Description of information needed.
-            context: Additional context from sensemaker.
-
-        Returns:
-            InfoSeekerResult with retrieved information.
-        """
-        return self.seek(info_request, context)
 
     def seek(
         self,

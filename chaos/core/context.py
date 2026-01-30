@@ -1,24 +1,29 @@
 """Context building utilities for the orchestrator."""
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from ..memory import Memory
 from ..types import Plan
+
+if TYPE_CHECKING:
+    from .state import ExecutionState
 
 
 class ContextBuilder:
     """Builds context dictionaries for various orchestrator operations."""
 
-    def __init__(self, memory: Memory) -> None:
-        self.memory = memory
+    def __init__(self, state: "ExecutionState") -> None:
+        self.state = state
 
     def build_step_history(self, plan: Plan) -> list[dict]:
         """Build list of plan steps with their execution results."""
-        step_executions = self.memory.get_step_executions()
+        entries_by_step: dict[int, Any] = {}
+        for entry in self.state.get_entries():
+            if entry.step is not None:
+                entries_by_step[entry.step] = entry
 
         history = []
         for plan_step in plan.steps:
-            entry = step_executions.get(plan_step.step)
+            entry = entries_by_step.get(plan_step.step)
             if entry:
                 result = entry.result if entry.success else entry.error or "Not executed"
                 history.append({
@@ -47,10 +52,13 @@ class ContextBuilder:
         This allows user-added steps to reference previous results like
         "subtract 10 from step 3 result".
         """
-        step_executions = self.memory.get_step_executions()
-        step_results = {}
+        entries_by_step: dict[int, Any] = {}
+        for entry in self.state.get_entries():
+            if entry.step is not None:
+                entries_by_step[entry.step] = entry
 
-        for step_num, entry in step_executions.items():
+        step_results = {}
+        for step_num, entry in entries_by_step.items():
             if entry.success:
                 step_results[f"step_{step_num}"] = {
                     "result": entry.result,

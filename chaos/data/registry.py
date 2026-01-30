@@ -38,9 +38,6 @@ class DataRegistry:
         Currently supports:
         - CSV files: Registered as CSVDataSource
         - schema.yaml: Loads rich metadata for datasets
-
-        Args:
-            datasets_dir: Directory containing data files.
         """
         if not datasets_dir.exists():
             return
@@ -53,7 +50,6 @@ class DataRegistry:
         for csv_file in datasets_dir.glob("**/*.csv"):
             name = csv_file.stem
             if name not in self._sources:
-                # Get description from schema if available
                 description = self._schema_loader.get_dataset_description(name)
                 if not description:
                     description = f"Data from {csv_file.name}"
@@ -69,7 +65,6 @@ class DataRegistry:
                 if col_descriptions:
                     source.column_descriptions = col_descriptions
 
-                # Store full column metadata for richer prompts
                 col_metadata = self._schema_loader.get_column_metadata(name)
                 if col_metadata:
                     source.column_metadata = col_metadata
@@ -82,21 +77,12 @@ class DataRegistry:
         return self._schema_loader
 
     def get_sources_prompt(self, detailed: bool = True) -> str:
-        """
-        Generate a prompt describing available data sources for LLM.
-
-        Args:
-            detailed: If True and schema is loaded, use rich schema info.
-
-        Returns:
-            Formatted string describing available data sources.
-        """
+        """Generate a prompt describing available data sources for LLM."""
         if not self._sources:
             return "No data sources available."
 
-        # Use rich schema information if available
         if detailed and self._schema_loader.is_loaded:
-            return self._schema_loader.format_all_datasets_for_prompt()
+            return self._schema_loader.format_for_prompt(verbose=True)
 
         # Fallback to basic info
         lines = ["Available data sources:"]

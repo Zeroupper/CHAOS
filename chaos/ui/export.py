@@ -110,13 +110,10 @@ def export_run_to_markdown(
     lines.append(f"## Execution Log")
     lines.append(f"")
 
-    iteration = 0
     for entry in run_log.entries:
         content = entry.content
 
         if entry.source == "sensemaker" and entry.action == "request":
-            iteration += 1
-            lines.append(f"### Iteration {iteration}")
             lines.append(f"")
             lines.append(f"**Sensemaker Request:** {content.get('request', '')}")
             if content.get("reasoning"):
