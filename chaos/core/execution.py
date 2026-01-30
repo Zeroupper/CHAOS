@@ -43,16 +43,34 @@ class ExecutionEngine:
 
     def execute_plan(self, query: str, plan: Plan) -> dict[str, Any]:
         """Run sensemaking loop with progress display."""
-        iteration = 0
         new_info: InfoSeekerResult | None = None
+        last_step: int | None = None
+        step_retries = 0
 
-        while iteration < self.config.max_iterations:
-            iteration += 1
-            console.print(f"\n[bold cyan]=== Iteration {iteration}/{self.config.max_iterations} ===[/bold cyan]")
+        while True:
 
             # Process new info and update step states
             with agent_status("sensemaker", "Analyzing information..."):
                 sensemaker_result = self.sensemaker.process(query, plan, new_info)
+
+            # Track step retries (only for needs_info status)
+            if sensemaker_result.status == "needs_info":
+                current_step = sensemaker_result.current_step
+                if current_step != last_step:
+                    # New step, reset retry counter
+                    step_retries = 0
+                    last_step = current_step
+                else:
+                    # Same step, increment retry counter
+                    step_retries += 1
+                    if step_retries >= self.config.max_iterations:
+                        console.print(f"[yellow]Max retries ({self.config.max_iterations}) reached for step {current_step}, getting best answer...[/yellow]")
+                        display_memory_table(self.memory.export())
+                        final_answer = self.sensemaker.get_answer()
+                        return {
+                            "answer": final_answer.answer,
+                            "supporting_evidence": final_answer.supporting_evidence,
+                        }
 
             # Show current step states (after they've been updated)
             if self.sensemaker._step_states:
@@ -117,15 +135,6 @@ class ExecutionEngine:
                 source=new_info.source,
                 success=new_info.success,
             )
-
-        # Max iterations reached
-        console.print("[yellow]Max iterations reached, getting best answer...[/yellow]")
-        display_memory_table(self.memory.export())
-        final_answer = self.sensemaker.get_answer()
-        return {
-            "answer": final_answer.answer,
-            "supporting_evidence": final_answer.supporting_evidence,
-        }
 
     def _seek_with_retries(self, query: str, info_request: str) -> InfoSeekerResult:
         """Seek information with retry logic and sensemaker guidance on failure."""
@@ -244,6 +253,8 @@ class ExecutionEngine:
 
         # Reset the step state so it can be re-executed
         self.sensemaker.reset_step(correction.affected_step)
+        # Set current step to the affected step so the result is recorded correctly
+        self.sensemaker._current_step = correction.affected_step
 
         # Execute the corrected request
         new_info = self._seek_with_retries(query, request)
