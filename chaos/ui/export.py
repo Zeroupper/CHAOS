@@ -3,7 +3,10 @@
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from ..types import Verification
 
 
 @dataclass
@@ -11,8 +14,8 @@ class RunLogEntry:
     """Single entry in the run log."""
 
     timestamp: datetime
-    agent: str  # "sensemaker", "info_seeker", "verifier", "user", "correction"
-    action: str  # "request", "response", "correction_proposed", "correction_approved", etc.
+    source: str  # "sensemaker", "info_seeker", "verifier", "user", "correction"
+    action: str  # "request", "response", "proposed", "correction_decision", "complete"
     content: dict[str, Any]
 
 
@@ -29,7 +32,7 @@ class RunLog:
 
     def add_entry(
         self,
-        agent: str,
+        source: str,
         action: str,
         content: dict[str, Any],
     ) -> None:
@@ -37,25 +40,19 @@ class RunLog:
         self.entries.append(
             RunLogEntry(
                 timestamp=datetime.now(),
-                agent=agent,
+                source=source,
                 action=action,
                 content=content,
             )
         )
 
     def set_plan(self, plan: Any) -> None:
-        """Set the plan (from Plan model)."""
-        if hasattr(plan, "model_dump"):
-            self.plan = plan.model_dump()
-        else:
-            self.plan = dict(plan) if plan else None
+        """Set the plan (from Plan Pydantic model)."""
+        self.plan = plan.model_dump()
 
     def set_verification(self, verification: Any) -> None:
-        """Set the verification result."""
-        if hasattr(verification, "model_dump"):
-            self.verification = verification.model_dump()
-        else:
-            self.verification = dict(verification) if verification else None
+        """Set the verification result (from Verification Pydantic model)."""
+        self.verification = verification.model_dump()
 
 
 def export_run_to_markdown(
@@ -117,7 +114,7 @@ def export_run_to_markdown(
     for entry in run_log.entries:
         content = entry.content
 
-        if entry.agent == "sensemaker" and entry.action == "request":
+        if entry.source == "sensemaker" and entry.action == "request":
             iteration += 1
             lines.append(f"### Iteration {iteration}")
             lines.append(f"")
@@ -127,7 +124,7 @@ def export_run_to_markdown(
                 lines.append(f"*Reasoning:* {content['reasoning']}")
             lines.append(f"")
 
-        elif entry.agent == "info_seeker" and entry.action == "response":
+        elif entry.source == "info_seeker" and entry.action == "response":
             lines.append(f"**Info Seeker Response:**")
             lines.append(f"")
             lines.append(f"- **Source:** {content.get('source', 'unknown')}")
@@ -148,7 +145,7 @@ def export_run_to_markdown(
             lines.append(f"```")
             lines.append(f"")
 
-        elif entry.agent == "correction" and entry.action == "proposed":
+        elif entry.source == "correction" and entry.action == "proposed":
             lines.append(f"#### Data Quality Correction Proposed")
             lines.append(f"")
             lines.append(f"- **Affected Step:** {content.get('affected_step', '?')}")
@@ -158,7 +155,7 @@ def export_run_to_markdown(
                 lines.append(f"- **Reasoning:** {content['reasoning']}")
             lines.append(f"")
 
-        elif entry.agent == "user" and entry.action == "correction_decision":
+        elif entry.source == "user" and entry.action == "correction_decision":
             decision = content.get("decision", "")
             lines.append(f"**User Decision:** {decision}")
             if decision == "modify" and content.get("modified_request"):
@@ -166,7 +163,7 @@ def export_run_to_markdown(
                 lines.append(f"**Modified Request:** {content['modified_request']}")
             lines.append(f"")
 
-        elif entry.agent == "sensemaker" and entry.action == "complete":
+        elif entry.source == "sensemaker" and entry.action == "complete":
             lines.append(f"### Sensemaker Complete")
             lines.append(f"")
 
@@ -231,3 +228,43 @@ def generate_run_filename(query: str, output_dir: Path | str = ".") -> Path:
     if not safe_query:
         safe_query = "run"
     return output_dir / f"{timestamp}_{safe_query}.md"
+
+
+def offer_export_to_user(
+    run_log: RunLog,
+    result: dict[str, Any],
+    verification: "Verification | None",
+    export_dir: str | None,
+) -> None:
+    """
+    Offer to export the run to a markdown file.
+
+    Args:
+        run_log: The run log to export.
+        result: The result dictionary.
+        verification: Verification result if available.
+        export_dir: Directory for exports. Defaults to "exported_runs" if None.
+    """
+    from .display import console
+    from .prompts import prompt_export_run
+
+    # Update run log with final data
+    if not run_log.final_answer:
+        run_log.final_answer = result.get("answer", "")
+    if verification:
+        run_log.set_verification(verification)
+
+    # Use exported_runs directory if no export_dir specified
+    output_dir = export_dir or "exported_runs"
+
+    # Generate default filename
+    default_path = str(generate_run_filename(run_log.query, output_dir))
+
+    # Prompt user
+    export_path = prompt_export_run(default_path)
+    if export_path:
+        try:
+            output = export_run_to_markdown(run_log, export_path)
+            console.print(f"\n[green]Run exported to:[/green] {output}")
+        except Exception as e:
+            console.print(f"\n[red]Failed to export run:[/red] {e}")
