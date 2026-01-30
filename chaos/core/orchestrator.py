@@ -19,6 +19,7 @@ from ..types import (
     Verification,
 )
 from ..ui.display import (
+    agent_status,
     console,
     display_plan,
     display_tool_execution,
@@ -113,7 +114,8 @@ class Orchestrator:
 
         # Step 1: Create and review plan
         available_sources = self.data_registry.get_sources_prompt()
-        plan = self.planner.create_plan(query, available_sources)
+        with agent_status("planner", "Creating execution plan..."):
+            plan = self.planner.create_plan(query, available_sources)
 
         # Human reviews plan
         while True:
@@ -147,7 +149,8 @@ class Orchestrator:
                     "step_results": self.sensemaker.step_results,
                     "memory": self.memory.export(),
                 }
-                verification = self.verifier.verify(query, result, verification_context)
+                with agent_status("verifier", "Verifying answer..."):
+                    verification = self.verifier.verify(query, result, verification_context)
                 display_verification(verification, result.get("answer", ""))
 
             step_history = self._context.build_step_history(plan)

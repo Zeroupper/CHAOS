@@ -7,6 +7,7 @@ from ..data.registry import DataRegistry
 from ..memory import Memory
 from ..types import InfoSeekerResult, Plan, StepState
 from ..ui.display import (
+    agent_status,
     console,
     display_execution_progress,
     display_memory_table,
@@ -50,7 +51,8 @@ class ExecutionEngine:
             console.print(f"\n[bold cyan]=== Iteration {iteration}/{self.config.max_iterations} ===[/bold cyan]")
 
             # Process new info and update step states
-            sensemaker_result = self.sensemaker.process(query, plan, new_info)
+            with agent_status("sensemaker", "Analyzing information..."):
+                sensemaker_result = self.sensemaker.process(query, plan, new_info)
 
             # Show current step states (after they've been updated)
             if self.sensemaker._step_states:
@@ -132,7 +134,8 @@ class ExecutionEngine:
         new_info: InfoSeekerResult | None = None
 
         for attempt in range(self.config.max_retries):
-            new_info = self.info_seeker.seek(current_request)
+            with agent_status("info_seeker", "Seeking information..."):
+                new_info = self.info_seeker.seek(current_request)
 
             if new_info.success:
                 return new_info

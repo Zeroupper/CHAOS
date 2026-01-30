@@ -1,6 +1,7 @@
 """Rich-based display components for CHAOS."""
 
-from typing import Any
+from contextlib import contextmanager
+from typing import Any, Generator
 
 from rich.console import Console
 from rich.panel import Panel
@@ -11,10 +12,26 @@ from ..types import Plan, StepState, Verification
 
 console = Console()
 
+# Agent display names and colors
+AGENT_STYLES = {
+    "planner": ("Planner", "blue"),
+    "sensemaker": ("Sensemaker", "magenta"),
+    "info_seeker": ("Info Seeker", "cyan"),
+    "verifier": ("Verifier", "yellow"),
+}
+
+
+@contextmanager
+def agent_status(agent: str, message: str) -> Generator[None, None, None]:
+    """Show a spinner while an agent is working."""
+    name, color = AGENT_STYLES.get(agent, (agent.title(), "white"))
+    with console.status(f"[{color}]{name}:[/{color}] {message}", spinner="dots"):
+        yield
+
 
 def display_plan(plan: Plan) -> None:
     """Display execution plan in a formatted table."""
-    table = Table(title="Execution Plan", show_header=True)
+    table = Table(title="Execution Plan", show_header=True) 
     table.add_column("Step", style="cyan", width=6)
     table.add_column("Action", style="white")
     table.add_column("Source", style="green")
