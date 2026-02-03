@@ -14,10 +14,10 @@ from ..ui.prompts import (
     get_revised_request,
     select_step_to_revise,
 )
+from .context import build_replan_context, build_step_context_for_info_seeker
 
 if TYPE_CHECKING:
-    from .context import ContextBuilder
-    from .execution import ExecutionEngine
+    from .execution import SensemakingLoop
     from .state import ExecutionState
 
 
@@ -26,26 +26,22 @@ class InteractionHandler:
 
     def __init__(
         self,
-        execution_engine: "ExecutionEngine",
+        sensemaking_loop: "SensemakingLoop",
         info_seeker: InformationSeekingAgent,
         sensemaker: SensemakerAgent,
         planner: PlannerAgent,
         state: "ExecutionState",
         data_registry: DataRegistry,
-        context_builder: "ContextBuilder",
-        run_log: RunLog,
     ) -> None:
-        self.execution = execution_engine
+        self.sensemaking_loop = sensemaking_loop
         self.info_seeker = info_seeker
         self.sensemaker = sensemaker
         self.planner = planner
         self.state = state
         self.data_registry = data_registry
-        self.context = context_builder
-        self.run_log = run_log
 
     def handle_revision(
-        self, query: str, plan: Plan, step_history: list[dict]
+        self, query: str, plan: Plan, step_history: list[dict], run_log: RunLog
     ) -> dict[str, Any] | None:
         """Handle user revision of a specific step or adding a new step."""
         selection = select_step_to_revise(step_history)
@@ -54,7 +50,7 @@ class InteractionHandler:
 
         # Handle adding a new step
         if selection == "add_new":
-            return self.handle_add_new_step(query, plan)
+            return self.handle_add_new_step(query, plan, run_log)
 
         # Handle revising an existing step
         step_num = selection
@@ -78,9 +74,9 @@ class InteractionHandler:
             success=new_info.success,
         )
 
-        return self.execution.execute_plan(query, plan)
+        return self.sensemaking_loop.execute_plan(query, plan, run_log)
 
-    def handle_add_new_step(self, query: str, plan: Plan) -> dict[str, Any] | None:
+    def handle_add_new_step(self, query: str, plan: Plan, run_log: RunLog) -> dict[str, Any] | None:
         """Handle adding a new step to the plan."""
         new_action = get_new_step_action()
         if not new_action or not new_action.strip():
@@ -95,7 +91,7 @@ class InteractionHandler:
         console.print("[cyan]Executing new step...[/cyan]\n")
 
         # Build context with previous step results so info_seeker knows what values exist
-        step_context = self.context.build_step_context_for_info_seeker(plan)
+        step_context = build_step_context_for_info_seeker(self.state.get_entries(), plan)
 
         # Execute the new step with context
         new_info = self.info_seeker.seek(new_action, context=step_context)
@@ -125,10 +121,10 @@ class InteractionHandler:
         )
 
         # Continue sensemaking with the updated plan
-        return self.execution.execute_plan(query, plan)
+        return self.sensemaking_loop.execute_plan(query, plan, run_log)
 
     def handle_replan(
-        self, query: str, step_history: list[dict], modify_plan_func: Any
+        self, query: str, step_history: list[dict], modify_plan_func: Any, run_log: RunLog
     ) -> dict[str, Any] | None:
         """
         Handle user request to replan while keeping successful results.
@@ -152,7 +148,7 @@ class InteractionHandler:
         console.print("\n[cyan]Creating new plan with learnings from previous attempt...[/cyan]\n")
 
         # Build replan context from state and step history
-        replan_context = self.context.build_replan_context(step_history, suggested_fix)
+        replan_context = build_replan_context(step_history, suggested_fix)
 
         # Get available sources and append replan context
         available_sources = self.data_registry.get_sources_prompt()
@@ -182,6 +178,6 @@ class InteractionHandler:
 
         # Execute the new plan
         console.print("\n[bold]Executing revised plan...[/bold]\n")
-        new_result = self.execution.execute_plan(query, new_plan)
+        new_result = self.sensemaking_loop.execute_plan(query, new_plan, run_log)
 
         return {"result": new_result, "plan": new_plan}

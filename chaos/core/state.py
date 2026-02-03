@@ -140,12 +140,3 @@ class ExecutionState:
                 for entry in self._entries
             ],
         }
-
-    @property
-    def step_results(self) -> dict[int, str]:
-        """Get step results for backward compatibility."""
-        return {
-            step: state.result
-            for step, state in self._step_states.items()
-            if state.result is not None
-        }

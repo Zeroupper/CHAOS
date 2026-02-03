@@ -14,8 +14,8 @@ class RunLogEntry:
     """Single entry in the run log."""
 
     timestamp: datetime
-    source: str  # "sensemaker", "info_seeker", "verifier", "user", "correction"
-    action: str  # "request", "response", "proposed", "correction_decision", "complete"
+    source: str  # "sensemaker", "info_seeker", "verifier", "user", "review"
+    action: str  # "request", "response", "proposed", "review_decision", "complete"
     content: dict[str, Any]
 
 
@@ -126,15 +126,16 @@ def export_run_to_markdown(
             lines.append(f"")
             lines.append(f"- **Source:** {content.get('source', 'unknown')}")
             lines.append(f"- **Success:** {'Yes' if content.get('success') else 'No'}")
-            if include_code and content.get("code"):
+            code = content.get("params", {}).get("code", "")
+            if include_code and code:
                 lines.append(f"")
                 lines.append(f"```python")
-                lines.append(content["code"])
+                lines.append(code)
                 lines.append(f"```")
             lines.append(f"")
             lines.append(f"**Result:**")
             lines.append(f"```")
-            result = content.get("result", "")
+            result = content.get("results", "")
             # Truncate very long results
             if len(result) > 2000:
                 result = result[:2000] + "\n... (truncated)"
@@ -142,8 +143,8 @@ def export_run_to_markdown(
             lines.append(f"```")
             lines.append(f"")
 
-        elif entry.source == "correction" and entry.action == "proposed":
-            lines.append(f"#### Data Quality Correction Proposed")
+        elif entry.source == "review" and entry.action == "proposed":
+            lines.append(f"#### Data Quality Review Proposed")
             lines.append(f"")
             lines.append(f"- **Affected Step:** {content.get('affected_step', '?')}")
             lines.append(f"- **Issue:** {content.get('issue_description', '')}")
@@ -152,7 +153,7 @@ def export_run_to_markdown(
                 lines.append(f"- **Reasoning:** {content['reasoning']}")
             lines.append(f"")
 
-        elif entry.source == "user" and entry.action == "correction_decision":
+        elif entry.source == "user" and entry.action == "review_decision":
             decision = content.get("decision", "")
             lines.append(f"**User Decision:** {decision}")
             if decision == "modify" and content.get("modified_request"):

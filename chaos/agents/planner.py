@@ -32,6 +32,11 @@ class PlannerAgent(BaseAgent):
 
         self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
 
+IMPORTANT: Only create plans for clear, specific data analysis questions.
+- If the query is unclear, placeholder text, or not a real question, return an EMPTY steps array.
+- Do NOT invent what the user might want based on available data sources.
+- Do NOT guess intent - if it's not explicit in the query, don't plan for it.
+
 You will be provided with detailed schema information about available datasets including:
 - Column names, types, and descriptions
 - Units of measurement (e.g., bpm, ms, steps, meters)

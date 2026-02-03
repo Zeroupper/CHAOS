@@ -1,6 +1,6 @@
 """Configuration management for CHAOS."""
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
@@ -12,7 +12,7 @@ class LLMConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
     provider: str = "openrouter"
-    model: str = "openai/chatgpt-4o-latest"
+    model: str = "openai/gpt-oss-safeguard-20b"
     api_key: str | None = None
     max_tokens: int = 4096  # Safe default that works with most API key limits
 
@@ -22,15 +22,13 @@ class LogConfig:
     """Logging configuration."""
 
     level: str = "WARNING"
-    use_colors: bool = True
 
 
 @dataclass
 class Config:
     """Main configuration for CHAOS."""
 
-    llm: LLMConfig = field(default_factory=LLMConfig)
-    log: LogConfig = field(default_factory=LogConfig)
+    llm: LLMConfig
+    log: LogConfig
     max_step_attempts: int = 5  # Max different approaches for a step
-    max_code_retries: int = 3  # Max retries for failed code execution
-    datasets_dir: Path = field(default_factory=lambda: Path("datasets"))
+    datasets_dir: Path = Path("datasets")

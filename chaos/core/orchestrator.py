@@ -27,8 +27,8 @@ from ..ui.display import (
 from ..ui.export import RunLog, offer_export_to_user
 from ..ui.prompts import approve_plan, final_review, modify_plan_step
 from .config import Config
-from .context import ContextBuilder
-from .execution import ExecutionEngine
+from .context import build_step_history
+from .execution import SensemakingLoop
 from .interaction import InteractionHandler
 from .state import ExecutionState
 
@@ -65,28 +65,20 @@ class Orchestrator:
         self.info_seeker = InformationSeekingAgent(config, llm_client, self.data_registry)
         self.verifier = VerifierAgent(config, llm_client)
 
-        # Initialize run log (will be reset in run())
-        self._run_log = RunLog()
-
         # Initialize helpers
-        self._context = ContextBuilder(self.state)
-        self._execution = ExecutionEngine(
+        self._sensemaking_loop = SensemakingLoop(
             config=config,
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
             state=self.state,
-            data_registry=self.data_registry,
-            run_log=self._run_log,
         )
         self._interaction = InteractionHandler(
-            execution_engine=self._execution,
+            sensemaking_loop=self._sensemaking_loop,
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
             planner=self.planner,
             state=self.state,
             data_registry=self.data_registry,
-            context_builder=self._context,
-            run_log=self._run_log,
         )
 
     def run(self, query: str, export_dir: str | None = None) -> dict[str, Any]:
@@ -104,10 +96,7 @@ class Orchestrator:
         self.state.reset()
 
         # Initialize run log for export
-        self._run_log = RunLog(query=query)
-        # Update references in helpers
-        self._execution.run_log = self._run_log
-        self._interaction.run_log = self._run_log
+        run_log = RunLog(query=query)
 
         console.print(f"\n[bold cyan]Processing:[/bold cyan] {query}\n")
 
@@ -133,11 +122,11 @@ class Orchestrator:
                 return CANCELLED_RESULT
 
         # Log the approved plan
-        self._run_log.set_plan(plan)
+        run_log.set_plan(plan)
 
         # Step 2: Execute sensemaking loop
         console.print("\n[bold]Starting execution...[/bold]\n")
-        result = self._execution.execute_plan(query, plan)
+        result = self._sensemaking_loop.execute_plan(query, plan, run_log)
 
         # Step 3: Verification and human review
         verification: Verification | None = None
@@ -145,38 +134,37 @@ class Orchestrator:
             if verification is None:
                 verification_context = {
                     "plan": plan,
-                    "step_results": self.sensemaker.step_results,
                     "memory": self.state.export(),
                 }
                 with agent_status("verifier", "Verifying answer..."):
                     verification = self.verifier.verify(query, result, verification_context)
                 display_verification(verification, result.get("answer", ""))
 
-            step_history = self._context.build_step_history(plan)
+            step_history = build_step_history(self.state.get_entries(), plan)
             final_decision = final_review(verification.recommendation, bool(step_history))
 
             if final_decision == "accept":
                 final_result = self._finalize(result, verification, plan)
-                offer_export_to_user(self._run_log, result, verification, export_dir)
+                offer_export_to_user(run_log, result, verification, export_dir)
                 return final_result
             elif final_decision == "reject":
                 console.print("[yellow]Answer rejected.[/yellow]")
-                offer_export_to_user(self._run_log, result, verification, export_dir)
+                offer_export_to_user(run_log, result, verification, export_dir)
                 return REJECTED_RESULT
             elif final_decision == "revise":
-                revised = self._interaction.handle_revision(query, plan, step_history)
+                revised = self._interaction.handle_revision(query, plan, step_history, run_log)
                 if revised:
                     result = revised
                     verification = None
             elif final_decision == "replan":
                 replan_result = self._interaction.handle_replan(
-                    query, step_history, self._modify_plan
+                    query, step_history, self._modify_plan, run_log
                 )
                 if replan_result:
                     result = replan_result["result"]
                     plan = replan_result["plan"]
                     # Update run log with new plan
-                    self._run_log.set_plan(plan)
+                    run_log.set_plan(plan)
                     verification = None
             elif final_decision is None:
                 console.print("[yellow]Operation cancelled.[/yellow]")
@@ -204,6 +192,4 @@ class Orchestrator:
             "supporting_evidence": result.get("supporting_evidence", []),
             "verification": verification.model_dump(),
             "plan": plan.model_dump() if plan else None,
-            "step_results": self.sensemaker.step_results,
-            "memory": self.state.export(),
         }

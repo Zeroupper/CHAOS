@@ -8,10 +8,10 @@ from ..core.state import ExecutionState
 from ..llm.structured_client import StructuredLLMClient
 from ..types import (
     CompleteResponse,
+    ExecuteResponse,
     InfoSeekerResult,
-    NeedsCorrectionResponse,
-    NeedsInfoResponse,
     Plan,
+    ReviewResponse,
     SensemakerResponse,
     StepState,
 )
@@ -54,7 +54,7 @@ If ALL steps in the plan are "completed" (no "pending" steps remain):
 
 If you need to execute a step:
 {
-    "status": "needs_info",
+    "status": "execute",
     "current_step": <step number>,
     "request": "What to execute",
     "reasoning": "Why this is needed"
@@ -62,7 +62,7 @@ If you need to execute a step:
 
 If a result appears to have a DATA QUALITY ISSUE that can be fixed:
 {
-    "status": "needs_correction",
+    "status": "review",
     "affected_step": <step number with the issue>,
     "issue_description": "Clear description of the data quality problem",
     "proposed_correction": "A corrected query/request that avoids the issue",
@@ -81,7 +81,7 @@ When you receive a result, evaluate whether it appears valid in context:
 - NaN, null, None, -1 as standalone values may indicate missing data
 - Empty results [], {} may indicate no matching data
 - Use judgment: -1 for temperature is suspicious, -1 for a delta might be valid
-If you suspect issues, use "needs_correction" to propose a fix.
+If you suspect issues, use "review" to propose a fix.
 
 RULES:
 1. NEVER do math yourself - all computations via Python. Even simple subtraction/addition must be executed via Python.
@@ -139,18 +139,18 @@ Based on the step states, decide what to do next."""
 
         messages = [{"role": "user", "content": prompt}]
         result = self._call_llm(
-            messages, Union[CompleteResponse, NeedsInfoResponse, NeedsCorrectionResponse]
+            messages, Union[CompleteResponse, ExecuteResponse, ReviewResponse]
         )
 
-        # Update current step tracking for needs_info responses
-        if result.status == "needs_info":
+        # Update current step tracking for execute responses
+        if result.status == "execute":
             if result.current_step != self.state.current_step:
                 self.state.current_step = result.current_step
             else:
                 self.state.current_step += 1
 
         return result
-
+                
     def _format_plan_steps(self, plan: Plan) -> str:
         """Format plan steps for the prompt."""
         if not plan.steps:
@@ -238,11 +238,6 @@ Based on the step states, decide what to do next."""
         # Update current step to be at or past this step
         if step >= self.state.current_step:
             self.state.current_step = step
-
-    @property
-    def step_results(self) -> dict[int, str]:
-        """Get step results for backward compatibility."""
-        return self.state.step_results
 
     def get_answer(self) -> CompleteResponse:
         """Generate final answer from accumulated knowledge."""

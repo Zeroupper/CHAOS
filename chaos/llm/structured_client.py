@@ -70,7 +70,7 @@ class StructuredLLMClient:
             messages = [{"role": "system", "content": system}] + messages
 
         return self._client.chat.completions.create(
-            model=self.config.model,  # e.g., "openai/gpt-4o", "deepseek/deepseek-chat"
+            model=self.config.model,
             messages=messages,
             response_model=response_model,
             max_retries=self.max_retries,

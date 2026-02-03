@@ -137,19 +137,19 @@ class CompleteResponse(BaseModel):
     supporting_evidence: list[str] = Field(default_factory=list)
 
 
-class NeedsInfoResponse(BaseModel):
-    """Response when sensemaker needs more information."""
+class ExecuteResponse(BaseModel):
+    """Response when sensemaker needs to execute a step."""
 
-    status: Literal["needs_info"] = "needs_info"
+    status: Literal["execute"] = "execute"
     current_step: int = Field(ge=1, default=1)
     request: str = ""
     reasoning: str = ""
 
 
-class NeedsCorrectionResponse(BaseModel):
+class ReviewResponse(BaseModel):
     """Response when sensemaker detects data quality issue and proposes fix."""
 
-    status: Literal["needs_correction"] = "needs_correction"
+    status: Literal["review"] = "review"
     affected_step: int = Field(ge=1)
     issue_description: str = ""
     proposed_correction: str = ""
@@ -157,7 +157,7 @@ class NeedsCorrectionResponse(BaseModel):
 
 
 # Discriminated union - Instructor handles this automatically
-SensemakerResponse = CompleteResponse | NeedsInfoResponse | NeedsCorrectionResponse
+SensemakerResponse = CompleteResponse | ExecuteResponse | ReviewResponse
 
 
 # === Verifier Types ===
