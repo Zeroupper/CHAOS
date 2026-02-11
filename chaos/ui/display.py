@@ -90,11 +90,18 @@ def display_step_states(step_states: dict[int, StepState], plan: Plan | None = N
 
 
 def display_execution_progress(
-    step: int, total: int, code: str, result: str, source: str, success: bool
+    step: int,
+    total: int,
+    code: str,
+    result: str,
+    source: str,
+    success: bool,
+    sandbox: bool = False,
 ) -> None:
     """Display step execution progress."""
     status = "[green]Y[/green]" if success else "[red]X[/red]"
-    console.print(f"  {status} Step {step}/{total} on [cyan]{source}[/cyan]")
+    env_tag = " [dim]\\[sandbox][/dim]" if sandbox else ""
+    console.print(f"  {status} Step {step}/{total} on [cyan]{source}[/cyan]{env_tag}")
     if code:
         console.print(
             Panel(

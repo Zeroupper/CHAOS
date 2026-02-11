@@ -32,3 +32,4 @@ class Config:
     log: LogConfig
     max_step_attempts: int = 5  # Max different approaches for a step
     datasets_dir: Path = Path("datasets/gloss_sample")
+    sandbox: bool = True  # Run LLM-generated code in Docker sandbox

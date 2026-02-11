@@ -48,7 +48,12 @@ class SensemakingLoop:
         self, request: str, step: int, plan: Plan, run_log: RunLog, is_review: bool = False
     ) -> InfoSeekerResult:
         """Execute info seeker request and display results."""
-        with agent_status("info_seeker", "Seeking information..."):
+        status_msg = (
+            "Running code in sandbox..."
+            if self.config.sandbox
+            else "Seeking information..."
+        )
+        with agent_status("info_seeker", status_msg):
             result = self.info_seeker.seek(request)
         self._log_info_seeker_response(run_log, result, is_review)
         display_execution_progress(
@@ -58,6 +63,7 @@ class SensemakingLoop:
             result=result.results,
             source=result.source,
             success=result.success,
+            sandbox=self.config.sandbox,
         )
         return result
 

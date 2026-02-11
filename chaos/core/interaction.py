@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING, Any
 from ..agents import InformationSeekingAgent, PlannerAgent, SensemakerAgent
 from ..data.registry import DataRegistry
 from ..types import Plan, PlanStep
-from ..ui.display import console, display_execution_progress, display_plan
+from ..ui.display import agent_status, console, display_execution_progress, display_plan
 from ..ui.export import RunLog
 from ..ui.prompts import (
     approve_plan,
@@ -17,6 +17,7 @@ from ..ui.prompts import (
 from .context import build_replan_context, build_step_context_for_info_seeker
 
 if TYPE_CHECKING:
+    from .config import Config
     from .execution import SensemakingLoop
     from .state import ExecutionState
 
@@ -26,6 +27,7 @@ class InteractionHandler:
 
     def __init__(
         self,
+        config: "Config",
         sensemaking_loop: "SensemakingLoop",
         info_seeker: InformationSeekingAgent,
         sensemaker: SensemakerAgent,
@@ -33,6 +35,7 @@ class InteractionHandler:
         state: "ExecutionState",
         data_registry: DataRegistry,
     ) -> None:
+        self.config = config
         self.sensemaking_loop = sensemaking_loop
         self.info_seeker = info_seeker
         self.sensemaker = sensemaker
@@ -64,7 +67,13 @@ class InteractionHandler:
 
         console.print(f"\n[cyan]Re-executing step {step_num} with your revision...[/cyan]\n")
 
-        new_info = self.info_seeker.seek(revised_request)
+        status_msg = (
+            "Running code in sandbox..."
+            if self.config.sandbox
+            else "Seeking information..."
+        )
+        with agent_status("info_seeker", status_msg):
+            new_info = self.info_seeker.seek(revised_request)
         display_execution_progress(
             step=step_num,
             total=len(plan.steps),
@@ -72,6 +81,7 @@ class InteractionHandler:
             result=new_info.results,
             source=new_info.source,
             success=new_info.success,
+            sandbox=self.config.sandbox,
         )
 
         return self.sensemaking_loop.execute_plan(query, plan, run_log)
@@ -94,7 +104,13 @@ class InteractionHandler:
         step_context = build_step_context_for_info_seeker(self.state.get_entries(), plan)
 
         # Execute the new step with context
-        new_info = self.info_seeker.seek(new_action, context=step_context)
+        status_msg = (
+            "Running code in sandbox..."
+            if self.config.sandbox
+            else "Seeking information..."
+        )
+        with agent_status("info_seeker", status_msg):
+            new_info = self.info_seeker.seek(new_action, context=step_context)
         display_execution_progress(
             step=new_step_num,
             total=len(plan.steps),
@@ -102,6 +118,7 @@ class InteractionHandler:
             result=new_info.results,
             source=new_info.source,
             success=new_info.success,
+            sandbox=self.config.sandbox,
         )
 
         # Store result in state so sensemaker knows this step was executed

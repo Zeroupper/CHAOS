@@ -223,6 +223,16 @@ What query should I execute? Respond with JSON specifying the source, query_type
                 return ExecutionResult(error=f"Data source '{primary_source_name}' not found")
 
         try:
+            if self.config.sandbox:
+                code = params.get("code", "")
+                if not code:
+                    return ExecutionResult(error="No code provided")
+                from ..data.sandbox import execute_sandboxed
+
+                return execute_sandboxed(
+                    code, primary_source_name, self.config.datasets_dir
+                )
+
             # Collect all data sources to inject into execution namespace
             all_sources = self._get_all_source_dataframes()
 

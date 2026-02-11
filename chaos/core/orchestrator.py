@@ -73,6 +73,7 @@ class Orchestrator:
             state=self.state,
         )
         self._interaction = InteractionHandler(
+            config=config,
             sensemaking_loop=self._sensemaking_loop,
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
@@ -99,6 +100,8 @@ class Orchestrator:
         run_log = RunLog(query=query)
 
         console.print(f"\n[bold cyan]Processing:[/bold cyan] {query}\n")
+        if self.config.sandbox:
+            console.print("[dim]Sandbox mode enabled — code will run in Docker container[/dim]\n")
 
         # Step 1: Create and review plan
         available_sources = self.data_registry.get_sources_prompt()
