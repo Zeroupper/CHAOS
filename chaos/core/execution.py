@@ -158,6 +158,10 @@ class SensemakingLoop:
 
         if decision == "skip":
             console.print("[yellow]Skipping correction, continuing with original data.[/yellow]")
+            self.state.record_context(
+                review.affected_step,
+                f"[DATA CORRECTION] Step {review.affected_step}: {review.issue_description}\nUser skipped correction.",
+            )
             # Mark the step as completed with user_accepted so sensemaker moves on
             # and doesn't propose the same correction again
             step_state = self.state.get_step_state(review.affected_step)
@@ -181,6 +185,11 @@ class SensemakingLoop:
             request = review.proposed_correction
         else:  # modify
             request = modified_request or review.proposed_correction
+
+        self.state.record_context(
+            review.affected_step,
+            f"[DATA CORRECTION] Step {review.affected_step}: {review.issue_description}\nUser approved: {request}",
+        )
 
         console.print(f"\n[cyan]Executing corrected request for step {review.affected_step}...[/cyan]")
         console.print(f"[dim]Request: {request}[/dim]\n")

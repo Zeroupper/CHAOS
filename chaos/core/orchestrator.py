@@ -25,7 +25,7 @@ from ..ui.display import (
     display_verification,
 )
 from ..ui.export import RunLog, offer_export_to_user
-from ..ui.prompts import approve_plan, final_review, modify_plan_step
+from ..ui.prompts import approve_plan, final_review, get_plan_feedback
 from .config import Config
 from .context import build_step_history
 from .execution import SensemakingLoop
@@ -133,11 +133,10 @@ class Orchestrator:
         while True:
             if verification is None:
                 verification_context = {
-                    "plan": plan,
                     "memory": self.state.export(),
                 }
                 with agent_status("verifier", "Verifying answer..."):
-                    verification = self.verifier.verify(query, result, verification_context)
+                    verification = self.verifier.verify(plan, result, verification_context)
                 display_verification(verification, result.get("answer", ""))
 
             step_history = build_step_history(self.state.get_entries(), plan)
@@ -171,13 +170,12 @@ class Orchestrator:
                 return CANCELLED_RESULT
 
     def _modify_plan(self, plan: Plan) -> Plan:
-        """Allow user to modify plan steps."""
-        for step in plan.steps:
-            new_action = modify_plan_step(step.step, step.action)
-            if new_action and new_action != step.action:
-                step.action = new_action
-                step.modified = True
-        return plan
+        """Allow user to modify plan via feedback to the planner."""
+        feedback = get_plan_feedback()
+        if not feedback:
+            return plan
+        with agent_status("planner", "Revising plan..."):
+            return self.planner.modify_plan(plan, feedback)
 
     def _finalize(
         self,

@@ -95,7 +95,7 @@ result = 155.0 - 48.0
 
 **Result:**
 ```
-107.0
+107.0   
 ```
 
 ### Sensemaker Complete

@@ -55,6 +55,8 @@ def display_memory_table(memory: dict) -> None:
     table.add_column("Result", max_width=60, overflow="fold")
 
     for entry in entries:
+        if entry.get("is_internal_context"):
+            continue
         step = str(entry.get("step", "?"))
         success = entry.get("success", False)
         code = entry.get("code") or "-"
@@ -123,6 +125,11 @@ def display_verification(verification: Verification, answer: str) -> None:
     table.add_row("Recommendation", verification.recommendation.upper())
 
     console.print(table)
+
+    if verification.summary:
+        console.print(
+            Panel(verification.summary, title="Summary", border_style="green")
+        )
 
     if verification.gaps:
         console.print(

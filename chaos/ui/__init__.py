@@ -11,7 +11,7 @@ from .prompts import (
     approve_plan,
     final_review,
     get_revised_request,
-    modify_plan_step,
+    get_plan_feedback,
     select_step_to_revise,
 )
 
@@ -24,7 +24,7 @@ __all__ = [
     "display_verification",
     # Prompt components
     "approve_plan",
-    "modify_plan_step",
+    "get_plan_feedback",
     "final_review",
     "select_step_to_revise",
     "get_revised_request",

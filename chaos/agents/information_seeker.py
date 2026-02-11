@@ -214,7 +214,13 @@ What query should I execute? Respond with JSON specifying the source, query_type
 
         source = self.data_registry.get(primary_source_name)
         if source is None:
-            return ExecutionResult(error=f"Data source '{primary_source_name}' not found")
+            # Fallback to first available source (e.g. for pure computation steps)
+            sources = self.data_registry.list_sources()
+            if sources:
+                primary_source_name = sources[0]["name"]
+                source = self.data_registry.get(primary_source_name)
+            if source is None:
+                return ExecutionResult(error=f"Data source '{primary_source_name}' not found")
 
         try:
             # Collect all data sources to inject into execution namespace

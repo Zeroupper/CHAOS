@@ -15,6 +15,7 @@ class MemoryEntry:
     success: bool = True
     error: str | None = None
     step: int | None = None
+    is_internal_context: bool = False
 
 
 class ExecutionState:
@@ -104,6 +105,12 @@ class ExecutionState:
         self._step_states = {}
         self._entries = []
 
+    def record_context(self, step: int, message: str) -> None:
+        """Record an internal context entry (e.g. human-agent correction interaction)."""
+        self._entries.append(
+            MemoryEntry(code="", result=message, is_internal_context=True, step=step)
+        )
+
     def get_entries(self, limit: int | None = None) -> list[MemoryEntry]:
         """Get memory entries, optionally limited to most recent."""
         if limit:
@@ -136,6 +143,7 @@ class ExecutionState:
                     "success": entry.success,
                     "error": entry.error,
                     "step": entry.step,
+                    "is_internal_context": entry.is_internal_context,
                 }
                 for entry in self._entries
             ],

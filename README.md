@@ -171,37 +171,25 @@ export OPENROUTER_API_KEY=your_key_here
 ## Usage
 
 ```bash
-# Interactive mode
-uv run python main.py
-
 # Single query
 uv run python main.py "What is the average heart rate of test004?"
 
 # With options
-uv run python main.py "Your query" --datasets-dir ./my_data --max-iterations 5
-
-# Verbose output
-uv run python main.py "Your query" --verbose   # INFO level
-uv run python main.py "Your query" --debug     # DEBUG level
+uv run python main.py "Your query" --log-level DEBUG
 
 # Use a different model (any OpenRouter model works)
 uv run python main.py "Your query" --model "anthropic/claude-3.5-sonnet"
 uv run python main.py "Your query" --model "deepseek/deepseek-chat"
 uv run python main.py "Your query" --model "openai/gpt-4o"
-
 ```
 
 ### Command Line Options
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--datasets-dir` | Directory containing datasets | `./datasets` |
-| `--max-iterations` | Maximum sensemaking loop iterations | `5` |
-| `--verbose`, `-v` | Enable INFO level logging | Off |
-| `--debug` | Enable DEBUG level logging | Off |
-| `--log-level` | Explicit log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
-| `--no-color` | Disable ANSI colors in output | Off |
-| `--model` | LLM model to use | `openai/chatgpt-4o-latest` |
+| `--max-step-attempts` | Maximum attempts per step | `5` |
+| `--log-level` | Log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
+| `--model` | LLM model to use | from config |
 
 ## Human-in-the-Loop Mode
 
@@ -300,16 +288,26 @@ User Query
 
 ## Adding Data Sources
 
+### Dataset Directory
+
+The dataset directory is configured in `chaos/core/config.py`:
+
+```python
+datasets_dir: Path = Path("datasets/gloss_sample")
+```
+
+Change this path to point to your dataset folder. Only CSV files within the configured directory (and its subdirectories) will be auto-discovered. This prevents accidentally loading unrelated datasets that may exceed LLM context limits.
+
 ### Auto-Discovery
 
-Place CSV files in the `datasets/` directory - they will be auto-discovered:
+Place CSV files in your configured dataset directory and they will be auto-discovered:
 
 ```
-datasets/
-├── user_data.csv      → Becomes "user_data" source
-├── heart_rate.csv     → Becomes "heart_rate" source
-└── subdirectory/
-    └── steps.csv      → Becomes "steps" source
+datasets/gloss_sample/
+├── data_schema.yaml   → Optional: rich column metadata for the LLM
+├── garmin_hr.csv      → Becomes "garmin_hr" source
+├── garmin_steps.csv   → Becomes "garmin_steps" source
+└── ios_activity.csv   → Becomes "ios_activity" source
 ```
 
 ### Custom Data Sources

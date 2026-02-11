@@ -5,10 +5,9 @@ Entry point for the multi-agent sensemaking system.
 
 import argparse
 import sys
-from pathlib import Path
 
 from chaos.core.config import Config, LLMConfig, LogConfig
-from chaos.core.logger import get_logger, setup_logging
+from chaos.core.logger import setup_logging
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
 from chaos.llm import StructuredLLMClient
@@ -30,12 +29,6 @@ def parse_args() -> argparse.Namespace:
         nargs="?",
         default="This is an example query. Replace it with your own.",
         help="Natural language query to process",
-    )
-    parser.add_argument(
-        "--datasets-dir",
-        type=Path,
-        default=Path("datasets"),
-        help="Directory containing datasets",
     )
     parser.add_argument(
         "--max-step-attempts",
@@ -64,15 +57,11 @@ def main() -> None:
     # Set up logging
     setup_logging(level=args.log_level)
 
-    # Get logger for main module
-    logger = get_logger("Main")
-
     # Initialize configuration
     config = Config(
         llm=LLMConfig(),
         log=LogConfig(level=args.log_level),
         max_step_attempts=args.max_step_attempts,
-        datasets_dir=args.datasets_dir,
     )
 
     # Initialize LLM client
@@ -88,11 +77,13 @@ def main() -> None:
     data_registry = DataRegistry()
 
     # Auto-discover data sources
-    data_registry.auto_discover(args.datasets_dir)
+    data_registry.auto_discover(config.datasets_dir)
 
     sources = data_registry.list_sources()
-    source_names = ", ".join(s["name"] for s in sources) if sources else "none"
-    logger.info(f"Discovered {len(sources)} data sources: {source_names}")
+    print(f"\nDiscovered {len(sources)} data sources from {config.datasets_dir}:")
+    for s in sources:
+        print(f"  - {s['name']}")
+    print()
 
     # Create orchestrator
     orchestrator = Orchestrator(

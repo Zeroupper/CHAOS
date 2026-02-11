@@ -94,6 +94,8 @@ Be specific and actionable. Reference exact column names from the schema."""
         Returns:
             Plan object with steps and metadata.
         """
+        self._available_sources = available_sources
+
         prompt = f"""Create an execution plan for the following query:
 
 Query: {query}
@@ -106,3 +108,41 @@ Respond with a JSON plan."""
         plan = self._call_llm(messages, Plan)
         plan.query = query
         return plan
+
+    def modify_plan(self, plan: Plan, feedback: str) -> Plan:
+        """
+        Modify a plan based on user feedback.
+
+        Args:
+            plan: The current plan.
+            feedback: User's feedback on what to change.
+
+        Returns:
+            Updated Plan object.
+        """
+        current_steps = "\n".join(
+            f"  Step {s.step}: {s.action} (source: {s.source or '-'})"
+            for s in plan.steps
+        )
+
+        prompt = f"""Modify the following plan according to the user's instructions.
+
+Current plan understanding: {plan.query_understanding}
+
+Current steps:
+{current_steps}
+
+User's modification request: {feedback}
+
+The user's request is AUTHORITATIVE. Apply exactly what they ask for.
+Do NOT revert to any previous intent. Do NOT ignore or reinterpret the request.
+Update the query_understanding to reflect the modified plan.
+
+{self._available_sources}
+
+Respond with the revised JSON plan."""
+
+        messages = [{"role": "user", "content": prompt}]
+        revised = self._call_llm(messages, Plan)
+        revised.query = plan.query
+        return revised

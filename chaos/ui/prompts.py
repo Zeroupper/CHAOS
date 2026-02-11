@@ -24,18 +24,17 @@ def approve_plan(plan: Plan) -> str | None:
         "How would you like to proceed with this plan?",
         choices=[
             Choice("Approve and execute", value="approve"),
-            Choice("Modify plan steps", value="modify"),
+            Choice("Modify plan", value="modify"),
             Choice("Reject", value="reject"),
         ],
         style=custom_style,
     ).ask()
 
 
-def modify_plan_step(step_num: int, current_action: str) -> str | None:
-    """Allow user to modify a plan step."""
+def get_plan_feedback() -> str | None:
+    """Get user feedback on what to change in the plan."""
     return questionary.text(
-        f"Modify step {step_num} (Enter to keep current):",
-        default=current_action,
+        "What would you like to change about the plan?",
         style=custom_style,
     ).ask()
 
