@@ -47,6 +47,11 @@ def parse_args() -> argparse.Namespace:
         type=str,
         help="LLM model to use (default: moonshotai/kimi-k2.5)",
     )
+    parser.add_argument(
+        "--sandbox",
+        action="store_true",
+        help="Run LLM-generated code in Docker sandbox",
+    )
     return parser.parse_args()
 
 
@@ -62,6 +67,7 @@ def main() -> None:
         llm=LLMConfig(),
         log=LogConfig(level=args.log_level),
         max_step_attempts=args.max_step_attempts,
+        sandbox=args.sandbox,
     )
 
     # Initialize LLM client

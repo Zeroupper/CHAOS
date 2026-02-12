@@ -29,6 +29,7 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 - **Type-Safe LLM Responses**: All agent outputs are validated Pydantic models
 - **Automatic Retries**: Instructor handles validation failures with configurable retries
 - **Model Flexibility**: Works with any OpenRouter model (GPT-4o, Claude, DeepSeek, Kimi K2, etc.)
+- **Sandboxed Execution**: Optionally run LLM-generated code in an isolated Docker container (no network, read-only data)
 - **Extensible Architecture**: Easy to add new data sources and tools
 - **Memory Management**: Working memory tracks execution state across iterations
 
@@ -52,6 +53,7 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 │  │  Agent           │         │  Agent                    │     │
 │  │                  │         │  - Queries data sources   │     │
 │  │  Returns:        │         │  - Executes Python code   │     │
+│  │                  │         │    (host or sandbox)      │     │
 │  │  - Complete      │         │  - Returns:               │     │
 │  │  - NeedsInfo     │         │    InfoSeekerResult       │     │
 │  │  - NeedsCorrect  │         │                           │     │
@@ -102,6 +104,7 @@ CHAOS/
 │   │   └── registry.py           # Tool registry
 │   ├── data/                   # Data source management
 │   │   ├── base.py               # Base data source (CSVDataSource)
+│   │   ├── sandbox.py            # Docker sandbox bridge for isolated execution
 │   │   ├── registry.py           # Data source registry & auto-discovery
 │   │   └── schema.py             # Schema generation utilities
 │   ├── memory/                 # Working memory
@@ -110,11 +113,16 @@ CHAOS/
 │       ├── display.py            # Rich-based display components
 │       ├── prompts.py            # Questionary-based prompts
 │       └── export.py             # Run export to markdown
-├── datasets/                 # Place datasets here (auto-discovered)
-├── exported_runs/            # Exported run logs (markdown)
-├── tests/                    # Test suite
-├── main.py                   # Entry point
-└── pyproject.toml            # Project configuration
+├── sandbox/                 # Docker sandbox
+│   └── executor.py            # In-container code executor
+├── scripts/                 # Utility scripts
+│   └── install-sandbox.sh     # Build sandbox Docker image
+├── datasets/                # Place datasets here (auto-discovered)
+├── exported_runs/           # Exported run logs (markdown)
+├── tests/                   # Test suite
+├── Dockerfile               # Sandbox container image
+├── main.py                  # Entry point
+└── pyproject.toml           # Project configuration
 ```
 
 ## Type System
@@ -190,6 +198,56 @@ uv run python main.py "Your query" --model "openai/gpt-4o"
 | `--max-step-attempts` | Maximum attempts per step | `5` |
 | `--log-level` | Log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
 | `--model` | LLM model to use | from config |
+| `--sandbox` | Run LLM-generated code in Docker sandbox | off |
+
+## Sandbox Mode
+
+By default, LLM-generated Python code runs directly on the host via `exec()`. With sandbox mode enabled, code runs inside an isolated Docker container with no network access and read-only data mounts.
+
+### Setup
+
+```bash
+# Build the sandbox image (one-time)
+bash scripts/install-sandbox.sh
+```
+
+### Usage
+
+```bash
+# Run with sandbox enabled
+uv run python main.py --sandbox "What is the average heart rate of test004?"
+```
+
+### How it works
+
+```
+Host (CHAOS)                          Docker container (chaos-sandbox)
+────────────                          ──────────────────────────────
+InformationSeeker._execute_query()
+  ├─ --sandbox:
+  │   → docker run --rm -i            → /sandbox/executor.py
+  │     --network=none                   reads JSON from stdin
+  │     -v datasets:/data:ro             loads CSVs, exec(code)
+  │     stdin: JSON payload              writes JSON to stdout
+  │   ← parse stdout → ExecutionResult
+  │
+  └─ default:
+      → exec() on host (current behavior, unchanged)
+```
+
+### Isolation guarantees
+
+- **No network**: `--network=none` prevents any outbound connections
+- **Read-only data**: Datasets mounted as `-v ...:/data:ro`
+- **Ephemeral**: `--rm` removes the container after each execution
+- **Timeout**: 30-second hard limit on container execution
+
+### Testing the sandbox directly
+
+```bash
+echo '{"code": "result = df[\"heart_rate\"].mean()", "primary_source": "garmin_hr"}' | \
+  docker run --rm -i --network=none -v "$(pwd)/datasets/gloss_sample:/data:ro" chaos-sandbox
+```
 
 ## Human-in-the-Loop Mode
 
