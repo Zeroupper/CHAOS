@@ -33,6 +33,68 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 - **Extensible Architecture**: Easy to add new data sources and tools
 - **Memory Management**: Working memory tracks execution state across iterations
 
+## Prerequisites
+
+- [Python 3.11+](https://www.python.org/downloads/)
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) (recommended) or pip
+- An [OpenRouter API key](https://openrouter.ai/keys)
+- [Docker](https://docs.docker.com/get-docker/) (only if using `--sandbox` mode)
+
+## Installation
+
+```bash
+# Clone the repository
+git clone git@github.com:Zeroupper/CHAOS.git
+cd CHAOS
+
+# Install with uv (recommended)
+uv sync
+
+# Or with pip
+pip install -e .
+```
+
+### Configuration
+
+Set your OpenRouter API key:
+
+```bash
+export OPENROUTER_API_KEY=your_key_here
+```
+
+### Sandbox (optional)
+
+By default, LLM-generated Python code runs on the host via `exec()`. To run it in an isolated Docker container instead:
+
+```bash
+# Build the sandbox image (one-time)
+bash scripts/install-sandbox.sh
+```
+
+## Usage
+
+```bash
+# Single query
+uv run python main.py "What is the average heart rate of test004?"
+
+# With options
+uv run python main.py "Your query" --log-level DEBUG
+
+# Use a different model (any OpenRouter model works)
+uv run python main.py "Your query" --model "anthropic/claude-3.5-sonnet"
+uv run python main.py "Your query" --model "deepseek/deepseek-chat"
+uv run python main.py "Your query" --model "openai/gpt-4o"
+```
+
+### Command Line Options
+
+| Option | Description | Default |
+|--------|-------------|---------|
+| `--max-step-attempts` | Maximum attempts per step | `5` |
+| `--log-level` | Log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
+| `--model` | LLM model to use | from config |
+| `--sandbox` | Run LLM-generated code in Docker sandbox | off |
+
 ## Architecture
 
 ```
@@ -55,11 +117,11 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 │  │  Returns:        │         │  - Executes Python code   │     │
 │  │                  │         │    (host or sandbox)      │     │
 │  │  - Complete      │         │  - Returns:               │     │
-│  │  - NeedsInfo     │         │    InfoSeekerResult       │     │
-│  │  - NeedsCorrect  │         │                           │     │
+│  │  - Execute       │         │    InfoSeekerResult       │     │
+│  │  - Review        │         │                           │     │
 │  └────────┬─────────┘         └─────────────┬─────────────┘     │
 │           │                                 │                   │
-│           │ NeedsCorrection?                ▼                   │
+│           │ Review?                         ▼                   │
 │           │                   ┌───────────────────────────┐     │
 │           ▼                   │  Data Sources & Tools     │     │
 │  ┌──────────────────┐         │  (Registry-based)         │     │
@@ -94,7 +156,7 @@ CHAOS/
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
 │   │   ├── planner.py            # Creates execution plans → Plan
-│   │   ├── sensemaker.py         # Synthesizes info → Complete|NeedsInfo|NeedsCorrection
+│   │   ├── sensemaker.py         # Synthesizes info → Complete|Execute|Review
 │   │   ├── information_seeker.py # Retrieves data → InfoSeekerResult
 │   │   └── verifier.py           # Validates answers → Verification
 │   ├── llm/                    # LLM client
@@ -137,7 +199,7 @@ Plan, PlanStep
 QueryDecision, InfoSeekerResult
 
 # Sensemaker response (discriminated union)
-CompleteResponse | NeedsInfoResponse | NeedsCorrectionResponse
+CompleteResponse | ExecuteResponse | ReviewResponse
 
 # Verifier types
 Verification
@@ -151,72 +213,10 @@ ExecutionResult, StepState
 | Response | When Used |
 |----------|-----------|
 | `CompleteResponse` | All steps completed, final answer ready |
-| `NeedsInfoResponse` | Need to execute a step or request clarification |
-| `NeedsCorrectionResponse` | Data quality issue detected, proposes a fix |
-
-## Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/yourusername/CHAOS.git
-cd CHAOS
-
-# Install with uv (recommended)
-uv sync
-
-# Or with pip
-pip install -e .
-```
-
-## Configuration
-
-Set your OpenRouter API key:
-
-```bash
-export OPENROUTER_API_KEY=your_key_here
-```
-
-## Usage
-
-```bash
-# Single query
-uv run python main.py "What is the average heart rate of test004?"
-
-# With options
-uv run python main.py "Your query" --log-level DEBUG
-
-# Use a different model (any OpenRouter model works)
-uv run python main.py "Your query" --model "anthropic/claude-3.5-sonnet"
-uv run python main.py "Your query" --model "deepseek/deepseek-chat"
-uv run python main.py "Your query" --model "openai/gpt-4o"
-```
-
-### Command Line Options
-
-| Option | Description | Default |
-|--------|-------------|---------|
-| `--max-step-attempts` | Maximum attempts per step | `5` |
-| `--log-level` | Log level (DEBUG/INFO/WARNING/ERROR) | WARNING |
-| `--model` | LLM model to use | from config |
-| `--sandbox` | Run LLM-generated code in Docker sandbox | off |
+| `ExecuteResponse` | Need to execute a step or request clarification |
+| `ReviewResponse` | Data quality issue detected, proposes a fix |
 
 ## Sandbox Mode
-
-By default, LLM-generated Python code runs directly on the host via `exec()`. With sandbox mode enabled, code runs inside an isolated Docker container with no network access and read-only data mounts.
-
-### Setup
-
-```bash
-# Build the sandbox image (one-time)
-bash scripts/install-sandbox.sh
-```
-
-### Usage
-
-```bash
-# Run with sandbox enabled
-uv run python main.py --sandbox "What is the average heart rate of test004?"
-```
 
 ### How it works
 
