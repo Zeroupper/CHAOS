@@ -1,6 +1,10 @@
 # CHAOS
 
-**C**oordinated **H**ierarchical **A**gent **O**rchestration **S**ystem
+[![Python 3.11+](https://img.shields.io/badge/python-3.11%2B-blue?logo=python&logoColor=white)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Docker](https://img.shields.io/badge/sandbox-Docker-2496ED?logo=docker&logoColor=white)](https://www.docker.com/)
+
+**C**oordinated **H**uman-**A**gent **O**rchestrated **S**ensemaking
 
 A multi-agent LLM system for open-ended sensemaking over datasets. Built with Instructor + Pydantic for type-safe, validated LLM responses.
 
@@ -152,7 +156,11 @@ CHAOS/
 │   ├── core/                   # Orchestration & config
 │   │   ├── config.py             # Configuration management
 │   │   ├── orchestrator.py       # Main pipeline orchestrator (with human-in-the-loop)
-│   │   └── logger.py             # Logging infrastructure
+│   │   ├── execution.py          # SensemakingLoop — drives the sensemaker↔info_seeker cycle
+│   │   ├── interaction.py        # InteractionHandler — revision, replan, add-step flows
+│   │   ├── context.py            # Context builders for LLM prompts (step history, replan)
+│   │   ├── state.py              # ExecutionState — unified step states + memory entries
+│   │   └── logger.py             # Logging infrastructure (loguru)
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
 │   │   ├── planner.py            # Creates execution plans → Plan
@@ -168,9 +176,7 @@ CHAOS/
 │   │   ├── base.py               # Base data source (CSVDataSource)
 │   │   ├── sandbox.py            # Docker sandbox bridge for isolated execution
 │   │   ├── registry.py           # Data source registry & auto-discovery
-│   │   └── schema.py             # Schema generation utilities
-│   ├── memory/                 # Working memory
-│   │   └── memory.py             # Memory management
+│   │   └── schema.py             # Schema loader for YAML dataset metadata
 │   └── ui/                     # Interactive terminal UI
 │       ├── display.py            # Rich-based display components
 │       ├── prompts.py            # Questionary-based prompts
