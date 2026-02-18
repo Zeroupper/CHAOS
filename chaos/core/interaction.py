@@ -157,10 +157,13 @@ class InteractionHandler:
         Returns:
             Dict with new result and plan, or None if cancelled.
         """
-        # Get optional suggested fix from user
-        suggested_fix = get_replan_suggestion()
-        if suggested_fix is None:
-            return None
+        # Get optional suggested fix from user (skip in auto-approve mode)
+        if self.config.auto_approve:
+            suggested_fix = ""
+        else:
+            suggested_fix = get_replan_suggestion()
+            if suggested_fix is None:
+                return None
 
         console.print("\n[cyan]Creating new plan with learnings from previous attempt...[/cyan]\n")
 
@@ -174,21 +177,25 @@ class InteractionHandler:
         # Use regular create_plan with enhanced context
         new_plan = self.planner.create_plan(query, enhanced_sources)
 
-        # Show the new plan for approval
-        while True:
-            display_plan(new_plan)
-            decision = approve_plan(new_plan)
+        # Show the new plan for approval (or auto-approve)
+        display_plan(new_plan)
+        if self.config.auto_approve:
+            console.print("[dim]Auto-approved replan.[/dim]")
+        else:
+            while True:
+                decision = approve_plan(new_plan)
 
-            if decision == "approve":
-                break
-            elif decision == "reject":
-                console.print("[yellow]Replan rejected.[/yellow]")
-                return None
-            elif decision == "modify":
-                new_plan = modify_plan_func(new_plan)
-            elif decision is None:
-                console.print("[yellow]Operation cancelled.[/yellow]")
-                return None
+                if decision == "approve":
+                    break
+                elif decision == "reject":
+                    console.print("[yellow]Replan rejected.[/yellow]")
+                    return None
+                elif decision == "modify":
+                    new_plan = modify_plan_func(new_plan)
+                    display_plan(new_plan)
+                elif decision is None:
+                    console.print("[yellow]Operation cancelled.[/yellow]")
+                    return None
 
         # Reset state for fresh start (learnings are in the plan context)
         self.state.reset()

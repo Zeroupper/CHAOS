@@ -18,8 +18,8 @@ class LLMConfig(BaseSettings):
 
 
 @dataclass
-class LogConfig:
-    """Logging configuration."""
+class LogConfig:    
+    """Logging configuration."""    
 
     level: str = "WARNING"
 
@@ -33,3 +33,4 @@ class Config:
     max_step_attempts: int = 5  # Max different approaches for a step
     datasets_dir: Path = Path("datasets/gloss_sample")
     sandbox: bool = True  # Run LLM-generated code in Docker sandbox
+    auto_approve: bool = False  # Auto-approve planner and sensemaker without human guidance

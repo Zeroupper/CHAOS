@@ -108,21 +108,25 @@ class Orchestrator:
         with agent_status("planner", "Creating execution plan..."):
             plan = self.planner.create_plan(query, available_sources)
 
-        # Human reviews plan
-        while True:
-            display_plan(plan)
-            decision = approve_plan(plan)
+        # Human reviews plan (or auto-approve)
+        display_plan(plan)
+        if self.config.auto_approve:
+            console.print("[dim]Auto-approved plan.[/dim]")
+        else:
+            while True:
+                decision = approve_plan(plan)
 
-            if decision == "approve":
-                break
-            elif decision == "reject":
-                console.print("[yellow]Plan rejected.[/yellow]")
-                return REJECTED_RESULT
-            elif decision == "modify":
-                plan = self._modify_plan(plan)
-            elif decision is None:
-                console.print("[yellow]Operation cancelled.[/yellow]")
-                return CANCELLED_RESULT
+                if decision == "approve":
+                    break
+                elif decision == "reject":
+                    console.print("[yellow]Plan rejected.[/yellow]")
+                    return REJECTED_RESULT
+                elif decision == "modify":
+                    plan = self._modify_plan(plan)
+                    display_plan(plan)
+                elif decision is None:
+                    console.print("[yellow]Operation cancelled.[/yellow]")
+                    return CANCELLED_RESULT
 
         # Log the approved plan
         run_log.set_plan(plan)
@@ -143,15 +147,20 @@ class Orchestrator:
                 display_verification(verification, result.get("answer", ""))
 
             step_history = build_step_history(self.state.get_entries(), plan)
-            final_decision = final_review(verification.recommendation, bool(step_history))
+
+            if self.config.auto_approve:
+                final_decision = "accept"
+                console.print("[dim]Auto-approved final answer.[/dim]")
+            else:
+                final_decision = final_review(verification.recommendation, bool(step_history))
 
             if final_decision == "accept":
                 final_result = self._finalize(result, verification, plan)
-                offer_export_to_user(run_log, result, verification, export_dir)
+                offer_export_to_user(run_log, result, verification, export_dir, self.config.auto_approve)
                 return final_result
             elif final_decision == "reject":
                 console.print("[yellow]Answer rejected.[/yellow]")
-                offer_export_to_user(run_log, result, verification, export_dir)
+                offer_export_to_user(run_log, result, verification, export_dir, self.config.auto_approve)
                 return REJECTED_RESULT
             elif final_decision == "revise":
                 revised = self._interaction.handle_revision(query, plan, step_history, run_log)

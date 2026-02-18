@@ -52,6 +52,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Run LLM-generated code in Docker sandbox",
     )
+    parser.add_argument(
+        "--auto-approve",
+        action="store_true",
+        help="Auto-approve planner and sensemaker decisions without human guidance",
+    )
     return parser.parse_args()
 
 
@@ -68,6 +73,7 @@ def main() -> None:
         log=LogConfig(level=args.log_level),
         max_step_attempts=args.max_step_attempts,
         sandbox=args.sandbox,
+        auto_approve=args.auto_approve,
     )
 
     # Initialize LLM client

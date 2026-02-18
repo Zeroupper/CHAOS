@@ -233,6 +233,7 @@ def offer_export_to_user(
     result: dict[str, Any],
     verification: "Verification | None",
     export_dir: str | None,
+    auto_approve: bool = False,
 ) -> None:
     """
     Offer to export the run to a markdown file.
@@ -242,6 +243,7 @@ def offer_export_to_user(
         result: The result dictionary.
         verification: Verification result if available.
         export_dir: Directory for exports. Defaults to "exported_runs" if None.
+        auto_approve: If True, automatically save without prompting.
     """
     from .display import console
     from .prompts import prompt_export_run
@@ -258,8 +260,12 @@ def offer_export_to_user(
     # Generate default filename
     default_path = str(generate_run_filename(run_log.query, output_dir))
 
-    # Prompt user
-    export_path = prompt_export_run(default_path)
+    # Auto-save or prompt user
+    if auto_approve:
+        export_path = default_path
+    else:
+        export_path = prompt_export_run(default_path)
+
     if export_path:
         try:
             output = export_run_to_markdown(run_log, export_path)
