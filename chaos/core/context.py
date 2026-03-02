@@ -1,9 +1,11 @@
 """Context building utilities for the orchestrator."""
 
+import json
 from typing import Any
 
 from ..types import Plan
-from .state import MemoryEntry
+from .logger import truncate_for_llm
+from .state import ExecutionState, MemoryEntry
 
 
 def build_step_history(entries: list[MemoryEntry], plan: Plan) -> list[dict]:
@@ -75,6 +77,35 @@ def build_step_context_for_info_seeker(entries: list[MemoryEntry], plan: Plan) -
     }
 
 
+def build_query_prompt(
+    info_request: str,
+    sources_info: str,
+    step_results_str: str = "",
+    context: dict[str, Any] | None = None,
+) -> str:
+    """Build the user prompt for the InformationSeekingAgent's LLM call.
+
+    Args:
+        info_request: What information to retrieve.
+        sources_info: Formatted string of available data sources.
+        step_results_str: Description of available step results.
+        context: Optional additional context dict.
+    """
+    context_str = ""
+    if context:
+        context_str = f"\nAdditional context:\n{json.dumps(context, indent=2)}"
+
+    return f"""I need to find the following information:
+
+{info_request}
+
+{sources_info}
+{step_results_str}
+{context_str}
+
+What query should I execute? Respond with JSON specifying the source, query_type, and params."""
+
+
 def build_replan_context(step_history: list[dict], suggested_fix: str | None) -> str:
     """
     Build context string for replanning with learnings from previous attempt.
@@ -100,9 +131,9 @@ def build_replan_context(step_history: list[dict], suggested_fix: str | None) ->
         success = step.get("success", False)
 
         if success:
-            learnings.append(f"- {action} -> Result: {result[:200]}")
+            learnings.append(f"- {action} -> Result: {truncate_for_llm(result)}")
         else:
-            learnings.append(f"- {action} -> FAILED: {result[:200]}")
+            learnings.append(f"- {action} -> FAILED: {truncate_for_llm(result)}")
 
     context_parts.append("### What was attempted and discovered:")
     context_parts.extend(learnings)

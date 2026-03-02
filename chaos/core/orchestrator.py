@@ -8,9 +8,9 @@ from ..agents import (
     SensemakerAgent,
     VerifierAgent,
 )
+from ..agents.explorer import ExplorerAgent
 from ..data.registry import DataRegistry
 from ..llm.structured_client import StructuredLLMClient
-from ..tools.base import BaseTool
 from ..types import (
     CANCELLED_RESULT,
     REJECTED_RESULT,
@@ -21,11 +21,11 @@ from ..ui.display import (
     agent_status,
     console,
     display_plan,
-    display_tool_execution,
     display_verification,
 )
 from ..ui.export import RunLog, offer_export_to_user
 from ..ui.prompts import approve_plan, final_review, get_plan_feedback
+from .code_executor import CodeExecutor
 from .config import Config
 from .context import build_step_history
 from .execution import SensemakingLoop
@@ -50,19 +50,23 @@ class Orchestrator:
         config: Config,
         llm_client: StructuredLLMClient,
         data_registry: DataRegistry | None = None,
-        planner_tools: list[BaseTool] | None = None,
     ) -> None:
         self.config = config
         self.llm_client = llm_client
         self.data_registry = data_registry or DataRegistry()
         self.state = ExecutionState()
+        self.run_log: RunLog | None = None
+
+        # Centralized code executor
+        self._executor = CodeExecutor(config, self.data_registry)
 
         # Initialize agents
-        self.planner = PlannerAgent(
-            config, llm_client, tools=planner_tools, on_tool_execute=display_tool_execution
-        )
+        self.explorer = ExplorerAgent(self.data_registry)
+        self.planner = PlannerAgent(config, llm_client)
         self.sensemaker = SensemakerAgent(config, llm_client, self.state)
-        self.info_seeker = InformationSeekingAgent(config, llm_client, self.data_registry)
+        self.info_seeker = InformationSeekingAgent(
+            config, llm_client, self.data_registry, self._executor, self.state
+        )
         self.verifier = VerifierAgent(config, llm_client)
 
         # Initialize helpers
@@ -71,6 +75,7 @@ class Orchestrator:
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
             state=self.state,
+            executor=self._executor,
         )
         self._interaction = InteractionHandler(
             config=config,
@@ -80,6 +85,7 @@ class Orchestrator:
             planner=self.planner,
             state=self.state,
             data_registry=self.data_registry,
+            executor=self._executor,
         )
 
     def run(self, query: str, export_dir: str | None = None) -> dict[str, Any]:
@@ -95,18 +101,27 @@ class Orchestrator:
             Result dictionary with answer, verification, etc.
         """
         self.state.reset()
+        self._executor.reset()
 
-        # Initialize run log for export
+        # Initialize run log for export (also stored on self for eval access)
         run_log = RunLog(query=query)
+        self.run_log = run_log
 
         console.print(f"\n[bold cyan]Processing:[/bold cyan] {query}\n")
         if self.config.sandbox:
             console.print("[dim]Sandbox mode enabled — code will run in Docker container[/dim]\n")
 
-        # Step 1: Create and review plan
+        # Step 1a: Explore data — inspect all dataset schemas
         available_sources = self.data_registry.get_sources_prompt()
+        schemas = self.explorer.explore()
+        data_context = "DATASET SCHEMAS (use these exact column names):\n" + "\n".join(
+            str(s) for s in schemas
+        )
+        run_log.data_context = data_context
+
+        # Step 1b: Create plan from exploration results
         with agent_status("planner", "Creating execution plan..."):
-            plan = self.planner.create_plan(query, available_sources)
+            plan = self.planner.create_plan(query, available_sources, data_context)
 
         # Human reviews plan (or auto-approve)
         display_plan(plan)
@@ -128,7 +143,6 @@ class Orchestrator:
                     console.print("[yellow]Operation cancelled.[/yellow]")
                     return CANCELLED_RESULT
 
-        # Log the approved plan
         run_log.set_plan(plan)
 
         # Step 2: Execute sensemaking loop

@@ -3,7 +3,10 @@
 from dataclasses import dataclass
 from typing import Any
 
-from ..types import StepState
+from ..types import Plan, StepState
+from .logger import get_logger, truncate_for_llm
+
+_logger = get_logger("ExecutionState")
 
 
 @dataclass
@@ -23,6 +26,8 @@ class ExecutionState:
     Unified state tracking for plan execution.
 
     Consolidates step states and memory entries into a single source of truth.
+    Step result strings are stored for LLM display only — raw Python objects
+    are kept in CodeExecutor for step-to-step data passing.
     """
 
     def __init__(self) -> None:
@@ -61,7 +66,7 @@ class ExecutionState:
         Args:
             step: Step number.
             code: Code that was executed.
-            result: Result if successful.
+            result: Serialized result string (for display/LLM only).
             success: Whether execution succeeded.
             error: Error message if failed.
         """
@@ -117,8 +122,40 @@ class ExecutionState:
             return self._entries[-limit:]
         return self._entries
 
-    def get_context_for_llm(self, max_entries: int = 20) -> str:
-        """Format state for inclusion in LLM prompt."""
+    def format_step_states(self, plan: Plan) -> str:
+        """Format execution status of each plan step for LLM prompts."""
+        if not plan.steps:
+            return "No steps defined."
+
+        lines = []
+        for plan_step in plan.steps:
+            step_num = plan_step.step
+            state = self._step_states.get(step_num)
+
+            if not state:
+                lines.append(f"  Step {step_num}: [pending] - Not yet executed")
+            elif state.status == "completed":
+                result_str = truncate_for_llm(state.result or "", 100)
+                var_name = f"step_{step_num}_result"
+                if state.user_accepted:
+                    lines.append(f"  Step {step_num}: [completed] {var_name}={result_str} (USER ACCEPTED - do not propose corrections)")
+                else:
+                    lines.append(f"  Step {step_num}: [completed] {var_name}={result_str}")
+            elif state.status == "failed":
+                lines.append(
+                    f"  Step {step_num}: [failed] "
+                    f"reason={state.failure_reason}"
+                )
+
+        return "\n".join(lines)
+
+    def get_context_for_llm(self, max_entries: int = 20, max_result_chars: int = 200) -> str:
+        """Format state for inclusion in LLM prompt.
+
+        Results are truncated to ``max_result_chars`` to stay within
+        context limits — the full values are passed separately via
+        step_N_result variables.
+        """
         if not self._entries:
             return "No code executed yet."
 
@@ -128,7 +165,9 @@ class ExecutionState:
             step_info = f"Step {entry.step}: " if entry.step is not None else ""
             lines.append(f"\n{step_info} Code:\n```\n{entry.code}\n```")
             if entry.success:
-                lines.append(f"Result: {entry.result}")
+                result_str = str(entry.result) if entry.result is not None else ""
+                result_str = truncate_for_llm(result_str, max_result_chars)
+                lines.append(f"Result: {result_str}")
             else:
                 lines.append(f"Error: {entry.error}")
         return "\n".join(lines)

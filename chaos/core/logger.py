@@ -31,3 +31,17 @@ def format_result(result, max_length: int = 200) -> str:
     """Format result, truncating if too long."""
     s = str(result)
     return s if len(s) <= max_length else s[:max_length] + "..."
+
+
+def truncate_for_llm(text: str, max_chars: int = 200) -> str:
+    """Truncate text for LLM prompts, showing total length."""
+    if len(text) <= max_chars:
+        return text
+    return text[:max_chars] + f"... (truncated, {len(text)} chars total)"
+
+
+def truncate_for_display(text: str, max_chars: int = 300) -> str:
+    """Truncate text for UI display."""
+    if len(text) <= max_chars:
+        return text
+    return text[:max_chars] + "..."

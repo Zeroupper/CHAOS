@@ -14,6 +14,7 @@ from ..ui.prompts import (
     get_revised_request,
     select_step_to_revise,
 )
+from .code_executor import CodeExecutor
 from .context import build_replan_context, build_step_context_for_info_seeker
 
 if TYPE_CHECKING:
@@ -34,6 +35,7 @@ class InteractionHandler:
         planner: PlannerAgent,
         state: "ExecutionState",
         data_registry: DataRegistry,
+        executor: CodeExecutor | None = None,
     ) -> None:
         self.config = config
         self.sensemaking_loop = sensemaking_loop
@@ -42,6 +44,7 @@ class InteractionHandler:
         self.planner = planner
         self.state = state
         self.data_registry = data_registry
+        self._executor = executor
 
     def handle_revision(
         self, query: str, plan: Plan, step_history: list[dict], run_log: RunLog
@@ -199,6 +202,8 @@ class InteractionHandler:
 
         # Reset state for fresh start (learnings are in the plan context)
         self.state.reset()
+        if self._executor:
+            self._executor.reset()
 
         # Execute the new plan
         console.print("\n[bold]Executing revised plan...[/bold]\n")

@@ -4,6 +4,7 @@ import json
 from typing import Union
 
 from ..core.config import Config
+from ..core.logger import truncate_for_llm
 from ..core.state import ExecutionState
 from ..llm.structured_client import StructuredLLMClient
 from ..types import (
@@ -36,66 +37,31 @@ class SensemakerAgent(BaseAgent):
     ) -> None:
         super().__init__(config, llm_client)
         self.state = state
-        self._system_prompt = """You are a sensemaking agent. Your task is to execute a plan step-by-step and synthesize the results.
+        self._system_prompt = """You are a sensemaking agent. Execute a plan step-by-step and synthesize results.
 
-You will be given step states that track the progress of each step:
-- "pending": Step has not been executed yet
-- "completed": Step executed successfully with valid result
-- "failed": Step failed and cannot proceed
+Completed steps are available as `step_N_result` variables. Reference them in requests.
 
-Based on the step states and results, respond with JSON in one of these formats:
+RESPONSES (JSON):
+- Execute: {"status": "execute", "current_step": N, "request": "what to compute", "reasoning": "why"}
+- Done: {"status": "complete", "answer": "<value only>", "supporting_evidence": ["step values"]}
+- Data quality issue: {"status": "review", "affected_step": N, "issue_description": "...", "proposed_correction": "...", "reasoning": "..."}
 
-If ALL steps in the plan are "completed" (no "pending" steps remain):
-{
-    "status": "complete",
-    "answer": "The computed answer from the step results",
-    "supporting_evidence": ["Values from each completed step"]
-}
-
-If you need to execute a step:
-{
-    "status": "execute",
-    "current_step": <step number>,
-    "request": "What to execute",
-    "reasoning": "Why this is needed"
-}
-
-If a result appears to have a DATA QUALITY ISSUE that can be fixed:
-{
-    "status": "review",
-    "affected_step": <step number with the issue>,
-    "issue_description": "Clear description of the data quality problem",
-    "proposed_correction": "A corrected query/request that avoids the issue",
-    "reasoning": "Why this correction will fix the issue"
-}
-
-If any step has truly missing/unavailable data that CANNOT be corrected:
-{
-    "status": "complete",
-    "answer": "Cannot complete: [explanation]. Successfully computed: [what worked].",
-    "supporting_evidence": ["Evidence of what succeeded and what failed"]
-}
-
-RESULT QUALITY EVALUATION:
-When you receive a result, evaluate whether it appears valid in context:
-- NaN, null, None, -1 as standalone values may indicate missing data
-- Empty results [], {} may indicate no matching data
-- Use judgment: -1 for temperature is suspicious, -1 for a delta might be valid
-If you suspect issues, use "review" to propose a fix.
+WHEN A STEP FAILS:
+Read the error message. If it is a code bug (type mismatch, wrong args, bad API usage), re-request the SAME step with "execute" and describe the fix in your request so the code generator can correct it. Do NOT use "review" for code errors — just re-execute with better instructions.
 
 RULES:
-1. NEVER do math yourself - all computations via Python. Even simple subtraction/addition must be executed via Python.
-2. Execute steps IN ORDER - don't skip ahead
-3. For computations, include actual values from previous steps in your request (e.g., "Compute 155.0 - (-1.0)")
-4. USER MODIFIED steps must be followed EXACTLY as written
-5. NEVER propose corrections for steps marked "(USER ACCEPTED - do not propose corrections)" - the user has explicitly chosen to use the original value
-6. NEVER return "complete" if ANY step is still "pending" - you MUST execute all steps in order first"""
+1. All computation via code — never do math yourself.
+2. Step order: if last completed step is N, next must be N+1.
+3. Reference results as `step_N_result` — never assign to them.
+4. If a step returns NaN/null after one retry, accept it and complete.
+5. Follow USER MODIFIED steps exactly. Never re-correct USER ACCEPTED values."""
 
     def process(
         self,
         query: str,
         plan: Plan,
         new_info: InfoSeekerResult | None = None,
+        data_context: str = "",
     ) -> SensemakerResponse:
         """Process new information and update memory."""
         # Store new information in state
@@ -110,19 +76,27 @@ RULES:
 
         # Build context for LLM
         memory_context = self.state.get_context_for_llm()
-        plan_steps = self._format_plan_steps(plan)
-        step_states_str = self._format_step_states(plan)
+        plan_steps = plan.format_steps()
+        step_states_str = self.state.format_step_states(plan)
 
         # Format new info if available
         new_info_str = ""
         if new_info:
+            # Truncate results for LLM context (full values are passed via step_N_result)
+            results_preview = truncate_for_llm(new_info.results)
             info_dict = {
                 "request": new_info.request,
                 "source": new_info.source,
                 "success": new_info.success,
-                "results": new_info.results,
+                "results": results_preview,
             }
             new_info_str = f"\nLatest result:\n{json.dumps(info_dict, indent=2, default=str)}"
+
+        # Include dataset schemas only when reviewing data quality issues
+        # (failed steps or NaN results that may need column name correction)
+        schema_block = ""
+        if data_context and self._has_failed_or_nan_steps():
+            schema_block = f"\n{data_context}\nUse these exact column names when proposing corrections.\n"
 
         prompt = f"""Query: {query}
 
@@ -134,7 +108,7 @@ Step States:
 
 {memory_context}
 {new_info_str}
-
+{schema_block}
 Based on the step states, decide what to do next."""
 
         messages = [{"role": "user", "content": prompt}]
@@ -144,58 +118,21 @@ Based on the step states, decide what to do next."""
 
         # Update current step tracking for execute responses
         if result.status == "execute":
-            if result.current_step != self.state.current_step:
-                self.state.current_step = result.current_step
-            else:
-                self.state.current_step += 1
+            self.state.current_step = result.current_step
 
         return result
                 
-    def _format_plan_steps(self, plan: Plan) -> str:
-        """Format plan steps for the prompt."""
-        if not plan.steps:
-            return "No specific steps in plan."
-
-        lines = []
-        for step in plan.steps:
-            source_str = f" (from {step.source})" if step.source else ""
-            if step.modified:
-                lines.append(
-                    f"  Step {step.step} [USER MODIFIED - FOLLOW EXACTLY]: "
-                    f"{step.action}{source_str}"
-                )
-            else:
-                lines.append(f"  Step {step.step}: {step.action}{source_str}")
-        return "\n".join(lines)
-
-    def _format_step_states(self, plan: Plan) -> str:
-        """Format step states for the prompt."""
-        if not plan.steps:
-            return "No steps defined."
-
-        lines = []
-        for plan_step in plan.steps:
-            step_num = plan_step.step
-            state = self.state.get_step_state(step_num)
-
-            if not state:
-                lines.append(f"  Step {step_num}: [pending] - Not yet executed")
-            elif state.status == "completed":
-                result_str = state.result or ""
-                if len(result_str) > 100:
-                    result_str = result_str[:100] + "..."
-                # Include acknowledgment note if user accepted a suspicious value
-                if state.user_accepted:
-                    lines.append(f"  Step {step_num}: [completed] result={result_str} (USER ACCEPTED - do not propose corrections)")
-                else:
-                    lines.append(f"  Step {step_num}: [completed] result={result_str}")
-            elif state.status == "failed":
-                lines.append(
-                    f"  Step {step_num}: [failed] "
-                    f"reason={state.failure_reason}"
-                )
-
-        return "\n".join(lines)
+    def _has_failed_or_nan_steps(self) -> bool:
+        """Check if any step has failed or returned a NaN/null-like result."""
+        for step_state in self.state.step_states.values():
+            if step_state.status == "failed":
+                return True
+            if step_state.result and any(
+                marker in str(step_state.result).lower()
+                for marker in ("nan", "null", "none")
+            ):
+                return True
+        return False
 
     def reset(self) -> None:
         """Reset state for a new query."""
@@ -245,7 +182,7 @@ Based on the step states, decide what to do next."""
 
 {self.state.get_context_for_llm()}
 
-Provide a final comprehensive answer.
+Provide a final concise answer...
 Respond with JSON containing 'status' (always "complete"), 'answer' and 'supporting_evidence'."""
 
         messages = [{"role": "user", "content": prompt}]

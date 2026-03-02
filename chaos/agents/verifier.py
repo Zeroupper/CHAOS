@@ -3,6 +3,7 @@
 from typing import Any
 
 from ..core.config import Config
+from ..core.logger import truncate_for_llm
 from ..llm.structured_client import StructuredLLMClient
 from ..types import Plan, Verification
 from .base import BaseAgent
@@ -133,9 +134,7 @@ Evaluate this answer and provide a verification report as JSON."""
             lines.append(f"    Code executed: {code}")
 
             if success and entry.get("result") is not None:
-                result_str = str(entry["result"])
-                if len(result_str) > 500:
-                    result_str = result_str[:500] + "..."
+                result_str = truncate_for_llm(str(entry["result"]))
                 lines.append(f"    Result: {result_str}")
             elif entry.get("error"):
                 lines.append(f"    Error: {entry['error']}")

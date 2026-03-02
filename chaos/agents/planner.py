@@ -2,9 +2,8 @@
 
 from ..core.config import Config
 from ..llm.structured_client import StructuredLLMClient
-from ..tools.base import BaseTool
 from ..types import Plan
-from .base import BaseAgent, ToolExecutionCallback
+from .base import BaseAgent
 
 
 class PlannerAgent(BaseAgent):
@@ -16,97 +15,67 @@ class PlannerAgent(BaseAgent):
     - Which data sources to query
     - What steps to take
 
-    If web search tools are available, the planner will autonomously
-    conduct a research phase - deciding whether to search, fetch URLs,
-    or stop based on the accumulated context.
+    Expects data_context (from ExplorerAgent) to be passed explicitly
+    via create_plan() — the orchestrator owns the explorer→planner flow.
     """
 
     def __init__(
         self,
         config: Config,
         llm_client: StructuredLLMClient,
-        tools: list[BaseTool] | None = None,
-        on_tool_execute: ToolExecutionCallback | None = None,
     ) -> None:
-        super().__init__(config, llm_client, tools, on_tool_execute)
+        super().__init__(config, llm_client)
 
-        self._system_prompt = """You are a planning agent for a data analysis system. Your task is to create detailed execution plans for answering user queries about datasets.
+        self._system_prompt = """You are a planning agent for a data analysis system. Create execution plans for user queries about datasets.
 
-IMPORTANT: Only create plans for clear, specific data analysis questions.
-- If the query is unclear, placeholder text, or not a real question, return an EMPTY steps array.
-- Do NOT invent what the user might want based on available data sources.
-- Do NOT guess intent - if it's not explicit in the query, don't plan for it.
+Only plan for clear, specific questions. Return EMPTY steps for unclear or non-analytical queries.
 
-You will be provided with detailed schema information about available datasets including:
-- Column names, types, and descriptions
-- Units of measurement (e.g., bpm, ms, steps, meters)
-- Typical value ranges
-- Possible enum values for categorical columns
-- Relationships between datasets (join keys)
-- Analysis hints for common query patterns
+GROUNDING — NO HALLUCINATION:
+- The input contains a DATASET SCHEMAS section listing every dataset with exact column names and dtypes.
+- The "source" field in each step MUST be an exact dataset name from the schemas.
+- If a column is not listed in DATASET SCHEMAS, it does not exist.
 
-Use this schema information to:
-1. Select the most appropriate data sources for the query
-2. Identify the correct column names and understand their meaning
-3. Consider data relationships when queries span multiple datasets
-4. Plan appropriate aggregations based on data types and units
 
-STEP PLANNING RULES:
+STEP RESULTS — each step's output is automatically saved as `step_N_result`:
+- Step 1 output → `step_1_result`, Step 2 output → `step_2_result`, etc.
+- When a step depends on previous results, explicitly reference the variable in the action description.
+- Example: "Compute correlation between heart_rate columns in step_1_result and step_2_result"
 
-The key principle is: OPTIMIZE FOR RESULT SIZE, NOT STEP COUNT.
-- Steps that return small results (single values, small aggregations) are FINE as separate steps
-- Steps that return large results (filtered DataFrames, lists of values) must be combined with aggregation
+Use the data discoveries (actual column names, types, value formats) to select correct data sources, columns, and aggregations.
 
-1. SEPARATE STEPS ARE OK when each returns a small result:
-   - Each aggregation (mean, max, min, sum, count) returns a single value - these can be separate steps
-   - Final computation steps that combine previous results are separate steps
+Respond with JSON:
+{"query_understanding": "...", "required_info": ["..."], "data_sources": ["..."], "steps": [{"step": 1, "action": "...", "source": "..."}]}
 
-2. COMBINE STEPS when intermediate results would be large:
-   - Filtering + aggregation should be ONE step (filter returns millions of rows)
-   - Don't create a step that just filters data without aggregating
+Reference exact column names from the data discoveries."""
 
-3. NEVER create steps that return:
-   - Filtered DataFrames without aggregation (can be millions of rows)
-   - Lists of raw values (can be millions of items)
-   - Raw record extractions (unless explicitly limited)
-
-Always respond with a JSON object in the following format:
-{
-    "query_understanding": "Your interpretation of what the user is asking",
-    "required_info": ["List of specific pieces of information needed"],
-    "data_sources": ["List of data source names to query"],
-    "steps": [
-        {"step": 1, "action": "Description of action", "source": "data_source_name"},
-        {"step": 2, "action": "Description of action", "source": "data_source_name"}
-    ]
-}
-
-Be specific and actionable. Reference exact column names from the schema."""
-
-    def create_plan(self, query: str, available_sources: str = "") -> Plan:
+    def create_plan(self, query: str, available_sources: str = "", data_context: str = "") -> Plan:
         """
         Create an execution plan for the given query.
 
         Args:
             query: The user's natural language query.
             available_sources: Description of available data sources.
+            data_context: Exploration results from ExplorerAgent (schemas, discoveries).
 
         Returns:
             Plan object with steps and metadata.
         """
         self._available_sources = available_sources
 
+        context_block = data_context if data_context else available_sources
+
         prompt = f"""Create an execution plan for the following query:
 
 Query: {query}
 
-{available_sources}
+{context_block}
 
 Respond with a JSON plan."""
 
         messages = [{"role": "user", "content": prompt}]
         plan = self._call_llm(messages, Plan)
         plan.query = query
+        plan.data_context = data_context
         return plan
 
     def modify_plan(self, plan: Plan, feedback: str) -> Plan:
@@ -125,6 +94,8 @@ Respond with a JSON plan."""
             for s in plan.steps
         )
 
+        context_block = plan.data_context if plan.data_context else self._available_sources
+
         prompt = f"""Modify the following plan according to the user's instructions.
 
 Current plan understanding: {plan.query_understanding}
@@ -138,11 +109,12 @@ The user's request is AUTHORITATIVE. Apply exactly what they ask for.
 Do NOT revert to any previous intent. Do NOT ignore or reinterpret the request.
 Update the query_understanding to reflect the modified plan.
 
-{self._available_sources}
+{context_block}
 
 Respond with the revised JSON plan."""
 
         messages = [{"role": "user", "content": prompt}]
         revised = self._call_llm(messages, Plan)
         revised.query = plan.query
+        revised.data_context = plan.data_context
         return revised

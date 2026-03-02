@@ -6,8 +6,6 @@ from typing import Any
 
 import pandas as pd
 
-from ..types import ExecutionResult
-
 
 class BaseDataSource(ABC):
     """Abstract base class for data sources."""
@@ -20,34 +18,12 @@ class BaseDataSource(ABC):
         """Get data source information for LLM context."""
         return {
             "name": self.name,
-            "description": self.description,
-            "schema": self.get_schema(),
-            "example_queries": self.get_example_queries(),
+            "description": self.description
         }
-
-    @abstractmethod
-    def get_schema(self) -> dict[str, Any]:
-        """Get the schema of this data source."""
-        ...
-
-    @abstractmethod
-    def get_example_queries(self) -> list[str]:
-        """Get example queries for this data source."""
-        ...
-
-    @abstractmethod
-    def query(self, query: str, **kwargs: Any) -> ExecutionResult:
-        """Execute a query against this data source."""
-        ...
 
     @abstractmethod
     def connect(self) -> None:
         """Establish connection to the data source."""
-        ...
-
-    @abstractmethod
-    def disconnect(self) -> None:
-        """Close connection to the data source."""
         ...
 
 
@@ -63,8 +39,6 @@ class CSVDataSource(BaseDataSource):
         self.name = name
         self.file_path = file_path
         self.description = description or f"CSV data from {file_path.name}"
-        self.column_descriptions: dict[str, str] = {}
-        self.column_metadata: dict[str, dict[str, Any]] = {}
         self._data: pd.DataFrame | None = None
 
     def connect(self) -> None:
@@ -72,90 +46,7 @@ class CSVDataSource(BaseDataSource):
         if self._data is None:
             self._data = pd.read_csv(self.file_path)
 
-    def disconnect(self) -> None:
-        """Clear loaded data."""
-        self._data = None
-
-    def get_schema(self) -> dict[str, Any]:
-        """Get CSV column schema with rich metadata if available."""
-        self.connect()
-        if self._data is None:
-            return {"columns": [], "types": {}, "row_count": 0}
-
-        schema = {
-            "columns": list(self._data.columns),
-            "types": {col: str(dtype) for col, dtype in self._data.dtypes.items()},
-            "row_count": len(self._data),
-            "column_descriptions": self.column_descriptions,
-        }
-
-        if self.column_metadata:
-            schema["column_metadata"] = self.column_metadata
-
-        return schema
-
-    def get_example_queries(self) -> list[str]:
-        return [
-            f"exec(code=\"result = df['column'].mean()\") - Compute average of a column in {self.name}",
-            f"exec(code=\"result = len(df)\") - Count rows in {self.name}",
-            f"exec(code=\"result = df.groupby('col')['val'].sum().to_dict()\") - Group and aggregate",
-        ]
-
-    def query(self, query: str, **kwargs: Any) -> ExecutionResult:
-        """Execute query on CSV data."""
-        self.connect()
-        if self._data is None:
-            return ExecutionResult(error="Data not loaded")
-
-        try:
-            if query == "exec":
-                import json as _json
-                import numpy as np
-
-                code = kwargs.get("code", "")
-                if not code:
-                    return ExecutionResult(error="No code provided")
-
-                namespace: dict[str, Any] = {
-                    "df": self._data.copy(),
-                    "pd": pd,
-                    "np": np,
-                    "result": None,
-                }
-
-                # Inject all data sources for multi-source queries
-                all_sources = kwargs.get("all_sources", {})
-                for source_name, source_df in all_sources.items():
-                    namespace[source_name] = source_df
-
-                try:
-                    exec(code, namespace)
-                    result = namespace.get("result")
-
-                    try:
-                        if hasattr(result, "to_dict"):
-                            result_str = _json.dumps(result.to_dict())
-                        elif hasattr(result, "tolist"):
-                            result_str = _json.dumps(result.tolist())
-                        else:
-                            result_str = _json.dumps(result, default=str)
-                    except (TypeError, ValueError):
-                        result_str = str(result)
-
-                    max_chars = 5000
-                    truncated = len(result_str) > max_chars
-                    if truncated:
-                        result_str = result_str[:max_chars]
-
-                    return ExecutionResult(result=result_str, truncated=truncated)
-
-                except Exception as e:
-                    return ExecutionResult(error=f"Code execution failed: {e}")
-
-            else:
-                return ExecutionResult(
-                    error=f"Unknown query type '{query}'. Use 'exec' with code parameter."
-                )
-
-        except Exception as e:
-            return ExecutionResult(error=str(e))
+    @property
+    def data(self) -> pd.DataFrame | None:
+        """Access the loaded DataFrame."""
+        return self._data

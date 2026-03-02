@@ -46,6 +46,7 @@ class Plan(BaseModel):
     required_info: list[str] = Field(default_factory=list)
     data_sources: list[str] = Field(default_factory=list)
     steps: list[PlanStep] = Field(default_factory=list)
+    data_context: str = ""
 
     def format_steps(self, show_modified: bool = True, prefix: str = "  ") -> str:
         """
@@ -65,9 +66,35 @@ class Plan(BaseModel):
         for step in self.steps:
             source_str = f" (from {step.source})" if step.source else ""
             if step.modified and show_modified:
-                lines.append(f"{prefix}Step {step.step} [USER MODIFIED]: {step.action}{source_str}")
+                lines.append(f"{prefix}Step {step.step} [USER MODIFIED - FOLLOW EXACTLY]: {step.action}{source_str}")
             else:
                 lines.append(f"{prefix}Step {step.step}: {step.action}{source_str}")
+        return "\n".join(lines)
+
+
+# === Schema Types ===
+
+
+class ColumnSchema(BaseModel):
+    """Schema for a single DataFrame column."""
+
+    name: str
+    dtype: str
+    nulls: int = 0
+    sample: list[str] = Field(default_factory=list)
+
+
+class DatasetSchema(BaseModel):
+    """Schema for a single dataset."""
+
+    name: str
+    shape: list[int] = Field(default_factory=list)
+    columns: list[ColumnSchema] = Field(default_factory=list)
+
+    def __str__(self) -> str:
+        lines = [f"\n=== {self.name} ===", f"Shape: {tuple(self.shape)}"]
+        for col in self.columns:
+            lines.append(f"  {col.name} ({col.dtype}): nulls={col.nulls}, sample={col.sample}")
         return "\n".join(lines)
 
 

@@ -16,7 +16,7 @@ Understanding data shouldn't require writing code or uploading sensitive informa
 
 ```
 You: "What's the average heart rate of user test004?"
-CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
+CHAOS: Explores → Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
        (and shows you exactly how it calculated that)
 ```
 
@@ -30,11 +30,12 @@ CHAOS: Plans → Executes → Verifies → "The average heart rate is 72.5 bpm"
 
 ## Features
 
+- **Dynamic Data Exploration**: Explorer agent discovers actual data structure, value formats, and quirks before planning — no static schemas needed
 - **Type-Safe LLM Responses**: All agent outputs are validated Pydantic models
 - **Automatic Retries**: Instructor handles validation failures with configurable retries
 - **Model Flexibility**: Works with any OpenRouter model (GPT-4o, Claude, DeepSeek, Kimi K2, etc.)
 - **Sandboxed Execution**: Optionally run LLM-generated code in an isolated Docker container (no network, read-only data)
-- **Extensible Architecture**: Easy to add new data sources and tools
+- **Extensible Architecture**: Easy to add new data sources
 - **Memory Management**: Working memory tracks execution state across iterations
 
 ## Prerequisites
@@ -107,8 +108,15 @@ uv run python main.py "Your query" --model "openai/gpt-4o"
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
+│                       Explorer Agent                            │
+│          Multi-turn data exploration before planning            │
+│  Discovers: column types, value formats, NaN rates, quirks     │
+│              Returns: data_context (string)                     │
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
 │                        Planner Agent                            │
-│                 Creates execution plan from query               │
+│          Creates execution plan using data discoveries          │
 │              Returns: Plan (validated Pydantic model)           │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
@@ -127,7 +135,7 @@ uv run python main.py "Your query" --model "openai/gpt-4o"
 │           │                                 │                   │
 │           │ Review?                         ▼                   │
 │           │                   ┌───────────────────────────┐     │
-│           ▼                   │  Data Sources & Tools     │     │
+│           ▼                   │  Data Sources             │     │
 │  ┌──────────────────┐         │  (Registry-based)         │     │
 │  │  Human Approval  │         └───────────────────────────┘     │
 │  │  for Correction  │                                           │
@@ -163,20 +171,17 @@ CHAOS/
 │   │   └── logger.py             # Logging infrastructure (loguru)
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
+│   │   ├── explorer.py           # Multi-turn data exploration → data_context
 │   │   ├── planner.py            # Creates execution plans → Plan
 │   │   ├── sensemaker.py         # Synthesizes info → Complete|Execute|Review
 │   │   ├── information_seeker.py # Retrieves data → InfoSeekerResult
 │   │   └── verifier.py           # Validates answers → Verification
 │   ├── llm/                    # LLM client
 │   │   └── structured_client.py  # Instructor-wrapped OpenAI client
-│   ├── tools/                  # Extensible tool system
-│   │   ├── base.py               # Base tool class
-│   │   └── registry.py           # Tool registry
 │   ├── data/                   # Data source management
 │   │   ├── base.py               # Base data source (CSVDataSource)
 │   │   ├── sandbox.py            # Docker sandbox bridge for isolated execution
-│   │   ├── registry.py           # Data source registry & auto-discovery
-│   │   └── schema.py             # Schema loader for YAML dataset metadata
+│   │   └── registry.py           # Data source registry & auto-discovery
 │   └── ui/                     # Interactive terminal UI
 │       ├── display.py            # Rich-based display components
 │       ├── prompts.py            # Questionary-based prompts
@@ -198,6 +203,9 @@ CHAOS/
 All LLM responses are validated Pydantic models defined in `chaos/types.py`:
 
 ```python
+# Explorer types
+ResearchAction
+
 # Plan types
 Plan, PlanStep
 
@@ -231,7 +239,7 @@ Host (CHAOS)                          Docker container (chaos-sandbox)
 ────────────                          ──────────────────────────────
 InformationSeeker._execute_query()
   ├─ --sandbox:
-  │   → docker run --rm -i            → /sandbox/executor.py
+  │   → docker run --rm -i            → /sandbox/entrypoint.py
   │     --network=none                   reads JSON from stdin
   │     -v datasets:/data:ro             loads CSVs, exec(code)
   │     stdin: JSON payload              writes JSON to stdout
@@ -270,8 +278,16 @@ User Query
     │
     ▼
 ┌───────────────────────────┐
+│    DATA EXPLORATION       │
+│  Explorer investigates    │
+│  datasets (multi-turn)    │
+└───────────┬───────────────┘
+            │
+            ▼
+┌───────────────────────────┐
 │      PLAN CREATION        │
-│   Planner creates plan    │
+│  Planner creates plan     │
+│  using data discoveries   │
 └───────────┬───────────────┘
             │
             ▼
@@ -368,11 +384,12 @@ Place CSV files in your configured dataset directory and they will be auto-disco
 
 ```
 datasets/gloss_sample/
-├── data_schema.yaml   → Optional: rich column metadata for the LLM
 ├── garmin_hr.csv      → Becomes "garmin_hr" source
 ├── garmin_steps.csv   → Becomes "garmin_steps" source
 └── ios_activity.csv   → Becomes "ios_activity" source
 ```
+
+No static schema files are needed. The Explorer Agent dynamically discovers column types, value formats, NaN rates, and data quirks at runtime before planning.
 
 ### Custom Data Sources
 
@@ -386,43 +403,12 @@ class MyDataSource(BaseDataSource):
     name = "my_source"
     description = "My custom data source"
 
-    def get_schema(self):
-        return {
-            "columns": ["col1", "col2"],
-            "types": {"col1": "int64", "col2": "string"},
-            "row_count": 1000
-        }
-
     def query(self, query_type: str, **kwargs) -> ExecutionResult:
         if query_type == "exec":
             code = kwargs.get("code", "")
             # Execute code and return result
             return ExecutionResult(result="computed value")
         return ExecutionResult(error="Unknown query type")
-```
-
-## Adding Tools
-
-Implement `BaseTool` and register with `ToolRegistry`:
-
-```python
-from chaos.tools.base import BaseTool
-
-class MyTool(BaseTool):
-    name = "my_tool"
-    description = "Does something useful"
-
-    def _get_parameters_schema(self):
-        return {
-            "type": "object",
-            "properties": {
-                "input": {"type": "string"}
-            }
-        }
-
-    def execute(self, **kwargs):
-        # Implement tool logic
-        return {"result": "success"}
 ```
 
 ## Dependencies

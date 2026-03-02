@@ -20,15 +20,30 @@ class RunLogEntry:
 
 
 @dataclass
+class ExplorationTurn:
+    """Single exploration turn from the ExplorerAgent."""
+
+    turn: int
+    source: str
+    reasoning: str
+    code: str
+    result: str
+    success: bool
+
+
+@dataclass
 class RunLog:
     """Accumulates all exchanges during a run for export."""
 
     query: str = ""
     plan: dict[str, Any] | None = None
+    exploration: list[ExplorationTurn] = field(default_factory=list)
+    data_context: str = ""  # Full explorer output passed to planner
     entries: list[RunLogEntry] = field(default_factory=list)
     final_answer: str = ""
     verification: dict[str, Any] | None = None
     start_time: datetime = field(default_factory=datetime.now)
+    export_path: str | None = None
 
     def add_entry(
         self,
@@ -87,6 +102,41 @@ def export_run_to_markdown(
     lines.append(f"")
     lines.append(f"> {run_log.query}")
     lines.append(f"")
+
+    # Exploration
+    if run_log.exploration:
+        lines.append(f"## Data Exploration")
+        lines.append(f"")
+        for exp in run_log.exploration:
+            status = "OK" if exp.success else "FAILED"
+            lines.append(f"### Turn {exp.turn} — `{exp.source}` [{status}]")
+            lines.append(f"")
+            lines.append(f"**Reasoning:** {exp.reasoning}")
+            lines.append(f"")
+            lines.append(f"```python")
+            lines.append(exp.code)
+            lines.append(f"```")
+            lines.append(f"")
+            result_text = exp.result
+            if len(result_text) > 2000:
+                result_text = result_text[:2000] + "\n... (truncated)"
+            lines.append(f"**Result:**")
+            lines.append(f"```")
+            lines.append(result_text)
+            lines.append(f"```")
+            lines.append(f"")
+
+    # Data Context (what the planner received from the explorer)
+    if run_log.data_context:
+        lines.append(f"## Data Context (Explorer → Planner)")
+        lines.append(f"")
+        ctx = run_log.data_context
+        if len(ctx) > 5000:
+            ctx = ctx[:5000] + "\n... (truncated)"
+        lines.append(f"```")
+        lines.append(ctx)
+        lines.append(f"```")
+        lines.append(f"")
 
     # Plan
     if run_log.plan:
@@ -269,6 +319,7 @@ def offer_export_to_user(
     if export_path:
         try:
             output = export_run_to_markdown(run_log, export_path)
+            run_log.export_path = str(output)
             console.print(f"\n[green]Run exported to:[/green] {output}")
         except Exception as e:
             console.print(f"\n[red]Failed to export run:[/red] {e}")

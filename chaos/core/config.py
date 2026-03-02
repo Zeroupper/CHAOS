@@ -11,10 +11,10 @@ class LLMConfig(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
-    provider: str = "openrouter"
+    # model: str = "qwen/qwen3.5-397b-a17b"
     model: str = "openai/gpt-oss-safeguard-20b"
     api_key: str | None = None
-    max_tokens: int = 4096  # Safe default that works with most API key limits
+    max_tokens: int = 16000  
 
 
 @dataclass
@@ -31,6 +31,7 @@ class Config:
     llm: LLMConfig
     log: LogConfig
     max_step_attempts: int = 5  # Max different approaches for a step
+    max_research_turns: int = 10  # Max exploration turns for ExplorerAgent
     datasets_dir: Path = Path("datasets/gloss_sample")
     sandbox: bool = True  # Run LLM-generated code in Docker sandbox
     auto_approve: bool = False  # Auto-approve planner and sensemaker without human guidance
