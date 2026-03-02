@@ -1,0 +1,84 @@
+# CHAOS Evaluation Test Cases (small subset)
+# Expected answers for objective cases are in verify_test_cases.py
+# Dataset: datasets/gloss_sample/
+
+test_cases:
+
+  # ============================================================
+  # OBJECTIVE
+  # ============================================================
+
+  # - id: "obj_001"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: "What was the highest heart rate recorded for user test004?"
+
+  # - id: "obj_002"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: "How many total steps were taken according to the Garmin watch for user test004?"
+
+  - id: "obj_005"
+    category: "objective"
+    difficulty: "medium"
+    query: "What was the lowest resting heart rate for user test004, ignoring any invalid readings?"
+
+  - id: "obj_006"
+    category: "objective"
+    difficulty: "medium"
+    query: "How many different WiFi networks did user test004's phone connect to?"
+
+  - id: "obj_009"
+    category: "objective"
+    difficulty: "complex"
+    query: "What was the average heart rate for user test004 during walking periods? Match heart rate readings within 30 seconds of each walking activity event."
+
+  - id: "obj_010"
+    category: "objective"
+    difficulty: "complex"
+    query: "What is the Pearson correlation between heart rate readings from the dedicated heart rate sensor and the stress sensor for user test004? Align readings by closest timestamp within 1 second."
+
+  - id: "obj_011"
+    category: "objective"
+    difficulty: "complex"
+    query: "What is the Pearson correlation between hourly step counts from the Garmin watch and the iPhone for user test004?"
+
+  # ============================================================
+  # SUBJECTIVE
+  # ============================================================
+
+  - id: "sub_001"
+    category: "subjective"
+    difficulty: "medium"
+    query: "Based on the data, is user test004 physically active or sedentary?"
+    rubric:
+      - criterion: "Uses step data"
+        weight: 0.3
+        description: "References actual step count values from garmin_steps or ios_steps"
+      - criterion: "Provides quantitative evidence"
+        weight: 0.3
+        description: "Cites specific numeric values (total steps, daily average, etc.)"
+      - criterion: "Sound reasoning"
+        weight: 0.2
+        description: "Logical chain from step data to activity level conclusion"
+      - criterion: "Contextualizes findings"
+        weight: 0.2
+        description: "Compares to standard benchmarks (e.g., 10k steps/day) or provides context"
+
+  # - id: "sub_004"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: "What can we figure out about user test004's sleep habits?"
+  #   rubric:
+  #     - criterion: "Uses relevant data sources"
+  #       weight: 0.25
+  #       description: "Considers heart rate patterns, lock/unlock timing, activity data, or brightness data"
+  #     - criterion: "Identifies temporal patterns"
+  #       weight: 0.25
+  #       description: "Looks at time-of-day patterns that suggest sleep/wake cycles"
+  #     - criterion: "Provides evidence"
+  #       weight: 0.25
+  #       description: "Cites specific data points or computed values"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.25
+  #       description: "Logical chain from sensor data to sleep pattern inference"

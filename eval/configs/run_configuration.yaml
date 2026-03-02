@@ -1,0 +1,92 @@
+# =============================================================================
+# CHAOS Eval — Multi-Model Comparison Config
+# =============================================================================
+# Usage: python -m eval --config eval/configs/run_configuration.yaml
+#
+# This file defines the full evaluation suite. Every field below is optional
+# except `models[].name` and `models[].model`.
+# =============================================================================
+
+# --- Global settings --------------------------------------------------------
+
+# LLM used as judge for subjective rubric scoring (default: anthropic/claude-sonnet-4-20250514)
+judge_model: "anthropic/claude-haiku-4.5"
+
+# How many times to repeat each (configuration × query) pair (default: 5)
+n_repeats: 2
+
+# Max concurrent workers for the parallel runner (default: 3)
+max_workers: 16
+
+# Path to datasets used by CHAOS and RAG pipelines
+datasets_dir: "datasets/gloss_sample"
+
+# Path to test cases file
+test_cases_path: "eval/test_cases/test_cases_small.yaml"
+
+# Directory where results and reports are written
+output_dir: "eval_results"
+
+# Skip LLM-as-judge evaluation for subjective queries (default: false)
+# skip_subjective: true
+
+# --- Models ----------------------------------------------------------------
+# Each entry runs as an independent pipeline. The runner executes ALL
+# models × ALL test cases × n_repeats in parallel.
+#
+# Fields per model:
+#   name      (required)  — unique label, appears in reports and filenames
+#   model     (required)  — OpenRouter model ID (provider/model-name)
+#   pipeline  (optional)  — "chaos" (default) or "rag"
+#   sandbox   (optional)  — true/false, enable sandboxed code execution (default: false)
+#   system_prompt_overrides (optional) — dict of agent_name → custom system prompt
+
+models:
+  # -- CHAOS pipeline variants -----------------------------------------------
+  # - name: chaos_deepseek-r1-32b
+  #   model: deepseek/deepseek-r1-distill-qwen-32b
+  #   pipeline: chaos
+  #   sandbox: true
+
+  - name: chaos_gpt-oss-safeguard-20b
+    model: openai/gpt-oss-safeguard-20b
+    pipeline: chaos
+    sandbox: true
+
+  # - name: chaos_qwen-3.5-35b-a3b
+  #   model: qwen/qwen3.5-35b-a3b
+  #   pipeline: chaos
+  #   sandbox: true
+
+  # - name: qwen/qwen3.5-397b-a17b
+  #   model: qwen/qwen3.5-397b-a17b
+  #   pipeline: chaos
+  #   sandbox: true
+
+  # - name: chaos_claude-sonnet
+  #   model: anthropic/claude-sonnet-4-20250514
+  #   pipeline: chaos
+
+  # -- RAG baseline variants -------------------------------------------------
+
+  # - name: rag_gpt-oss-safeguard-20b
+  #   model: openai/gpt-oss-safeguard-20b
+  #   pipeline: rag
+
+  # - name: rag_gpt-4o
+  #   model: openai/gpt-4o
+  #   pipeline: rag
+
+  # -- Sandbox variants ------------------------------------------------------
+  # - name: chaos_gpt-4o_sandbox
+  #   model: openai/gpt-4o
+  #   pipeline: chaos
+  #   sandbox: true
+
+  # -- Custom system prompt overrides ----------------------------------------
+  # Override the system prompt for specific agents (planner, sensemaker, etc.)
+  # - name: chaos_gpt-4o_strict
+  #   model: openai/gpt-4o
+  #   pipeline: chaos
+  #   system_prompt_overrides:
+  #     planner: "You are a strict data analyst. Only use exact computations, never estimate."
