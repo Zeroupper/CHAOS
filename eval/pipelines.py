@@ -57,7 +57,7 @@ def run_chaos(
     repeat: int,
 ) -> EvalResult:
     """Run a single test case through the CHAOS orchestrator."""
-    llm_config = LLMConfig(model=run_config.model)
+    llm_config = LLMConfig(model=run_config.model, base_url=run_config.base_url)
     llm_client = InstrumentedLLMClient(llm_config)
 
     config = Config(
@@ -146,7 +146,7 @@ def run_rag(
     rag_index: Any,
 ) -> EvalResult:
     """Run a single test case through the RAG baseline."""
-    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model))
+    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model, base_url=run_config.base_url))
     start = time.time()
 
     try:

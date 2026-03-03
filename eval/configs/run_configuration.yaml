@@ -38,6 +38,8 @@ output_dir: "eval_results"
 #   name      (required)  — unique label, appears in reports and filenames
 #   model     (required)  — OpenRouter model ID (provider/model-name)
 #   pipeline  (optional)  — "chaos" (default) or "rag"
+#   base_url  (optional)  — OpenAI-compatible API base URL for local models
+#                           e.g. "http://localhost:11434/v1" for Ollama
 #   sandbox   (optional)  — true/false, enable sandboxed code execution (default: false)
 #   system_prompt_overrides (optional) — dict of agent_name → custom system prompt
 
@@ -82,6 +84,22 @@ models:
   #   model: openai/gpt-4o
   #   pipeline: chaos
   #   sandbox: true
+
+  # -- Local models (Ollama / vLLM) ------------------------------------------
+  # Requires a running local inference server. No API key needed.
+  # Ollama: ollama pull qwen3.5:2b && ollama serve
+  # vLLM:   vllm serve Qwen/Qwen3.5-2B --port 8000
+
+  # - name: chaos_qwen3.5-2b_local
+  #   model: qwen3.5:2b
+  #   base_url: "http://localhost:11434/v1"
+  #   pipeline: chaos
+  #   sandbox: true
+
+  # - name: rag_qwen3.5-2b_local
+  #   model: qwen3.5:2b
+  #   base_url: "http://localhost:11434/v1"
+  #   pipeline: rag
 
   # -- Custom system prompt overrides ----------------------------------------
   # Override the system prompt for specific agents (planner, sensemaker, etc.)

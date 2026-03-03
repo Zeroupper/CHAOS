@@ -8,6 +8,8 @@ from typing import Any
 
 import yaml
 
+from chaos.core.config import LLMConfig
+
 from .types import RubricCriterion, TestCase
 
 
@@ -18,6 +20,7 @@ class RunConfiguration:
     name: str  # e.g. "gpt4o_with_schema"
     model: str  # e.g. "openai/gpt-4o"
     pipeline: str = "chaos"  # "chaos" | "rag"
+    base_url: str | None = None  # override for local models (e.g. "http://localhost:11434/v1")
     system_prompt_overrides: dict[str, str] = field(default_factory=dict)
     sandbox: bool = False
 
@@ -47,6 +50,7 @@ class EvalConfig:
                 name=cfg["name"],
                 model=cfg["model"],
                 pipeline=cfg.get("pipeline", "chaos"),
+                base_url=cfg.get("base_url"),
                 system_prompt_overrides=cfg.get("system_prompt_overrides", {}),
                 sandbox=cfg.get("sandbox", False),
             ))
