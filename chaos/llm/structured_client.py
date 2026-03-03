@@ -15,32 +15,36 @@ class StructuredLLMClient:
     """
     LLM client that returns validated Pydantic models.
 
-    Works with ANY OpenRouter model (GPT-4o, DeepSeek, Kimi K2, Claude, etc.)
-    via the OpenAI-compatible API format.
+    Works with ANY OpenAI-compatible endpoint: OpenRouter, Ollama, vLLM, etc.
     """
-
-    OPENROUTER_URL = "https://openrouter.ai/api/v1"
 
     def __init__(self, config: LLMConfig, max_retries: int = 3) -> None:
         self.config = config
         self.max_retries = max_retries
-        # LLMConfig (pydantic-settings) auto-loads OPENROUTER_API_KEY from environment
-        self._api_key = config.api_key
 
-        if not self._api_key:
+        if not config.base_url:
             raise ValueError(
-                "OpenRouter API key not found. Set OPENROUTER_API_KEY environment "
-                "variable or pass api_key in LLMConfig."
+                "LLM base_url is not set. Set it in config."
             )
 
-        # OpenAI client pointing to OpenRouter - works with ALL OpenRouter models
+        if not config.is_local and not config.api_key:
+            raise ValueError(
+                "OpenRouter API key not found. Set OPENROUTER_API_KEY environment "
+                "variable or pass api_key in LLMConfig.\n"
+                "For local models, pass --base-url http://localhost:11434/v1"
+            )
+
         self._openai_client = OpenAI(
-            base_url=self.OPENROUTER_URL,
-            api_key=self._api_key,
-            default_headers={
-                "HTTP-Referer": "https://github.com/chaos-agents",
-                "X-Title": "CHAOS Multi-Agent System",
-            },
+            base_url=config.base_url,
+            api_key=config.api_key or "<local-api-key>",
+            default_headers=(
+                {}
+                if config.is_local
+                else {
+                    "HTTP-Referer": "https://github.com/chaos-agents",
+                    "X-Title": "CHAOS Multi-Agent System",
+                }
+            ),
         )
 
         # Wrap with Instructor for structured outputs

@@ -12,9 +12,16 @@ class LLMConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
     # model: str = "qwen/qwen3.5-397b-a17b"
-    model: str = "openai/gpt-oss-safeguard-20b"
+    model: str = "qwen3.5:2b"
     api_key: str | None = None
-    max_tokens: int = 16000  
+    # base_url: str = "https://openrouter.ai/api/v1"
+    base_url: str | None = "http://localhost:11434/v1"
+    max_tokens: int = 16000
+
+    @property
+    def is_local(self) -> bool:
+        """True when pointing at a local inference server."""
+        return self.base_url is not None and ("localhost" in self.base_url or "127.0.0.1" in self.base_url)
 
 
 @dataclass
