@@ -1,24 +1,4 @@
-"""Logging for CHAOS using loguru."""
-
-import sys
-
-from loguru import logger
-
-
-def setup_logging(level: str = "WARNING") -> None:
-    """Configure logging with specified level."""
-    logger.remove()
-    logger.add(
-        sys.stderr,
-        format="<level>[{extra[component]}]</level> {message}",
-        level=level.upper(),
-        colorize=True,
-    )
-
-
-def get_logger(component: str):
-    """Get logger for a component (e.g., 'Orchestrator', 'InformationSeeker')."""
-    return logger.bind(component=component)
+"""Text formatting utilities for CHAOS."""
 
 
 def format_code(code: str) -> str:

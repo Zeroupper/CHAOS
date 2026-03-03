@@ -6,7 +6,6 @@ from typing import TypeVar
 from pydantic import BaseModel
 
 from ..core.config import Config
-from ..core.logger import get_logger
 from ..llm.structured_client import StructuredLLMClient
 
 T = TypeVar("T", bound=BaseModel)
@@ -22,7 +21,6 @@ class BaseAgent(ABC):
         self.config = config
         self.llm_client = llm_client
         self._system_prompt: str = ""
-        self._logger = get_logger(self.__class__.__name__)
 
     @property
     def system_prompt(self) -> str:

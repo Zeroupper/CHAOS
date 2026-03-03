@@ -8,7 +8,7 @@ from typing import Any
 
 from pydantic import BaseModel
 
-from chaos.core.config import Config, LLMConfig, LogConfig
+from chaos.core.config import Config, LLMConfig
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
 from chaos.llm.structured_client import StructuredLLMClient
@@ -57,12 +57,11 @@ def run_chaos(
     repeat: int,
 ) -> EvalResult:
     """Run a single test case through the CHAOS orchestrator."""
-    llm_config = LLMConfig(model=run_config.model, base_url=run_config.base_url)
+    llm_config = LLMConfig(model=run_config.model, base_url=run_config.base_url) 
     llm_client = InstrumentedLLMClient(llm_config)
 
     config = Config(
         llm=llm_config,
-        log=LogConfig(level="WARNING"),
         datasets_dir=Path(eval_config.datasets_dir),
         sandbox=run_config.sandbox,
         auto_approve=True,
@@ -146,7 +145,7 @@ def run_rag(
     rag_index: Any,
 ) -> EvalResult:
     """Run a single test case through the RAG baseline."""
-    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model, base_url=run_config.base_url))
+    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model, base_url=run_config.base_url)) 
     start = time.time()
 
     try:

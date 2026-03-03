@@ -15,7 +15,6 @@ import pandas as pd
 from ..data.registry import DataRegistry
 from ..types import ExecutionResult
 from .config import Config
-from .logger import get_logger
 
 _SANDBOX_IMAGE = "chaos-sandbox"
 _CONTAINER_TIMEOUT = 30
@@ -38,7 +37,6 @@ class CodeExecutor:
     def __init__(self, config: Config, data_registry: DataRegistry) -> None:
         self._config = config
         self._registry = data_registry
-        self._logger = get_logger("CodeExecutor")
         self._step_results: dict[str, Any] = {}
 
     def execute(self, code: str, step_num: int | None = None, capture_stdout: bool = False) -> ExecutionResult:
@@ -62,8 +60,6 @@ class CodeExecutor:
                 "-v", f"{step_dir}:/step_results",
                 _SANDBOX_IMAGE,
             ]
-            self._logger.info(f"Spinning up sandbox container (image={_SANDBOX_IMAGE})")
-
             try:
                 proc = subprocess.run(cmd, input=payload, capture_output=True, text=True, timeout=_CONTAINER_TIMEOUT)
             except FileNotFoundError:
@@ -80,7 +76,7 @@ class CodeExecutor:
                 return ExecutionResult(error=f"Sandbox returned invalid JSON: {proc.stdout[:1000]}")
 
             if output.get("error"):
-                self._logger.error(f"Sandbox exec failed: {output['error']}")
+                print(f"Sandbox exec failed: {output['error']}")
                 return ExecutionResult(error=output["error"])
 
             result_path = Path(step_dir) / "result.pkl"
@@ -113,7 +109,7 @@ class CodeExecutor:
                 self._step_results[f"step_{step_num}_result"] = raw
             return ExecutionResult(result=serialize_result(raw))
         except Exception as e:
-            self._logger.error(f"Exec failed: {e}")
+            print(f"Exec failed: {e}")
             return ExecutionResult(error=f"Code execution failed: {e}")
 
     # -- step result management --

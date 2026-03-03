@@ -14,9 +14,6 @@ from rich.console import Console
 from rich.live import Live
 from rich.table import Table
 
-from loguru import logger as loguru_logger
-
-from chaos.core.logger import setup_logging
 from chaos.ui.display import set_quiet
 
 from .config import EvalConfig, RunConfiguration, load_test_cases, parse_test_cases
@@ -114,8 +111,6 @@ class EvalRunner:
 
     def run_suite(self) -> list[EvalResult]:
         """Run the full evaluation suite with parallel execution."""
-        setup_logging(level="WARNING")
-
         raw_cases = load_test_cases(self.config.test_cases_path)
         cases = parse_test_cases(raw_cases)
 
@@ -127,9 +122,8 @@ class EvalRunner:
             f"(max {self.config.max_workers} workers)\n"
         )
 
-        # Suppress all CHAOS output: Rich display + loguru logging
+        # Suppress all CHAOS output: Rich display
         set_quiet(True)
-        loguru_logger.disable("chaos")
 
         try:
             # Build shared RAG index if any config uses it
@@ -192,7 +186,6 @@ class EvalRunner:
                         live.update(_build_progress_table(progress))
 
         finally:
-            loguru_logger.enable("chaos")
             set_quiet(False)
 
         return self.results

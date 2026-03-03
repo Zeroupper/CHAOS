@@ -4,9 +4,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from ..types import Plan, StepState
-from .logger import get_logger, truncate_for_llm
-
-_logger = get_logger("ExecutionState")
+from .logger import truncate_for_llm
 
 
 @dataclass

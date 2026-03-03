@@ -6,8 +6,7 @@ Entry point for the multi-agent sensemaking system.
 import argparse
 import sys
 
-from chaos.core.config import Config, LLMConfig, LogConfig
-from chaos.core.logger import setup_logging
+from chaos.core.config import Config, LLMConfig
 from chaos.core.orchestrator import Orchestrator
 from chaos.data.registry import DataRegistry
 from chaos.llm import StructuredLLMClient
@@ -40,10 +39,7 @@ def main() -> None:
     # Initialize configuration (all settings live in Config / LLMConfig)
     config = Config(
         llm=LLMConfig(),
-        log=LogConfig(),
     )
-
-    setup_logging(level=config.log.level)
 
     # Initialize LLM client
     try:

@@ -15,7 +15,6 @@ from ..ui.export import RunLog
 from ..ui.prompts import approve_correction
 from .code_executor import CodeExecutor
 from .config import Config
-from .logger import get_logger
 from .state import ExecutionState
 
 
@@ -35,8 +34,6 @@ class SensemakingLoop:
         self.sensemaker = sensemaker
         self.state = state
         self._executor = executor
-
-        self._logger = get_logger("Orchestrator")
 
     def _finalize_result(
         self, result: dict[str, Any], plan: Plan, run_log: RunLog, reason: str = "complete"

@@ -1,14 +1,11 @@
 """Data source registry for managing available data sources."""
 
-import logging
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
 
 from .base import BaseDataSource, CSVDataSource
-
-logger = logging.getLogger(__name__)
 
 
 class DataRegistry:
@@ -63,7 +60,7 @@ class DataRegistry:
                 if hasattr(source, "data") and source.data is not None:
                     frames[name] = source.data
             except Exception as e:
-                logger.warning(f"Failed to load source '{name}': {e}")
+                print(f"Warning: Failed to load source '{name}': {e}")
         return frames
 
     def get_sources_prompt(self) -> str:

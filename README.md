@@ -99,7 +99,7 @@ bash scripts/install-sandbox.sh
 uv run python main.py "What is the average heart rate of test004?"
 ```
 
-All settings (model, base URL, sandbox, auto-approve, log level, etc.) are configured in `chaos/core/config.py`. See the `Config`, `LLMConfig`, and `LogConfig` classes.
+All settings (model, base URL, sandbox, auto-approve, etc.) are configured in `chaos/core/config.py`. See the `Config` and `LLMConfig` classes.
 
 ## Architecture
 
@@ -170,7 +170,7 @@ CHAOS/
 │   │   ├── context.py            # Context builders for LLM prompts (step history, replan)
 │   │   ├── code_executor.py      # Code execution (host or Docker sandbox)
 │   │   ├── state.py              # ExecutionState — unified step states + memory entries
-│   │   └── logger.py             # Logging infrastructure (loguru)
+│   │   └── logger.py             # Text formatting utilities
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
 │   │   ├── explorer.py           # Dataset schema inspector → data_context
@@ -374,7 +374,6 @@ All metrics are broken down by difficulty level (simple / medium / complex) in t
 - **pandas** - Data manipulation
 - **numpy** - Numerical operations
 - **httpx** - HTTP client
-- **loguru** - Logging
 - **questionary** - Interactive terminal prompts (disabled when `auto_approve: True`)
 - **rich** - Terminal formatting and tables
 
