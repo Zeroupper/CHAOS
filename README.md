@@ -111,7 +111,7 @@ All settings (model, base URL, sandbox, auto-approve, etc.) are configured in `c
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Explorer Agent                            │
 │      Inspects all dataset schemas before planning               │
-│  Discovers: column types, dtypes, null counts, sample values   │
+│  Discovers: column types, dtypes, null counts, sample values    │
 │              Returns: data_context (string)                     │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
