@@ -278,6 +278,78 @@ def generate_run_filename(query: str, output_dir: Path | str = ".") -> Path:
     return output_dir / f"{timestamp}_{safe_query}.md"
 
 
+def export_verbose_transcript(
+    transcript: list[dict],
+    output_path: Path | str,
+) -> Path:
+    """
+    Export the full LLM transcript (prompts + responses) to a markdown file.
+
+    Args:
+        transcript: List of transcript entries from StructuredLLMClient.
+        output_path: Path to write the markdown file.
+
+    Returns:
+        Path to the created file.
+    """
+    import json
+
+    output_path = Path(output_path)
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    lines: list[str] = []
+    lines.append("# CHAOS Verbose Transcript")
+    lines.append("")
+
+    for i, entry in enumerate(transcript, 1):
+        agent = entry.get("agent", "Unknown")
+        lines.append(f"## Call {i}: {agent}")
+        lines.append("")
+
+        ts = entry.get("timestamp", "")
+        if ts:
+            lines.append(f"**Timestamp:** {ts}")
+            lines.append("")
+
+        system_prompt = entry.get("system_prompt")
+        if system_prompt:
+            lines.append("### System Prompt")
+            lines.append("")
+            lines.append("```")
+            lines.append(system_prompt)
+            lines.append("```")
+            lines.append("")
+
+        messages = entry.get("messages", [])
+        if messages:
+            lines.append("### Messages")
+            lines.append("")
+            for msg in messages:
+                role = msg.get("role", "unknown")
+                content = msg.get("content", "")
+                lines.append(f"**{role}:**")
+                lines.append("")
+                lines.append("```")
+                lines.append(content)
+                lines.append("```")
+                lines.append("")
+
+        response = entry.get("response")
+        if response:
+            lines.append("### Response")
+            lines.append("")
+            lines.append("```json")
+            lines.append(json.dumps(response, indent=2, default=str))
+            lines.append("```")
+            lines.append("")
+
+        lines.append("---")
+        lines.append("")
+
+    output_path.write_text("\n".join(lines))
+    return output_path
+
+
 def offer_export_to_user(
     run_log: RunLog,
     result: dict[str, Any],

@@ -1,6 +1,7 @@
 """Instructor-based LLM client for structured outputs."""
 
-from typing import TypeVar
+from datetime import datetime, timezone
+from typing import Any, TypeVar
 
 import instructor
 from openai import OpenAI
@@ -21,6 +22,7 @@ class StructuredLLMClient:
     def __init__(self, config: LLMConfig, max_retries: int = 3) -> None:
         self.config = config
         self.max_retries = max_retries
+        self.transcript: list[dict[str, Any]] = []
 
         if not config.base_url:
             raise ValueError(
@@ -73,10 +75,20 @@ class StructuredLLMClient:
         if system:
             messages = [{"role": "system", "content": system}] + messages
 
-        return self._client.chat.completions.create(
+        result = self._client.chat.completions.create(
             model=self.config.model,
             messages=messages,
             response_model=response_model,
             max_retries=self.max_retries,
             max_tokens=self.config.max_tokens,
         )
+
+        self.transcript.append({
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "agent": response_model.__name__,
+            "system_prompt": system,
+            "messages": [m for m in messages if m.get("role") != "system"],
+            "response": result.model_dump(),
+        })
+
+        return result

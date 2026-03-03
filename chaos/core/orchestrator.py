@@ -23,7 +23,7 @@ from ..ui.display import (
     display_plan,
     display_verification,
 )
-from ..ui.export import RunLog, offer_export_to_user
+from ..ui.export import RunLog, export_verbose_transcript, offer_export_to_user
 from ..ui.prompts import approve_plan, final_review, get_plan_feedback
 from .code_executor import CodeExecutor
 from .config import Config
@@ -171,10 +171,12 @@ class Orchestrator:
             if final_decision == "accept":
                 final_result = self._finalize(result, verification, plan)
                 offer_export_to_user(run_log, result, verification, export_dir, self.config.auto_approve)
+                self._maybe_export_verbose(run_log)
                 return final_result
             elif final_decision == "reject":
                 console.print("[yellow]Answer rejected.[/yellow]")
                 offer_export_to_user(run_log, result, verification, export_dir, self.config.auto_approve)
+                self._maybe_export_verbose(run_log)
                 return REJECTED_RESULT
             elif final_decision == "revise":
                 revised = self._interaction.handle_revision(query, plan, step_history, run_log)
@@ -194,6 +196,19 @@ class Orchestrator:
             elif final_decision is None:
                 console.print("[yellow]Operation cancelled.[/yellow]")
                 return CANCELLED_RESULT
+
+    def _maybe_export_verbose(self, run_log: RunLog) -> None:
+        """Export verbose LLM transcript if enabled and a normal export was saved."""
+        if not self.config.verbose_export:
+            return
+        if not run_log.export_path:
+            return
+        verbose_path = run_log.export_path.replace(".md", "_verbose.md")
+        try:
+            out = export_verbose_transcript(self.llm_client.transcript, verbose_path)
+            console.print(f"[green]Verbose transcript exported to:[/green] {out}")
+        except Exception as e:
+            console.print(f"[red]Failed to export verbose transcript:[/red] {e}")
 
     def _modify_plan(self, plan: Plan) -> Plan:
         """Allow user to modify plan via feedback to the planner."""
