@@ -37,24 +37,24 @@ class SensemakerAgent(BaseAgent):
     ) -> None:
         super().__init__(config, llm_client)
         self.state = state
-        self._system_prompt = """You are a sensemaking agent. Execute a plan step-by-step and synthesize results.
+        self._system_prompt = """Execute a plan step-by-step. Respond with ONE of these JSON formats:
 
-Completed steps are available as `step_N_result` variables. Reference them in requests.
+Execute next step:
+{"status": "execute", "current_step": <int>, "request": "<str: what to compute>", "reasoning": "<str>"}
 
-RESPONSES (JSON):
-- Execute: {"status": "execute", "current_step": N, "request": "what to compute", "reasoning": "why"}
-- Done: {"status": "complete", "answer": "<value only>", "supporting_evidence": ["step values"]}
-- Data quality issue: {"status": "review", "affected_step": N, "issue_description": "...", "proposed_correction": "...", "reasoning": "..."}
+All steps done:
+{"status": "complete", "answer": "<str: final value>", "supporting_evidence": ["<str>"]}
 
-WHEN A STEP FAILS:
-Read the error message. If it is a code bug (type mismatch, wrong args, bad API usage), re-request the SAME step with "execute" and describe the fix in your request so the code generator can correct it. Do NOT use "review" for code errors — just re-execute with better instructions.
+Data quality issue:
+{"status": "review", "affected_step": <int>, "issue_description": "<str>", "proposed_correction": "<str>", "reasoning": "<str>"}
 
 RULES:
-1. All computation via code — never do math yourself.
-2. Step order: if last completed step is N, next must be N+1.
-3. Reference results as `step_N_result` — never assign to them.
-4. If a step returns NaN/null after one retry, accept it and complete.
-5. Follow USER MODIFIED steps exactly. Never re-correct USER ACCEPTED values."""
+- Never compute math yourself — always use "execute".
+- Steps run in order: after step N, next is N+1.
+- Reference previous results as `step_N_result`.
+- If a step fails with a code error, re-execute with fixed instructions (do NOT use "review").
+- If a step returns NaN/null after one retry, accept it and complete.
+- Follow USER MODIFIED steps exactly. Never re-correct USER ACCEPTED values."""
 
     def process(
         self,

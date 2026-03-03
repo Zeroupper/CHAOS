@@ -26,27 +26,26 @@ class PlannerAgent(BaseAgent):
     ) -> None:
         super().__init__(config, llm_client)
 
-        self._system_prompt = """You are a planning agent for a data analysis system. Create execution plans for user queries about datasets.
+        self._base_system_prompt = """Create step-by-step execution plans for data analysis queries.
 
-Only plan for clear, specific questions. Return EMPTY steps for unclear or non-analytical queries.
-
-GROUNDING — NO HALLUCINATION:
-- The input contains a DATASET SCHEMAS section listing every dataset with exact column names and dtypes.
-- The "source" field in each step MUST be an exact dataset name from the schemas.
-- If a column is not listed in DATASET SCHEMAS, it does not exist.
-
-
-STEP RESULTS — each step's output is automatically saved as `step_N_result`:
-- Step 1 output → `step_1_result`, Step 2 output → `step_2_result`, etc.
-- When a step depends on previous results, explicitly reference the variable in the action description.
-- Example: "Compute correlation between heart_rate columns in step_1_result and step_2_result"
-
-Use the data discoveries (actual column names, types, value formats) to select correct data sources, columns, and aggregations.
+RULES:
+- Only use dataset names and column names from the DATASET SCHEMAS below.
+- Each step output is saved as `step_N_result`. Reference it in later steps.
+- Return EMPTY steps for unclear or non-analytical queries.
 
 Respond with JSON:
-{"query_understanding": "...", "required_info": ["..."], "data_sources": ["..."], "steps": [{"step": 1, "action": "...", "source": "..."}]}
+{"query_understanding": "<str>", "steps": [{"step": <int>, "action": "<str: what to compute>", "source": "<str: dataset_name>"}]}"""
 
-Reference exact column names from the data discoveries."""
+        self._system_prompt = self._base_system_prompt
+        self._available_sources: str = ""
+
+    def _build_system_prompt(self, data_context: str) -> None:
+        """Set the system prompt with dataset schemas included."""
+        context_block = data_context if data_context else self._available_sources
+        if context_block:
+            self._system_prompt = f"{self._base_system_prompt}\n\n{context_block}"
+        else:
+            self._system_prompt = self._base_system_prompt
 
     def create_plan(self, query: str, available_sources: str = "", data_context: str = "") -> Plan:
         """
@@ -61,16 +60,9 @@ Reference exact column names from the data discoveries."""
             Plan object with steps and metadata.
         """
         self._available_sources = available_sources
+        self._build_system_prompt(data_context)
 
-        context_block = data_context if data_context else available_sources
-
-        prompt = f"""Create an execution plan for the following query:
-
-Query: {query}
-
-{context_block}
-
-Respond with a JSON plan."""
+        prompt = f"Create an execution plan for the following query:\n\n{query}"
 
         messages = [{"role": "user", "content": prompt}]
         plan = self._call_llm(messages, Plan)
@@ -94,7 +86,7 @@ Respond with a JSON plan."""
             for s in plan.steps
         )
 
-        context_block = plan.data_context if plan.data_context else self._available_sources
+        self._build_system_prompt(plan.data_context)
 
         prompt = f"""Modify the following plan according to the user's instructions.
 
@@ -108,8 +100,6 @@ User's modification request: {feedback}
 The user's request is AUTHORITATIVE. Apply exactly what they ask for.
 Do NOT revert to any previous intent. Do NOT ignore or reinterpret the request.
 Update the query_understanding to reflect the modified plan.
-
-{context_block}
 
 Respond with the revised JSON plan."""
 

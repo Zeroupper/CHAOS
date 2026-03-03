@@ -22,35 +22,15 @@ class VerifierAgent(BaseAgent):
 
     def __init__(self, config: Config, llm_client: StructuredLLMClient) -> None:
         super().__init__(config, llm_client)
-        self._system_prompt = """You are a verification agent. Your task is to evaluate answers against the execution plan.
+        self._system_prompt = """Verify an answer against its execution plan. The plan defines what should be computed.
 
-The execution plan is the sole source of truth. It defines what should be computed.
-Verify that the answer correctly reflects the computation described in the plan steps.
+Respond with JSON:
+{"is_complete": <bool>, "is_accurate": <bool>, "confidence_score": <float: 0.0-1.0>, "gaps": ["<str>"], "issues": ["<str>"], "summary": "<str>", "recommendation": "<str: approve|reject|needs_review>"}
 
-When verifying an answer, check:
-1. Does the answer match what the plan's steps describe?
-2. Were all plan steps executed successfully?
-3. Is the answer supported by the provided evidence?
-4. Are there any gaps, inconsistencies, or issues?
-
-Respond with a JSON object:
-{
-    "is_complete": true/false,
-    "is_accurate": true/false,
-    "confidence_score": 0.0 to 1.0,
-    "gaps": ["List of any missing information or gaps"],
-    "issues": ["List of any problems or concerns"],
-    "summary": "Brief summary of the verification",
-    "recommendation": "approve" | "reject" | "needs_review"
-}
-
-CRITICAL CONSISTENCY RULES:
-- If "gaps" is NOT empty, then "is_complete" MUST be false
-- If "issues" is NOT empty, then "is_accurate" MUST be false
-- If "is_complete" is false OR "is_accurate" is false, then "recommendation" MUST be "reject" or "needs_review"
-- "confidence_score" should reflect the severity of gaps/issues (more gaps/issues = lower score)
-
-Be critical but fair. A good answer should match the plan's intended computation with supporting evidence."""
+RULES:
+- If gaps is not empty, is_complete must be false.
+- If issues is not empty, is_accurate must be false.
+- If is_complete or is_accurate is false, recommendation must be "reject" or "needs_review"."""
 
     def verify(
         self,

@@ -95,15 +95,11 @@ def build_query_prompt(
     if context:
         context_str = f"\nAdditional context:\n{json.dumps(context, indent=2)}"
 
-    return f"""I need to find the following information:
-
-{info_request}
+    return f"""{info_request}
 
 {sources_info}
 {step_results_str}
-{context_str}
-
-What query should I execute? Respond with JSON specifying the source, query_type, and params."""
+{context_str}"""
 
 
 def build_replan_context(step_history: list[dict], suggested_fix: str | None) -> str:

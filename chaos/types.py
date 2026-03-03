@@ -43,8 +43,6 @@ class Plan(BaseModel):
 
     query: str = ""
     query_understanding: str = ""
-    required_info: list[str] = Field(default_factory=list)
-    data_sources: list[str] = Field(default_factory=list)
     steps: list[PlanStep] = Field(default_factory=list)
     data_context: str = ""
 
