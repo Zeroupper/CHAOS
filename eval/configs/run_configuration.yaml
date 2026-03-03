@@ -13,7 +13,7 @@
 judge_model: "anthropic/claude-haiku-4.5"
 
 # How many times to repeat each (configuration × query) pair (default: 5)
-n_repeats: 2
+n_repeats: 1
 
 # Max concurrent workers for the parallel runner (default: 3)
 max_workers: 16
@@ -50,20 +50,22 @@ models:
   #   pipeline: chaos
   #   sandbox: true
 
-  - name: chaos_gpt-oss-safeguard-20b
-    model: openai/gpt-oss-safeguard-20b
+  # - name: chaos_gpt-oss-safeguard-20b
+  #   model: openai/gpt-oss-safeguard-20b
+  #   pipeline: chaos
+  #   sandbox: true
+
+  - name: chaos_qwen-3.5-35b-a3b
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
     pipeline: chaos
     sandbox: true
 
-  # - name: chaos_qwen-3.5-35b-a3b
-  #   model: qwen/qwen3.5-35b-a3b
-  #   pipeline: chaos
-  #   sandbox: true
-
-  # - name: qwen/qwen3.5-397b-a17b
-  #   model: qwen/qwen3.5-397b-a17b
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: qwen/qwen3.5-397b-a17b
+    model: qwen/qwen3.5-397b-a17b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
 
   # - name: chaos_claude-sonnet
   #   model: anthropic/claude-sonnet-4-20250514
