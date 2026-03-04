@@ -13,10 +13,10 @@
 judge_model: "anthropic/claude-haiku-4.5"
 
 # How many times to repeat each (configuration × query) pair (default: 5)
-n_repeats: 1
+n_repeats: 2
 
 # Max concurrent workers for the parallel runner (default: 3)
-max_workers: 16
+max_workers: 50
 
 # Path to datasets used by CHAOS and RAG pipelines
 datasets_dir: "datasets/gloss_sample"
@@ -50,53 +50,41 @@ models:
   #   pipeline: chaos
   #   sandbox: true
 
-  # - name: chaos_gpt-oss-safeguard-20b
-  #   model: openai/gpt-oss-safeguard-20b
+  - name: chaos_gpt-oss-safeguard-20b
+    model: openai/gpt-oss-safeguard-20b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+
+  # - name: chaos_qwen-3.5-35b-a3b
+  #   model: qwen/qwen3.5-35b-a3b
+  #   base_url: "https://openrouter.ai/api/v1"
   #   pipeline: chaos
   #   sandbox: true
 
-  - name: chaos_qwen-3.5-35b-a3b
-    model: qwen/qwen3.5-35b-a3b
-    base_url: "https://openrouter.ai/api/v1"
-    pipeline: chaos
-    sandbox: true
-
-  - name: qwen/qwen3.5-397b-a17b
-    model: qwen/qwen3.5-397b-a17b
-    base_url: "https://openrouter.ai/api/v1"
-    pipeline: chaos
-    sandbox: true
-
-  # - name: chaos_claude-sonnet
-  #   model: anthropic/claude-sonnet-4-20250514
+  # - name: qwen/qwen3.5-397b-a17b
+  #   model: qwen/qwen3.5-397b-a17b
+  #   base_url: "https://openrouter.ai/api/v1"
   #   pipeline: chaos
+  #   sandbox: true
 
   # -- RAG baseline variants -------------------------------------------------
 
-  # - name: rag_gpt-oss-safeguard-20b
-  #   model: openai/gpt-oss-safeguard-20b
-  #   pipeline: rag
-
-  # - name: rag_gpt-4o
-  #   model: openai/gpt-4o
-  #   pipeline: rag
-
-  # -- Sandbox variants ------------------------------------------------------
-  # - name: chaos_gpt-4o_sandbox
-  #   model: openai/gpt-4o
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: rag_gpt-oss-safeguard-20b
+    model: openai/gpt-oss-safeguard-20b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: rag
 
   # -- Local models (Ollama / vLLM) ------------------------------------------
   # Requires a running local inference server. No API key needed.
   # Ollama: ollama pull qwen3.5:2b && ollama serve
   # vLLM:   vllm serve Qwen/Qwen3.5-2B --port 8000
 
-  # - name: chaos_qwen3.5-2b_local
-  #   model: qwen3.5:2b
-  #   base_url: "http://localhost:11434/v1"
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: chaos_qwen3.5-2b_local
+    model: qwen3.5:2b
+    base_url: "http://localhost:11434/v1"
+    pipeline: chaos
+    sandbox: true
 
   # - name: rag_qwen3.5-2b_local
   #   model: qwen3.5:2b

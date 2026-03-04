@@ -1,50 +1,78 @@
-# CHAOS Evaluation Test Cases (small subset)
+# CHAOS Evaluation Test Cases
 # Expected answers for objective cases are in verify_test_cases.py
 # Dataset: datasets/gloss_sample/
 
 test_cases:
 
   # ============================================================
-  # OBJECTIVE
+  # OBJECTIVE — Simple
   # ============================================================
 
-  # - id: "obj_001"
-  #   category: "objective"
-  #   difficulty: "simple"
-  #   query: "What was the highest heart rate recorded for user test004?"
+  - id: "obj_001"
+    category: "objective"
+    difficulty: "simple"
+    query: "What was the highest heart rate recorded for user test004?"
 
-  # - id: "obj_002"
+  - id: "obj_002"
+    category: "objective"
+    difficulty: "simple"
+    query: "How many total steps were taken according to the Garmin watch for user test004?"
+
+  # - id: "obj_003"
   #   category: "objective"
   #   difficulty: "simple"
-  #   query: "How many total steps were taken according to the Garmin watch for user test004?"
+  #   query: "How many times was the phone unlocked for user test004?"
+
+  # - id: "obj_004"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: "How many different apps were used on the phone by user test004?"
+
+  # ============================================================
+  # OBJECTIVE — Medium
+  # ============================================================
 
   - id: "obj_005"
     category: "objective"
     difficulty: "medium"
     query: "What was the lowest resting heart rate for user test004, ignoring any invalid readings?"
 
-  - id: "obj_006"
-    category: "objective"
-    difficulty: "medium"
-    query: "How many different WiFi networks did user test004's phone connect to?"
+  # - id: "obj_006"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: "How many different WiFi networks did user test004's phone connect to?"
 
-  - id: "obj_009"
-    category: "objective"
-    difficulty: "complex"
-    query: "What was the average heart rate for user test004 during walking periods? Match heart rate readings within 30 seconds of each walking activity event."
+  # - id: "obj_007"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: "What is the difference between the highest and lowest valid heart rate values recorded for user test004?"
 
-  - id: "obj_010"
-    category: "objective"
-    difficulty: "complex"
-    query: "What is the Pearson correlation between heart rate readings from the dedicated heart rate sensor and the stress sensor for user test004? Align readings by closest timestamp within 1 second."
-
-  - id: "obj_011"
-    category: "objective"
-    difficulty: "complex"
-    query: "What is the Pearson correlation between hourly step counts from the Garmin watch and the iPhone for user test004?"
+  # - id: "obj_008"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: "What was the average heart rate measured by the stress sensor during 'VALID' readings for user test004?"
 
   # ============================================================
-  # SUBJECTIVE
+  # OBJECTIVE — Complex
+  # ============================================================
+
+  # - id: "obj_009"
+  #   category: "objective"
+  #   difficulty: "complex"
+  #   query: "What was the average heart rate for user test004 during walking periods? Match heart rate readings within 30 seconds of each walking activity event."
+
+  # - id: "obj_010"
+  #   category: "objective"
+  #   difficulty: "complex"
+  #   query: "What is the Pearson correlation between heart rate readings from the dedicated heart rate sensor and the stress sensor for user test004? Align readings by closest timestamp within 1 second."
+
+  # - id: "obj_011"
+  #   category: "objective"
+  #   difficulty: "complex"
+  #   query: "What is the Pearson correlation between hourly step counts from the Garmin watch and the iPhone for user test004?"
+
+  # ============================================================
+  # SUBJECTIVE — Medium
   # ============================================================
 
   - id: "sub_001"
@@ -65,6 +93,46 @@ test_cases:
         weight: 0.2
         description: "Compares to standard benchmarks (e.g., 10k steps/day) or provides context"
 
+  # - id: "sub_002"
+  #   category: "subjective"
+  #   difficulty: "medium"
+  #   query: "What can you tell about user test004's daily routine from their phone usage?"
+  #   rubric:
+  #     - criterion: "Uses lock/unlock data"
+  #       weight: 0.25
+  #       description: "References lock/unlock event counts or patterns"
+  #     - criterion: "Uses app usage data"
+  #       weight: 0.25
+  #       description: "References app usage logs and which apps are used"
+  #     - criterion: "Identifies patterns"
+  #       weight: 0.25
+  #       description: "Identifies temporal patterns or usage habits"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.25
+  #       description: "Logical interpretation of patterns to routine insights"
+
+  # ============================================================
+  # SUBJECTIVE — Complex
+  # ============================================================
+
+  # - id: "sub_003"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: "Does user test004 seem stressed? What does the data tell us?"
+  #   rubric:
+  #     - criterion: "Uses heart rate data"
+  #       weight: 0.25
+  #       description: "References garmin_hr heart rate values and patterns"
+  #     - criterion: "Uses stress data"
+  #       weight: 0.25
+  #       description: "References garmin_stress data (heart rate from stress sensor, status values)"
+  #     - criterion: "Provides evidence"
+  #       weight: 0.25
+  #       description: "Cites specific numeric values from the data"
+  #     - criterion: "Acknowledges limitations"
+  #       weight: 0.25
+  #       description: "Notes data limitations, missing fields (e.g., stress_intensity being null), or uncertainty"
+
   # - id: "sub_004"
   #   category: "subjective"
   #   difficulty: "complex"
@@ -82,3 +150,21 @@ test_cases:
   #     - criterion: "Sound reasoning"
   #       weight: 0.25
   #       description: "Logical chain from sensor data to sleep pattern inference"
+
+  # - id: "sub_005"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: "Is user test004's heart rate variability healthy?"
+  #   rubric:
+  #     - criterion: "Computes HRV metrics"
+  #       weight: 0.3
+  #       description: "Calculates SDNN, RMSSD, or similar HRV metrics from IBI/BBI data"
+  #     - criterion: "Uses correct methodology"
+  #       weight: 0.25
+  #       description: "Properly handles IBI data (filters outliers, uses appropriate time windows)"
+  #     - criterion: "Interprets results"
+  #       weight: 0.25
+  #       description: "Contextualizes HRV values against known healthy ranges"
+  #     - criterion: "Acknowledges limitations"
+  #       weight: 0.2
+  #       description: "Notes limitations of wrist-based IBI measurement or data quality issues"
