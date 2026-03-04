@@ -11,10 +11,10 @@ class LLMConfig(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
-    model: str = "qwen/qwen3.5-35b-a3b"
-    base_url: str = "https://openrouter.ai/api/v1"
-    # model: str = "qwen3.5:9b"
-    # base_url: str | None = "http://localhost:11434/v1"
+    # model: str = "qwen/qwen3.5-35b-a3b"
+    # base_url: str = "https://openrouter.ai/api/v1"
+    model: str = "qwen3.5:2b"
+    base_url: str | None = "http://localhost:11434/v1"
     api_key: str | None = None
     max_tokens: int = 16000
 

@@ -24,9 +24,6 @@ class VerifierAgent(BaseAgent):
         super().__init__(config, llm_client)
         self._system_prompt = """Verify an answer against its execution plan. The plan defines what should be computed.
 
-Respond with JSON:
-{"is_complete": <bool>, "is_accurate": <bool>, "confidence_score": <float: 0.0-1.0>, "gaps": ["<str>"], "issues": ["<str>"], "summary": "<str>", "recommendation": "<str: approve|reject|needs_review>"}
-
 RULES:
 - If gaps is not empty, is_complete must be false.
 - If issues is not empty, is_accurate must be false.

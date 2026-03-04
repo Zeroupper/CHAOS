@@ -132,12 +132,18 @@ class StepState(BaseModel):
 # === Information Seeker Types ===
 
 
+class QueryParams(BaseModel):
+    """Parameters for a query execution."""
+
+    code: str = Field(min_length=1, description="Python code to execute. MUST assign output to `result` variable (e.g., result = ...). Never use step_N_result as the target variable.")
+
+
 class QueryDecision(BaseModel):
     """LLM decision about which query to execute."""
 
     source: str = Field(min_length=1)
     query_type: Literal["exec"] = "exec"
-    params: dict[str, str] = Field(default_factory=dict)
+    params: QueryParams
 
 
 class InfoSeekerResult(BaseModel):

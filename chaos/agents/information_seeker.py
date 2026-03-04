@@ -37,10 +37,7 @@ class InformationSeekingAgent(BaseAgent):
         self._system_prompt = """Write Python code to query datasets. Store output in `result`.
 
 Available variables: all datasets by name, `pd`, `np`, and `step_N_result` (only if listed as available).
-Do NOT assign to `step_N_result`. Use exact column names.
-
-Respond with JSON:
-{"source": "<str: dataset_name>", "query_type": "exec", "params": {"code": "<str: python code>"}}"""
+Do NOT assign to `step_N_result`. Use exact column names."""
 
     def seek(
         self,
@@ -68,43 +65,28 @@ Respond with JSON:
             )
 
         # Execute the query
-        source_name = query_decision.source
-        query_type = query_decision.query_type
-        params = query_decision.params
-
-        code = params.get("code", "")
-        if not code:
-            return InfoSeekerResult(
-                request=info_request,
-                source=source_name,
-                query_type=query_type,
-                params=params,
-                results="No code provided",
-                success=False,
-            )
+        code = query_decision.params.code
 
         step_num = self.state.current_step if self.state else None
         exec_result = self._executor.execute(code, step_num=step_num)
 
-        # Filter params to only include string values (exclude internal params like all_sources)
-        filtered_params = {k: v for k, v in params.items() if isinstance(v, str)}
+        params_dict = {"code": code}
 
         if exec_result.error:
             return InfoSeekerResult(
                 request=info_request,
-                source=source_name,
-                query_type=query_type,
-                params=filtered_params,
+                source=query_decision.source,
+                query_type=query_decision.query_type,
+                params=params_dict,
                 results=exec_result.error,
                 success=False,
             )
         else:
-            result_str = exec_result.result or ""
             return InfoSeekerResult(
                 request=info_request,
-                source=source_name,
-                query_type=query_type,
-                params=filtered_params,
-                results=result_str,
+                source=query_decision.source,
+                query_type=query_decision.query_type,
+                params=params_dict,
+                results=exec_result.result or "",
                 success=True,
             )

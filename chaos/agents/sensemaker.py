@@ -37,22 +37,19 @@ class SensemakerAgent(BaseAgent):
     ) -> None:
         super().__init__(config, llm_client)
         self.state = state
-        self._system_prompt = """Execute a plan step-by-step. Respond with ONE of these JSON formats:
+        self._system_prompt = """Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
 
-Execute next step:
-{"status": "execute", "current_step": <int>, "request": "<str: what to compute>", "reasoning": "<str>"}
-
-All steps done:
-{"status": "complete", "answer": "<str: final value>", "supporting_evidence": ["<str>"]}
-
-Data quality issue:
-{"status": "review", "affected_step": <int>, "issue_description": "<str>", "proposed_correction": "<str>", "reasoning": "<str>"}
+WHEN TO USE EACH TYPE:
+- "execute": Default. Use to run the next pending step or re-run a failed step with fixed instructions.
+- "complete": All steps are done and results are available. Provide the final answer.
+- "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
 
 RULES:
 - Never compute math yourself — always use "execute".
 - Steps run in order: after step N, next is N+1.
 - Reference previous results as `step_N_result`.
-- If a step fails with a code error, re-execute with fixed instructions (do NOT use "review").
+- If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
+- Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
 - If a step returns NaN/null after one retry, accept it and complete.
 - Follow USER MODIFIED steps exactly. Never re-correct USER ACCEPTED values."""
 
@@ -176,14 +173,37 @@ Based on the step states, decide what to do next."""
         if step >= self.state.current_step:
             self.state.current_step = step
 
-    def get_answer(self) -> CompleteResponse:
-        """Generate final answer from accumulated knowledge."""
-        prompt = f"""Based on all the information gathered:
+    def get_final_answer(self, query: str, raw_answer: str = "") -> CompleteResponse:
+        """Extract a clean final answer from step results.
 
-{self.state.get_context_for_llm()}
+        If no step completed successfully, returns N/A without calling the LLM.
+        Otherwise makes a lightweight LLM call to extract just the result value.
+        """
+        has_completed = any(
+            s.status == "completed" and s.result is not None
+            for s in self.state.step_states.values()
+        )
+        if not has_completed:
+            return CompleteResponse(
+                answer="N/A",
+                supporting_evidence=["No step completed successfully."],
+            )
 
-Provide a final concise answer...
-Respond with JSON containing 'status' (always "complete"), 'answer' and 'supporting_evidence'."""
+        prompt = f"""Based on the step results, provide the final answer.
+
+RULES:
+- "answer" must contain ONLY the computed result value (e.g., "0.8986", "42", "positive correlation").
+- Do NOT include row counts, column counts, null counts, or any other numbers besides the result.
+- If the result cannot be determined (data quality issues, all nulls, etc.), answer "N/A" with no numbers.
+- "supporting_evidence" should list the key step results that support the answer.
+
+Query: {query}
+
+Step results:
+{self.state.get_context_for_llm()}"""
+
+        if raw_answer:
+            prompt += f"\n\nRaw answer: {raw_answer}"
 
         messages = [{"role": "user", "content": prompt}]
         return self._call_llm(messages, CompleteResponse)

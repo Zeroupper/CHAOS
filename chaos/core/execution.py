@@ -35,11 +35,15 @@ class SensemakingLoop:
         self.state = state
         self._executor = executor
 
-    def _finalize_result(
-        self, result: dict[str, Any], plan: Plan, run_log: RunLog, reason: str = "complete"
+    def _finalize(
+        self, query: str, plan: Plan, run_log: RunLog,
+        reason: str = "complete", raw_answer: str = "",
     ) -> dict[str, Any]:
-        """Log completion, record error summary if needed, display memory table, and return result."""
+        """Extract final answer, log completion, display memory, return result."""
         self._record_error_summary(plan, reason)
+        with agent_status("sensemaker", "Extracting final answer..."):
+            clean = self.sensemaker.get_final_answer(query, raw_answer)
+        result = clean.model_dump(exclude={"status"})
         run_log.add_entry("sensemaker", reason, result)
         run_log.final_answer = result.get("answer")
         display_memory_table(self.state.export())
@@ -80,7 +84,10 @@ class SensemakingLoop:
         )
         with agent_status("info_seeker", status_msg):
             result = self.info_seeker.seek(request)
-        self._log_info_seeker_response(run_log, result, is_review)
+        data = result.model_dump()
+        if is_review:
+            data["is_review"] = True
+        run_log.add_entry("info_seeker", "response", data)
         display_execution_progress(
             step=step,
             total=len(plan.steps),
@@ -98,8 +105,6 @@ class SensemakingLoop:
             console.print("\n[yellow]No steps to execute.[/yellow]")
             return {"answer": "No data analysis needed for this query.", "supporting_evidence": []}
 
-        # Record exploration findings as internal context so the sensemaker
-        # sees them in its execution memory across all iterations.
         if plan.data_context:
             self.state.record_context(step=0, message=plan.data_context)
 
@@ -108,59 +113,44 @@ class SensemakingLoop:
 
         while True:
             with agent_status("sensemaker", "Analyzing information..."):
-                sensemaker_result = self.sensemaker.process(
+                response = self.sensemaker.process(
                     query, plan, new_info, data_context=plan.data_context
                 )
-
-            # Track step attempts and check for max attempts (execute only)
-            if sensemaker_result.status == "execute":
-                current_step = sensemaker_result.current_step
-                step_attempts[current_step] = step_attempts.get(current_step, 0) + 1
-                if step_attempts[current_step] > self.config.max_step_attempts:
-                    console.print(f"[yellow]Max attempts ({self.config.max_step_attempts}) reached for step {current_step}, getting best answer...[/yellow]")
-                    return self._finalize_result(
-                        self.sensemaker.get_answer().model_dump(exclude={"status"}), plan, run_log, "max_attempts"
-                    )
 
             if self.state.step_states:
                 display_step_states(self.state.step_states, plan)
 
-            match sensemaker_result.status:
+            match response.status:
                 case "complete":
                     console.print("\n[bold green]* Analysis complete![/bold green]")
-                    return self._finalize_result(
-                        sensemaker_result.model_dump(exclude={"status"}), plan, run_log
-                    )
+                    return self._finalize(query, plan, run_log, raw_answer=response.answer)
 
                 case "review":
-                    new_info = self._handle_review(plan, sensemaker_result, run_log)
-                    continue
+                    new_info = self._handle_review(plan, response, run_log)
 
                 case _:  # execute
-                    run_log.add_entry("sensemaker", "request", sensemaker_result.model_dump(exclude={"status"}))
-                    console.print(f"\n[bold]Sensemaker Request:[/bold] {sensemaker_result.request}")
-                    if sensemaker_result.reasoning:
-                        console.print(f"[dim]Reasoning: {sensemaker_result.reasoning}[/dim]")
+                    step = response.current_step
+                    step_attempts[step] = step_attempts.get(step, 0) + 1
+
+                    if step_attempts[step] > self.config.max_step_attempts:
+                        console.print(f"[yellow]Max attempts ({self.config.max_step_attempts}) reached for step {step}, getting best answer...[/yellow]")
+                        return self._finalize(query, plan, run_log, reason="max_attempts")
+
+                    run_log.add_entry("sensemaker", "request", response.model_dump(exclude={"status"}))
+                    console.print(f"\n[bold]Sensemaker Request:[/bold] {response.request}")
+                    if response.reasoning:
+                        console.print(f"[dim]Reasoning: {response.reasoning}[/dim]")
 
                     new_info = self._seek_and_display(
-                        sensemaker_result.request, sensemaker_result.current_step, plan, run_log
+                        response.request, step, plan, run_log
                     )
 
                     if not new_info.success:
                         console.print(
-                            f"\n[bold yellow]Step {sensemaker_result.current_step} failed — "
-                            f"retrying (attempt {step_attempts.get(sensemaker_result.current_step, 1)}"
+                            f"\n[bold yellow]Step {step} failed — "
+                            f"retrying (attempt {step_attempts[step]}"
                             f"/{self.config.max_step_attempts})...[/bold yellow]"
                         )
-
-    def _log_info_seeker_response(
-        self, run_log: RunLog, info: InfoSeekerResult, is_review: bool = False
-    ) -> None:
-        """Log an info seeker response to the run log."""
-        data = info.model_dump()
-        if is_review:
-            data["is_review"] = True
-        run_log.add_entry("info_seeker", "response", data)
 
     def _handle_review(
         self,
@@ -168,27 +158,9 @@ class SensemakingLoop:
         review: ReviewResponse,
         run_log: RunLog,
     ) -> InfoSeekerResult | None:
-        """
-        Handle a data quality review proposal from the sensemaker.
-
-        Shows the review to the user, gets approval/modification,
-        and executes the corrected request.
-
-        Args:
-            plan: Current execution plan.
-            review: ReviewResponse from sensemaker.
-            run_log: Run log for recording events.
-
-        Returns:
-            InfoSeekerResult from executing the correction, or None if skipped.
-        """
-        if not isinstance(review, ReviewResponse):
-            return None
-
-        # Log review proposal
+        """Handle a data quality review proposal from the sensemaker."""
         run_log.add_entry("review", "proposed", review.model_dump(exclude={"status"}))
 
-        # Show review proposal to user and get decision
         if self.config.auto_approve:
             decision, modified_request = "approve", None
         else:
@@ -198,7 +170,6 @@ class SensemakingLoop:
                 proposed_fix=review.proposed_correction,
             )
 
-        # Log user decision
         run_log.add_entry("user", "review_decision", {
             "decision": decision,
             "modified_request": modified_request,
@@ -210,8 +181,6 @@ class SensemakingLoop:
                 review.affected_step,
                 f"[DATA CORRECTION] Step {review.affected_step}: {review.issue_description}\nUser skipped correction.",
             )
-            # Mark the step as completed with user_accepted so sensemaker moves on
-            # and doesn't propose the same correction again
             step_state = self.state.get_step_state(review.affected_step)
             if step_state:
                 self.state.set_step_state(
@@ -223,16 +192,11 @@ class SensemakingLoop:
                         user_accepted=True,
                     ),
                 )
-                # Update current step tracking
                 if review.affected_step >= self.state.current_step:
                     self.state.current_step = review.affected_step
             return None
 
-        # Determine the request to execute
-        if decision == "approve":
-            request = review.proposed_correction
-        else:  # modify
-            request = modified_request or review.proposed_correction
+        request = modified_request or review.proposed_correction if decision == "modify" else review.proposed_correction
 
         self.state.record_context(
             review.affected_step,
@@ -242,16 +206,11 @@ class SensemakingLoop:
         console.print(f"\n[cyan]Executing corrected request for step {review.affected_step}...[/cyan]")
         console.print(f"[dim]Request: {request}[/dim]\n")
 
-        # Reset the step state so it can be re-executed
         self.sensemaker.reset_step(review.affected_step)
         if self._executor:
             self._executor.reset_step(review.affected_step)
-        # Set current step to the affected step so the result is recorded correctly
         self.state.current_step = review.affected_step
 
-        # Execute the corrected request
-        new_info = self._seek_and_display(
+        return self._seek_and_display(
             request, review.affected_step, plan, run_log, is_review=True
         )
-
-        return new_info
