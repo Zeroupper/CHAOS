@@ -212,7 +212,14 @@ def _render_run_line(
     export_link = _make_export_link(r.export_path, report_dir)
 
     if r.error:
-        lines.append(f"**Run {r.repeat_index + 1}**: ERROR: {r.error[:120]}{export_link}")
+        short = r.error[:120]
+        lines.append(f"\n- Run {r.repeat_index + 1}: **ERROR**: {short}{export_link}")
+        if len(r.error) > 120:
+            lines.append("<details><summary>Full error</summary>")
+            lines.append("")
+            lines.append(f"```\n{r.error}\n```")
+            lines.append("")
+            lines.append("</details>")
         lines.append("")
         return
 
