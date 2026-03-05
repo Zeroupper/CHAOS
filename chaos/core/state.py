@@ -96,9 +96,10 @@ class ExecutionState:
         self._step_states[step] = state
 
     def reset_step(self, step: int) -> None:
-        """Reset a specific step to pending state."""
+        """Reset a specific step to pending state, clearing old memory entries."""
         if step in self._step_states:
             del self._step_states[step]
+        self._entries = [e for e in self._entries if e.step != step]
         if step <= self._current_step:
             self._current_step = step - 1
 

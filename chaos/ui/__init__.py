@@ -10,9 +10,7 @@ from .display import (
 from .prompts import (
     approve_plan,
     final_review,
-    get_revised_request,
     get_plan_feedback,
-    select_step_to_revise,
 )
 
 __all__ = [
@@ -26,6 +24,4 @@ __all__ = [
     "approve_plan",
     "get_plan_feedback",
     "final_review",
-    "select_step_to_revise",
-    "get_revised_request",
 ]

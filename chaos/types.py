@@ -35,7 +35,6 @@ class PlanStep(BaseModel):
     step: int = Field(ge=1)
     action: str = Field(min_length=1)
     source: str = ""
-    modified: bool = False  # True if user modified this step in interactive mode
 
 
 class Plan(BaseModel):
@@ -46,12 +45,11 @@ class Plan(BaseModel):
     steps: list[PlanStep] = Field(default_factory=list)
     data_context: str = ""
 
-    def format_steps(self, show_modified: bool = True, prefix: str = "  ") -> str:
+    def format_steps(self, prefix: str = "  ") -> str:
         """
         Format plan steps as a string.
 
         Args:
-            show_modified: Whether to show [USER MODIFIED] prefix for modified steps.
             prefix: Prefix for each line.
 
         Returns:
@@ -63,10 +61,7 @@ class Plan(BaseModel):
         lines = []
         for step in self.steps:
             source_str = f" (from {step.source})" if step.source else ""
-            if step.modified and show_modified:
-                lines.append(f"{prefix}Step {step.step} [USER MODIFIED - FOLLOW EXACTLY]: {step.action}{source_str}")
-            else:
-                lines.append(f"{prefix}Step {step.step}: {step.action}{source_str}")
+            lines.append(f"{prefix}Step {step.step}: {step.action}{source_str}")
         return "\n".join(lines)
 
 

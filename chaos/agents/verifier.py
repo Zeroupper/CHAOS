@@ -67,9 +67,9 @@ Answer: {answer}
 
 VERIFICATION CHECKLIST:
 1. Does the answer match what the plan's steps describe?
-2. Were all plan steps executed and do the results support the answer?
-3. Does the final answer contain an ACTUAL COMPUTED VALUE (not a guess)?
-4. Are there any signs of hallucinated or guessed values?
+2. Did any step encounter an error that was never resolved by a later execution?
+3. Do the results seem like legitimate answers, or do they indicate abnormalities (e.g. negative values where impossible, NaN, empty)?
+4. Does the final answer contain an ACTUAL COMPUTED VALUE (not a guess or hallucination)?
 
 Evaluate this answer and provide a verification report as JSON."""
 
@@ -139,13 +139,11 @@ User question: {question}"""
 
         lines = ["Evidence (executed computations):"]
         for entry in entries:
-            step = entry.get("step", "?")
-
+            # Skip internal context entries (e.g. dataset schemas) — not relevant for verification
             if entry.get("is_internal_context"):
-                lines.append(f"\n  Step {step} (context):")
-                lines.append(f"    {entry.get('result', '')}")
                 continue
 
+            step = entry.get("step", "?")
             code = entry.get("code", "")
             success = entry.get("success", False)
 

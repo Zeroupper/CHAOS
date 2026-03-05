@@ -14,7 +14,6 @@ from ..types import (
     Plan,
     ReviewResponse,
     SensemakerResponse,
-    StepState,
 )
 from .base import BaseAgent
 
@@ -51,7 +50,7 @@ RULES:
 - If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
 - Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
 - If a step returns NaN/null after one retry, accept it and complete.
-- Follow USER MODIFIED steps exactly. Never re-correct USER ACCEPTED values."""
+- Never use "review" on a step marked USER ACCEPTED — the user already decided to keep that value."""
 
     def process(
         self,
@@ -139,40 +138,6 @@ Based on the step states, decide what to do next."""
         """Reset a specific step to pending state (used after correction)."""
         self.state.reset_step(step)
 
-    def mark_step_completed(
-        self, step: int, result: str | None, error: str | None = None
-    ) -> None:
-        """
-        Manually mark a step as completed (used for user-added steps).
-
-        Args:
-            step: Step number to mark.
-            result: The result if successful.
-            error: The error if failed.
-        """
-        if error:
-            self.state.set_step_state(
-                step,
-                StepState(
-                    step=step,
-                    status="failed",
-                    error=error,
-                    failure_reason=error,
-                ),
-            )
-        else:
-            self.state.set_step_state(
-                step,
-                StepState(
-                    step=step,
-                    status="completed",
-                    result=result,
-                ),
-            )
-        # Update current step to be at or past this step
-        if step >= self.state.current_step:
-            self.state.current_step = step
-
     def get_final_answer(self, query: str, raw_answer: str = "") -> CompleteResponse:
         """Extract a clean final answer from step results.
 
@@ -194,7 +159,8 @@ Based on the step states, decide what to do next."""
 RULES:
 - "answer" must contain ONLY the computed result value (e.g., "0.8986", "42", "positive correlation").
 - Do NOT include row counts, column counts, null counts, or any other numbers besides the result.
-- If the result cannot be determined (data quality issues, all nulls, etc.), answer "N/A" with no numbers.
+- Use the last computed result from the final step as the answer. Do NOT second-guess code correctness.
+- Only answer "N/A" if a crucial step failed or returned a null/NaN value.
 - "supporting_evidence" should list the key step results that support the answer.
 
 Query: {query}

@@ -1,10 +1,10 @@
 """Information seeking agent - retrieves data from sources."""
 
+import json
 from typing import Any
 
 from ..core.code_executor import CodeExecutor
 from ..core.config import Config
-from ..core.context import build_query_prompt
 from ..core.state import ExecutionState
 from ..data.registry import DataRegistry
 from ..llm.structured_client import StructuredLLMClient
@@ -39,6 +39,18 @@ class InformationSeekingAgent(BaseAgent):
 Available variables: all datasets by name, `pd`, `np`, and `step_N_result` (only if listed as available).
 Do NOT assign to `step_N_result`. Use exact column names."""
 
+    def _build_prompt(self, info_request: str, context: dict[str, Any] | None = None) -> str:
+        """Build the user prompt for the LLM call."""
+        context_str = ""
+        if context:
+            context_str = f"\nAdditional context:\n{json.dumps(context, indent=2)}"
+
+        return f"""{info_request}
+
+{self.data_registry.get_sources_prompt()}
+{self._executor.describe_step_results()}
+{context_str}"""
+
     def seek(
         self,
         info_request: str,
@@ -46,12 +58,7 @@ Do NOT assign to `step_N_result`. Use exact column names."""
     ) -> InfoSeekerResult:
         """Seek information from available sources."""
         # Ask LLM what code to execute
-        prompt = build_query_prompt(
-            info_request,
-            self.data_registry.get_sources_prompt(),
-            self._executor.describe_step_results(),
-            context,
-        )
+        prompt = self._build_prompt(info_request, context)
         try:
             query_decision = self._call_llm([{"role": "user", "content": prompt}], QueryDecision)
         except Exception as e:

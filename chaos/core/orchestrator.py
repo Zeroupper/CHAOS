@@ -27,9 +27,7 @@ from ..ui.export import RunLog, export_verbose_transcript, offer_export_to_user
 from ..ui.prompts import approve_plan, final_review, get_explain_question, get_plan_feedback
 from .code_executor import CodeExecutor
 from .config import Config
-from .context import build_step_history
 from .execution import SensemakingLoop
-from .interaction import InteractionHandler
 from .state import ExecutionState
 
 
@@ -42,7 +40,7 @@ class Orchestrator:
     2. Human reviews/modifies plan
     3. Sensemaker + InformationSeeker loop until COMPLETE
     4. Verifier validates the answer
-    5. Human reviews final answer
+    5. Human reviews final answer (accept, reject, modify plan, or explain)
     """
 
     def __init__(
@@ -69,22 +67,12 @@ class Orchestrator:
         )
         self.verifier = VerifierAgent(config, llm_client)
 
-        # Initialize helpers
+        # Initialize sensemaking loop
         self._sensemaking_loop = SensemakingLoop(
             config=config,
             info_seeker=self.info_seeker,
             sensemaker=self.sensemaker,
             state=self.state,
-            executor=self._executor,
-        )
-        self._interaction = InteractionHandler(
-            config=config,
-            sensemaking_loop=self._sensemaking_loop,
-            info_seeker=self.info_seeker,
-            sensemaker=self.sensemaker,
-            planner=self.planner,
-            state=self.state,
-            data_registry=self.data_registry,
             executor=self._executor,
         )
 
@@ -123,50 +111,41 @@ class Orchestrator:
         with agent_status("planner", "Creating execution plan..."):
             plan = self.planner.create_plan(query, available_sources, data_context)
 
-        # Human reviews plan (or auto-approve)
-        display_plan(plan)
-        if self.config.auto_approve:
-            console.print("[dim]Auto-approved plan.[/dim]")
-        else:
-            while True:
-                decision = approve_plan(plan)
-
-                if decision == "approve":
-                    break
-                elif decision == "reject":
+        # Human reviews plan (or auto-approve) — loops back here on "modify" from final review
+        while True:
+            display_plan(plan)
+            if self.config.auto_approve:
+                console.print("[dim]Auto-approved plan.[/dim]")
+            else:
+                plan_decision = self._approve_plan_loop(plan)
+                if plan_decision == "reject":
                     console.print("[yellow]Plan rejected.[/yellow]")
                     return REJECTED_RESULT
-                elif decision == "modify":
-                    plan = self._modify_plan(plan)
-                    display_plan(plan)
-                elif decision is None:
+                elif plan_decision is None:
                     console.print("[yellow]Operation cancelled.[/yellow]")
                     return CANCELLED_RESULT
 
-        run_log.set_plan(plan)
+            run_log.set_plan(plan)
 
-        # Step 2: Execute sensemaking loop
-        console.print("\n[bold]Starting execution...[/bold]\n")
-        result = self._sensemaking_loop.execute_plan(query, plan, run_log)
+            # Step 2: Execute sensemaking loop
+            self.state.reset()
+            self._executor.reset()
+            console.print("\n[bold]Starting execution...[/bold]\n")
+            result = self._sensemaking_loop.execute_plan(query, plan, run_log)
 
-        # Step 3: Verification and human review
-        verification: Verification | None = None
-        while True:
-            if verification is None:
-                verification_context = {
-                    "memory": self.state.export(),
-                }
-                with agent_status("verifier", "Verifying answer..."):
-                    verification = self.verifier.verify(plan, result, verification_context)
-                display_verification(verification, result.get("answer", ""))
-
-            step_history = build_step_history(self.state.get_entries(), plan)
+            # Step 3: Verification and human review
+            verification_context = {"memory": self.state.export()}
+            with agent_status("verifier", "Verifying answer..."):
+                verification = self.verifier.verify(plan, result, verification_context)
+            display_verification(verification, result.get("answer", ""))
 
             if self.config.auto_approve:
                 final_decision = "accept"
                 console.print("[dim]Auto-approved final answer.[/dim]")
             else:
-                final_decision = final_review(verification.recommendation, bool(step_history))
+                final_decision = self._final_review_loop(
+                    plan, result, verification, verification_context
+                )
 
             if final_decision == "accept":
                 final_result = self._finalize(result, verification, plan)
@@ -178,36 +157,63 @@ class Orchestrator:
                 offer_export_to_user(run_log, result, verification, export_dir, self.config.auto_approve)
                 self._maybe_export_verbose(run_log)
                 return REJECTED_RESULT
-            elif final_decision == "revise":
-                revised = self._interaction.handle_revision(query, plan, step_history, run_log)
-                if revised:
-                    result = revised
-                    verification = None
-            elif final_decision == "explain":
-                from rich.panel import Panel
-
-                while True:
-                    question = get_explain_question()
-                    if not question:
-                        break
-                    with agent_status("verifier", "Explaining..."):
-                        explanation = self.verifier.explain(
-                            plan, result, verification, verification_context, question
-                        )
-                    console.print(Panel(explanation, title="Explanation", border_style="cyan"))
-            elif final_decision == "replan":
-                replan_result = self._interaction.handle_replan(
-                    query, step_history, self._modify_plan, run_log
-                )
-                if replan_result:
-                    result = replan_result["result"]
-                    plan = replan_result["plan"]
-                    # Update run log with new plan
-                    run_log.set_plan(plan)
-                    verification = None
+            elif final_decision == "modify":
+                # User wants to modify the plan — loop back to plan phase
+                plan = self._modify_plan(plan)
+                console.print("\n[cyan]Re-executing with modified plan...[/cyan]")
+                continue
             elif final_decision is None:
                 console.print("[yellow]Operation cancelled.[/yellow]")
                 return CANCELLED_RESULT
+
+    def _approve_plan_loop(self, plan: Plan) -> str | None:
+        """Loop plan approval until user approves, rejects, or cancels."""
+        while True:
+            decision = approve_plan()
+            if decision == "approve":
+                return "approve"
+            elif decision == "reject":
+                return "reject"
+            elif decision == "modify":
+                plan = self._modify_plan(plan)
+                display_plan(plan)
+            elif decision is None:
+                return None
+
+    def _final_review_loop(
+        self,
+        plan: Plan,
+        result: dict[str, Any],
+        verification: Verification,
+        verification_context: dict[str, Any],
+    ) -> str | None:
+        """Loop final review until user picks a terminal action (accept/reject/modify)."""
+        while True:
+            final_decision = final_review()
+            if final_decision == "explain":
+                self._handle_explain(plan, result, verification, verification_context)
+            else:
+                return final_decision
+
+    def _handle_explain(
+        self,
+        plan: Plan,
+        result: dict[str, Any],
+        verification: Verification,
+        verification_context: dict[str, Any],
+    ) -> None:
+        """Run the explain Q&A loop."""
+        from rich.panel import Panel
+
+        while True:
+            question = get_explain_question()
+            if not question:
+                break
+            with agent_status("verifier", "Explaining..."):
+                explanation = self.verifier.explain(
+                    plan, result, verification, verification_context, question
+                )
+            console.print(Panel(explanation, title="Explanation", border_style="cyan"))
 
     def _maybe_export_verbose(self, run_log: RunLog) -> None:
         """Export verbose LLM transcript if enabled and a normal export was saved."""

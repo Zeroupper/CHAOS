@@ -105,8 +105,8 @@ class SensemakingLoop:
             console.print("\n[yellow]No steps to execute.[/yellow]")
             return {"answer": "No data analysis needed for this query.", "supporting_evidence": []}
 
-        if plan.data_context:
-            self.state.record_context(step=0, message=plan.data_context)
+        # Use the plan's understanding (which reflects modifications) instead of the raw query
+        effective_query = plan.query_understanding or query
 
         new_info: InfoSeekerResult | None = None
         step_attempts: dict[int, int] = {}
@@ -114,7 +114,7 @@ class SensemakingLoop:
         while True:
             with agent_status("sensemaker", "Analyzing information..."):
                 response = self.sensemaker.process(
-                    query, plan, new_info, data_context=plan.data_context
+                    effective_query, plan, new_info, data_context=plan.data_context
                 )
 
             if self.state.step_states:
@@ -123,7 +123,7 @@ class SensemakingLoop:
             match response.status:
                 case "complete":
                     console.print("\n[bold green]* Analysis complete![/bold green]")
-                    return self._finalize(query, plan, run_log, raw_answer=response.answer)
+                    return self._finalize(effective_query, plan, run_log, raw_answer=response.answer)
 
                 case "review":
                     new_info = self._handle_review(plan, response, run_log)
@@ -134,7 +134,7 @@ class SensemakingLoop:
 
                     if step_attempts[step] > self.config.max_step_attempts:
                         console.print(f"[yellow]Max attempts ({self.config.max_step_attempts}) reached for step {step}, getting best answer...[/yellow]")
-                        return self._finalize(query, plan, run_log, reason="max_attempts")
+                        return self._finalize(effective_query, plan, run_log, reason="max_attempts")
 
                     run_log.add_entry("sensemaker", "request", response.model_dump(exclude={"status"}))
                     console.print(f"\n[bold]Sensemaker Request:[/bold] {response.request}")

@@ -112,15 +112,14 @@ All settings (model, base URL, sandbox, auto-approve, etc.) are configured in `c
 │                       Explorer Agent                            │
 │      Inspects all dataset schemas before planning               │
 │  Discovers: column types, dtypes, null counts, sample values    │
-│              Returns: data_context (string)                     │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                        Planner Agent                            │
-│          Creates execution plan using data discoveries          │
-│              Returns: Plan (validated Pydantic model)           │
-└─────────────────────────────┬───────────────────────────────────┘
-                              ▼
+│                    Planner Agent ◄───────────────────────┐      │
+│          Creates/modifies execution plan                 │      │
+│     Human: approve / modify / reject                     │      │
+└─────────────────────────────┬────────────────────────────┘──────┘
+                              ▼                            ▲
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Sensemaking Loop                          │
 │  ┌──────────────────┐         ┌───────────────────────────┐     │
@@ -128,25 +127,21 @@ All settings (model, base URL, sandbox, auto-approve, etc.) are configured in `c
 │  │  Agent           │         │  Agent                    │     │
 │  │                  │         │  - Queries data sources   │     │
 │  │  Returns:        │         │  - Executes Python code   │     │
-│  │                  │         │    (host or sandbox)      │     │
-│  │  - Complete      │         │  - Returns:               │     │
-│  │  - Execute       │         │    InfoSeekerResult       │     │
+│  │  - Complete      │         │    (host or sandbox)      │     │
+│  │  - Execute       │         │                           │     │
 │  │  - Review        │         │                           │     │
-│  └────────┬─────────┘         └─────────────┬─────────────┘     │
-│           │                                 │                   │
-│           │ Review?                         │ Query             │
-│           │                                 │                   │
-│           ▼                                 ▼                   │
-│  ┌──────────────────┐         ┌───────────────────────────┐     │
-│  │  Human Approval  │         │  Data Sources             │     │
-│  │  for Correction  │         │  (Registry-based)         │     │
 │  └──────────────────┘         └───────────────────────────┘     │
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                        Verifier Agent                           │
-│                Validates answer, creates report                 │
-│             Returns: Verification (validated model)             │
+│              Validates answer + explains on request             │
+└─────────────────────────────┬───────────────────────────────────┘
+                              ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                        Final Review                             │
+│     Human: accept / modify plan / explain answer / reject       │
+│         "Modify plan" loops back to Planner ──────────────►─────┘
 └─────────────────────────────┬───────────────────────────────────┘
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
@@ -166,18 +161,16 @@ CHAOS/
 │   │   ├── config.py             # Configuration management (LLMConfig, Config)
 │   │   ├── orchestrator.py       # Main pipeline orchestrator (with human-in-the-loop)
 │   │   ├── execution.py          # SensemakingLoop — drives the sensemaker↔info_seeker cycle
-│   │   ├── interaction.py        # InteractionHandler — revision, replan, add-step flows
-│   │   ├── context.py            # Context builders for LLM prompts (step history, replan)
 │   │   ├── code_executor.py      # Code execution (host or Docker sandbox)
 │   │   ├── state.py              # ExecutionState — unified step states + memory entries
 │   │   └── logger.py             # Text formatting utilities
 │   ├── agents/                 # Agent implementations
 │   │   ├── base.py               # Base agent with _call_llm(messages, Model)
 │   │   ├── explorer.py           # Dataset schema inspector → data_context
-│   │   ├── planner.py            # Creates execution plans → Plan
+│   │   ├── planner.py            # Creates/modifies execution plans → Plan
 │   │   ├── sensemaker.py         # Synthesizes info → Complete|Execute|Review
 │   │   ├── information_seeker.py # Retrieves data → InfoSeekerResult
-│   │   └── verifier.py           # Validates answers → Verification
+│   │   └── verifier.py           # Validates answers + explains them → Verification
 │   ├── llm/                    # LLM client
 │   │   └── structured_client.py  # Instructor-wrapped OpenAI-compatible client
 │   ├── data/                   # Data source management
@@ -230,7 +223,7 @@ QueryDecision, InfoSeekerResult
 CompleteResponse | ExecuteResponse | ReviewResponse
 
 # Verifier types
-Verification
+Verification, ExplanationResponse
 
 # Execution types
 ExecutionResult, StepState
@@ -250,11 +243,15 @@ DatasetSchema, ColumnSchema
 
 ## Human-in-the-Loop
 
-CHAOS supports human guidance at two key points in the pipeline:
+CHAOS keeps you in control at every stage of the pipeline:
 
 1. **Plan Review** — Before execution, approve, modify, or reject the plan
 2. **Data Quality Correction** — During execution, approve or modify fixes for suspicious data (e.g., -1 placeholders)
-3. **Final Review** — After verification, accept the answer, revise a specific step, replan from scratch, or reject
+3. **Final Review** — After verification:
+   - **Accept** the answer
+   - **Modify plan** — describe what to change, the planner updates the plan, and execution restarts from scratch
+   - **Explain answer** — ask follow-up questions about the solution in a Q&A chat with the verifier
+   - **Reject** the answer
 4. **Run Export** — Export the full run (query, plan, code, results, verification) to markdown
 
 Set `auto_approve: True` in config to skip all human prompts (used by the evaluation framework).

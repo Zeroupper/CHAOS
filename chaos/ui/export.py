@@ -152,8 +152,7 @@ def export_run_to_markdown(
             for step in steps:
                 action = step.get("action", "").replace("|", "\\|")
                 source = step.get("source", "-") or "-"
-                modified = " *(modified)*" if step.get("modified") else ""
-                lines.append(f"| {step.get('step', '?')} | {action}{modified} | {source} |")
+                lines.append(f"| {step.get('step', '?')} | {action} | {source} |")
             lines.append(f"")
 
     # Execution Log
