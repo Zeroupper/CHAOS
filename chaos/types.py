@@ -206,3 +206,9 @@ class Verification(BaseModel):
     recommendation: Literal["approve", "reject", "needs_review"] = "needs_review"
 
 
+class ExplanationResponse(BaseModel):
+    """Response from verifier when explaining an answer."""
+
+    explanation: str
+
+

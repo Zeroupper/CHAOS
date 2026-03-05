@@ -11,10 +11,10 @@ class LLMConfig(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="OPENROUTER_")
 
-    # model: str = "qwen/qwen3.5-35b-a3b"
-    # base_url: str = "https://openrouter.ai/api/v1"
-    model: str = "qwen3.5:2b"
-    base_url: str | None = "http://localhost:11434/v1"
+    model: str = "qwen/qwen3.5-35b-a3b"
+    base_url: str = "https://openrouter.ai/api/v1"
+    # model: str = "qwen3.5:2b"
+    # base_url: str | None = "http://localhost:11434/v1"
     api_key: str | None = None
     max_tokens: int = 16000
 
@@ -33,5 +33,5 @@ class Config:
     max_research_turns: int = 10  # Max exploration turns for ExplorerAgent
     datasets_dir: Path = Path("datasets/gloss_sample")
     sandbox: bool = True  # Run LLM-generated code in Docker sandbox
-    auto_approve: bool = True  # Auto-approve planner and sensemaker without human guidance
+    auto_approve: bool = False  # Auto-approve planner and sensemaker without human guidance
     verbose_export: bool = True  # Export full LLM transcripts alongside normal export

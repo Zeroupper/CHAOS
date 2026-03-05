@@ -24,7 +24,7 @@ from ..ui.display import (
     display_verification,
 )
 from ..ui.export import RunLog, export_verbose_transcript, offer_export_to_user
-from ..ui.prompts import approve_plan, final_review, get_plan_feedback
+from ..ui.prompts import approve_plan, final_review, get_explain_question, get_plan_feedback
 from .code_executor import CodeExecutor
 from .config import Config
 from .context import build_step_history
@@ -183,6 +183,18 @@ class Orchestrator:
                 if revised:
                     result = revised
                     verification = None
+            elif final_decision == "explain":
+                from rich.panel import Panel
+
+                while True:
+                    question = get_explain_question()
+                    if not question:
+                        break
+                    with agent_status("verifier", "Explaining..."):
+                        explanation = self.verifier.explain(
+                            plan, result, verification, verification_context, question
+                        )
+                    console.print(Panel(explanation, title="Explanation", border_style="cyan"))
             elif final_decision == "replan":
                 replan_result = self._interaction.handle_replan(
                     query, step_history, self._modify_plan, run_log

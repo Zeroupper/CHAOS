@@ -5,7 +5,7 @@ from typing import Any
 from ..core.config import Config
 from ..core.logger import truncate_for_llm
 from ..llm.structured_client import StructuredLLMClient
-from ..types import Plan, Verification
+from ..types import ExplanationResponse, Plan, Verification
 from .base import BaseAgent
 
 
@@ -75,6 +75,48 @@ Evaluate this answer and provide a verification report as JSON."""
 
         messages = [{"role": "user", "content": prompt}]
         return self._call_llm(messages, Verification)
+
+    def explain(
+        self,
+        plan: Plan,
+        result: dict[str, Any],
+        verification: Verification,
+        context: dict[str, Any] | None,
+        question: str,
+    ) -> str:
+        """
+        Answer a user question about the solution using full execution context.
+
+        Args:
+            plan: The execution plan.
+            result: Result from sensemaker.
+            verification: The verification result.
+            context: Execution memory / step results.
+            question: The user's question.
+
+        Returns:
+            Explanation string.
+        """
+        evidence_str = self._format_memory_evidence(context)
+        plan_str = plan.format_steps()
+        answer = result.get("answer", "")
+
+        prompt = f"""You are explaining a data-analysis answer to the user.
+Use the context below to answer their question clearly and concisely.
+
+Plan Steps:
+{plan_str}
+
+Answer: {answer}
+
+{evidence_str}
+
+Verification Summary: {verification.summary}
+
+User question: {question}"""
+
+        messages = [{"role": "user", "content": prompt}]
+        return self._call_llm(messages, ExplanationResponse).explanation
 
     def _format_memory_evidence(self, context: dict[str, Any] | None) -> str:
         """

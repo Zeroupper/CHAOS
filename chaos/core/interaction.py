@@ -68,6 +68,12 @@ class InteractionHandler:
         if revised_request is None:
             return None
 
+        # Update the plan step with the revised action text
+        plan_step = next((s for s in plan.steps if s.step == step_num), None)
+        if plan_step:
+            plan_step.action = revised_request
+            plan_step.modified = True
+
         console.print(f"\n[cyan]Re-executing step {step_num} with your revision...[/cyan]\n")
 
         status_msg = (

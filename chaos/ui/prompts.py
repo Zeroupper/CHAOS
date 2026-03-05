@@ -48,10 +48,19 @@ def final_review(recommendation: str, has_steps: bool = True) -> str | None:
     if has_steps:
         choices.insert(1, Choice("Revise (fix a step)", value="revise"))
         choices.insert(2, Choice("Replan (fresh start with learnings)", value="replan"))
+    choices.insert(-1, Choice("Explain answer", value="explain"))
 
     return questionary.select(
         "Final review - what would you like to do?",
         choices=choices,
+        style=custom_style,
+    ).ask()
+
+
+def get_explain_question() -> str | None:
+    """Prompt the user for a question about the answer."""
+    return questionary.text(
+        "What would you like to know about this answer? (empty to go back)",
         style=custom_style,
     ).ask()
 
