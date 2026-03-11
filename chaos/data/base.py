@@ -44,7 +44,7 @@ class CSVDataSource(BaseDataSource):
     def connect(self) -> None:
         """Load CSV file into memory."""
         if self._data is None:
-            self._data = pd.read_csv(self.file_path)
+            self._data = pd.read_csv(self.file_path, low_memory=False)
 
     @property
     def data(self) -> pd.DataFrame | None:

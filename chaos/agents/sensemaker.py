@@ -157,9 +157,8 @@ Based on the step states, decide what to do next."""
         prompt = f"""Based on the step results, provide the final answer.
 
 RULES:
-- "answer" must contain ONLY the computed result value (e.g., "0.8986", "42", "positive correlation").
-- Do NOT include row counts, column counts, null counts, or any other numbers besides the result.
-- Use the last computed result from the final step as the answer. Do NOT second-guess code correctness.
+- "answer" must directly answer the query. State the result value first, optionally followed by one short sentence of context (e.g. "0.611 (Pearson correlation from 89 paired observations).").
+- Use the value from the last computed step as the definitive result. Do NOT recompute or second-guess code correctness.
 - Only answer "N/A" if a crucial step failed or returned a null/NaN value.
 - "supporting_evidence" should list the key step results that support the answer.
 

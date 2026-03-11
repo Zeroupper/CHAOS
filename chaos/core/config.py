@@ -31,7 +31,8 @@ class Config:
     llm: LLMConfig
     max_step_attempts: int = 5  # Max different approaches for a step
     max_research_turns: int = 10  # Max exploration turns for ExplorerAgent
-    datasets_dir: Path = Path("datasets/gloss_sample")
+    # datasets_dir: Path = Path("datasets/gloss_sample")
+    datasets_dir: Path = Path("datasets/globem-dataset-multi-year-datasets-for-longitudinal-human-behavior-modeling-generalization-1.1/INS-W_1")
     sandbox: bool = True  # Run LLM-generated code in Docker sandbox
     auto_approve: bool = False  # Auto-approve planner and sensemaker without human guidance
     verbose_export: bool = True  # Export full LLM transcripts alongside normal export

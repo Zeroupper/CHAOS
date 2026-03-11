@@ -31,7 +31,8 @@ class PlannerAgent(BaseAgent):
 RULES:
 - Only use dataset names and column names from the DATASET SCHEMAS below.
 - Each step output is saved as `step_N_result`. Reference it in later steps.
-- Return EMPTY steps for unclear or non-analytical queries."""
+- Return EMPTY steps for unclear or non-analytical queries.
+- If the query includes a "Hint:", use it to identify the correct datasets and columns."""
 
         self._system_prompt = self._base_system_prompt
         self._available_sources: str = ""
