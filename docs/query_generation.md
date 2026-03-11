@@ -38,9 +38,9 @@ Generate N queries in this YAML format:
 ```
 
 **Example queries:**
-- "What was the highest heart rate recorded for user test004?"
-- "How many total steps were taken according to the Garmin watch for user test004?"
-- "How many times was the phone unlocked for user test004?"
+- "What was the highest heart rate recorded in the dataset?"
+- "How many total steps were taken according to the Garmin watch?"
+- "How many times was the phone unlocked?"
 
 ### Medium
 
@@ -278,7 +278,8 @@ Objective test cases need ground truth expected answers in `eval/test_cases/veri
 ```python
 def obj_XXX() -> float:
     """<paste the query text here>"""
-    df = load("dataset_name")
+    # Use load_all() for simple (no filtering), load() for medium/complex (per-user)
+    df = load_all("dataset_name")
     # compute the answer
     return float(result)
 
