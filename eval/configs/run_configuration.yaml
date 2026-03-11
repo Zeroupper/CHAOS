@@ -13,22 +13,25 @@
 judge_model: "anthropic/claude-haiku-4.5"
 
 # How many times to repeat each (configuration × query) pair (default: 5)
-n_repeats: 2
+n_repeats: 1
 
 # Max concurrent workers for the parallel runner (default: 3)
-max_workers: 50
+max_workers: 6
 
 # Path to datasets used by CHAOS and RAG pipelines
-datasets_dir: "datasets/gloss_sample"
+# datasets_dir: "datasets/gloss_sample"
+datasets_dir: "datasets/globem-dataset-multi-year-datasets-for-longitudinal-human-behavior-modeling-generalization-1.1/INS-W_1"
 
 # Path to test cases file
-test_cases_path: "eval/test_cases/test_cases_small.yaml"
+# test_cases_path: "eval/test_cases/gloss/test_cases.yaml"
+test_cases_path: "eval/test_cases/globem/test_cases.yaml"
 
 # Directory where results and reports are written
 output_dir: "eval_results"
 
-# Skip LLM-as-judge evaluation for subjective queries (default: false)
-# skip_subjective: true
+# Append column/dataset hints to queries (default: true). Set to false to
+# test without hints.
+use_hints: True
 
 # --- Models ----------------------------------------------------------------
 # Each entry runs as an independent pipeline. The runner executes ALL
@@ -50,8 +53,8 @@ models:
   #   pipeline: chaos
   #   sandbox: true
 
-  - name: chaos_gpt-oss-safeguard-20b
-    model: openai/gpt-oss-safeguard-20b
+  - name: chaos_qwen-3.5-35b-a3b
+    model: qwen/qwen3.5-35b-a3b
     base_url: "https://openrouter.ai/api/v1"
     pipeline: chaos
     sandbox: true
@@ -70,21 +73,21 @@ models:
 
   # -- RAG baseline variants -------------------------------------------------
 
-  - name: rag_gpt-oss-safeguard-20b
-    model: openai/gpt-oss-safeguard-20b
-    base_url: "https://openrouter.ai/api/v1"
-    pipeline: rag
+  # - name: rag_qwen/qwen3.5-35b-a3b
+  #   model: qwen/qwen3.5-35b-a3b
+  #   base_url: "https://openrouter.ai/api/v1"
+  #   pipeline: rag
 
   # -- Local models (Ollama / vLLM) ------------------------------------------
   # Requires a running local inference server. No API key needed.
   # Ollama: ollama pull qwen3.5:2b && ollama serve
   # vLLM:   vllm serve Qwen/Qwen3.5-2B --port 8000
 
-  - name: chaos_qwen3.5-2b_local
-    model: qwen3.5:2b
-    base_url: "http://localhost:11434/v1"
-    pipeline: chaos
-    sandbox: true
+  # - name: chaos_qwen3.5-2b_local
+  #   model: qwen3.5:2b
+  #   base_url: "http://localhost:11434/v1"
+  #   pipeline: chaos
+  #   sandbox: true
 
   # - name: rag_qwen3.5-2b_local
   #   model: qwen3.5:2b

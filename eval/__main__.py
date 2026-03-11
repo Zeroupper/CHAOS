@@ -45,9 +45,8 @@ def main() -> None:
     cases = parse_test_cases(raw_cases)
     case_map = {c.id: c for c in cases}
 
-    evaluate_objective_results(results, case_map)
-    if not eval_config.skip_subjective:
-        evaluate_subjective_results(results, case_map, eval_config)
+    evaluate_objective_results(results, case_map, eval_config.test_cases_path, eval_config.judge_model)
+    evaluate_subjective_results(results, case_map, eval_config)
 
     # Compute aggregates once
     rag_config_name = None

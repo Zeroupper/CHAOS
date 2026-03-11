@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 import pandas as pd
-import yaml
 from pydantic import BaseModel
 
 from chaos.llm.structured_client import StructuredLLMClient
@@ -18,10 +18,11 @@ Do not make up data. If the context doesn't contain enough information, say so.
 Be precise with numbers and cite the source data when possible.
 """
 
+MAX_CHUNK_CHARS = 3000
+
 
 class RAGAnswer(BaseModel):
     answer: str
-    confidence: float = 0.0
 
 
 class RAGBaseline:
@@ -38,7 +39,7 @@ class RAGBaseline:
         self._index: Any = None
         self._embedder: Any = None
 
-    def build_index(self, datasets_dir: Path, chunk_rows: int = 50) -> None:
+    def build_index(self, datasets_dir: Path) -> None:
         """Build FAISS index from dataset CSVs."""
         import faiss
         from sentence_transformers import SentenceTransformer
@@ -46,52 +47,53 @@ class RAGBaseline:
         self._embedder = SentenceTransformer("sentence-transformers/all-MiniLM-L6-v2")
         self._chunks = []
 
-        # Schema chunks from data_schema.yaml
-        schema_path = datasets_dir / "data_schema.yaml"
-        if schema_path.exists():
-            with open(schema_path) as f:
-                schema = yaml.safe_load(f)
-            for name, ds_info in schema.get("datasets", {}).items():
-                lines = [f"Dataset: {name}", f"Description: {ds_info.get('description', '')}"]
-                for col, info in ds_info.get("columns", {}).items():
-                    unit = f" [{info['unit']}]" if info.get("unit") else ""
-                    desc = f": {info['description']}" if info.get("description") else ""
-                    lines.append(f"  - {col} ({info.get('type', 'unknown')}){unit}{desc}")
-                self._chunks.append("\n".join(lines))
-
-        # Summary + row chunks from each CSV
-        for csv_file in sorted(datasets_dir.glob("*.csv")):
+        csv_files = sorted(datasets_dir.glob("**/*.csv"))
+        print(f"  RAG: found {len(csv_files)} CSV files")
+        for i, csv_file in enumerate(csv_files, 1):
             try:
-                df = pd.read_csv(csv_file)
+                df = pd.read_csv(csv_file, low_memory=False)
             except Exception:
                 continue
             name = csv_file.stem
-
-            # Statistical summary
-            summary = f"Statistical summary for {name} ({len(df)} rows):\n"
             numeric = df.select_dtypes(include=[np.number])
-            if not numeric.empty:
-                summary += numeric.describe().to_string()
-            for col in df.select_dtypes(include=["object"]).columns:
-                vc = df[col].value_counts().head(10)
-                if not vc.empty:
-                    summary += f"\n\n{col} value counts (top 10):\n{vc.to_string()}"
-            self._chunks.append(summary)
 
-            # Row groups as markdown tables
-            for start in range(0, len(df), chunk_rows):
-                subset = df.iloc[start : start + chunk_rows]
-                chunk = f"Data from {name} (rows {start}-{start + len(subset) - 1}):\n"
-                chunk += subset.to_string(index=False)
-                self._chunks.append(chunk)
+            # Column listing
+            self._chunks.append(
+                f"Dataset {name} has {len(df)} rows and columns: {', '.join(df.columns)}"
+            )
+
+            # Column stats grouped by prefix (one chunk per group)
+            if not numeric.empty:
+                groups: dict[str, list[str]] = defaultdict(list)
+                for col in numeric.columns:
+                    prefix = col.split(":")[0] if ":" in col else "general"
+                    groups[prefix].append(col)
+                for prefix, cols in groups.items():
+                    stats = numeric[cols].describe().T.to_string()
+                    self._chunks.append(
+                        f"Stats for {name} [{prefix}] ({len(cols)} columns, {len(df)} rows):\n{stats}"
+                    )
+
+            # Row batches (50 rows per chunk with column names)
+            batch_size = 200
+            for start in range(0, len(df), batch_size):
+                batch = df.iloc[start : start + batch_size]
+                self._chunks.append(
+                    f"Rows from {name} ({start}-{start + len(batch) - 1} of {len(df)}):\n"
+                    + batch.to_string(index=False)
+                )
+
+            print(f"  RAG: [{i}/{len(csv_files)}] {name}: {len(df)} rows x {len(df.columns)} cols")
 
         if not self._chunks:
             raise ValueError(f"No data found in {datasets_dir}")
 
-        embeddings = self._embedder.encode(self._chunks, show_progress_bar=False)
+        print(f"  RAG: embedding {len(self._chunks)} chunks...")
+        embeddings = self._embedder.encode(self._chunks, show_progress_bar=True)
         embeddings = np.array(embeddings, dtype=np.float32)
         self._index = faiss.IndexFlatL2(embeddings.shape[1])
         self._index.add(embeddings)
+        print(f"  RAG: index built ({self._index.ntotal} vectors)")
 
     def run(self, query: str, llm_client: StructuredLLMClient) -> dict[str, Any]:
         """Embed query, retrieve top-k chunks, generate answer."""
@@ -101,19 +103,20 @@ class RAGBaseline:
         query_vec = np.array(self._embedder.encode([query]), dtype=np.float32)
         _, indices = self._index.search(query_vec, min(self.top_k, len(self._chunks)))
         retrieved = [self._chunks[i] for i in indices[0] if i < len(self._chunks)]
+        # Cap each chunk to fit in context window
+        retrieved = [c[:MAX_CHUNK_CHARS] for c in retrieved]
         context = "\n\n---\n\n".join(retrieved)
 
+        user_prompt = f"Data context:\n{context}\n\nQuestion: {query}\n\nAnswer using ONLY the provided data."
+
         result = llm_client.chat(
-            messages=[{
-                "role": "user",
-                "content": f"Data context:\n{context}\n\nQuestion: {query}\n\nAnswer using ONLY the provided data.",
-            }],
+            messages=[{"role": "user", "content": user_prompt}],
             response_model=RAGAnswer,
             system=RAG_SYSTEM_PROMPT,
         )
 
         return {
             "answer": result.answer,
-            "confidence": result.confidence,
             "retrieved_chunks": retrieved,
+            "prompt": user_prompt,
         }

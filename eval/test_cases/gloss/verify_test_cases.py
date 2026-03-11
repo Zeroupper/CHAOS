@@ -1,10 +1,7 @@
-"""Ground truth expected answers for objective benchmark cases.
+"""Ground truth expected answers for Gloss sample objective benchmark cases.
 
 Each function computes the expected answer independently from the Gloss sample
 dataset.  The OBJECTIVE_GROUND_TRUTH dict maps case IDs to (compute_fn, expected_value).
-
-Use ``get_expected_answer(case_id)`` to look up the expected value during evaluation.
-It raises ``KeyError`` if no ground truth exists for the given ID.
 """
 
 from __future__ import annotations
@@ -23,28 +20,32 @@ def load(name: str) -> pd.DataFrame:
     return df[df["uid"] == USER_ID]
 
 
+def load_all(name: str) -> pd.DataFrame:
+    """Load full CSV (all users)."""
+    return pd.read_csv(DATASETS_DIR / f"{name}.csv")
+
+
 def obj_001() -> float:
-    """What was the highest heart rate recorded for user test004?"""
-    hr = load("garmin_hr")
+    """What was the highest heart rate recorded in the dataset?"""
+    hr = load_all("garmin_hr")
     return float(hr["heart_rate"].max())
 
 
 def obj_002() -> float:
-    """How many total steps were taken according to the Garmin watch for user test004?"""
-    steps = load("garmin_steps")
+    """How many total steps were taken according to the Garmin watch?"""
+    steps = load_all("garmin_steps")
     return float(steps["steps"].sum())
 
 
 def obj_003() -> int:
-    """How many times was the phone unlocked for user test004?"""
-    lock = load("ios_lock_unlock")
-    # lock_state: 0 = locked, 1 = unlocked
+    """How many times was the phone unlocked?"""
+    lock = load_all("ios_lock_unlock")
     return int((lock["lock_state"] == 1).sum())
 
 
 def obj_004() -> int:
-    """How many different apps were used on the phone by user test004?"""
-    app = load("app_usage_logs")
+    """How many different apps were used on the phone?"""
+    app = load_all("app_usage_logs")
     return int(app["appName"].nunique())
 
 
@@ -157,13 +158,3 @@ OBJECTIVE_GROUND_TRUTH: dict[str, tuple] = {
 }
 
 
-def get_expected_answer(case_id: str) -> float:
-    """Look up the expected answer for an objective case.
-
-    Raises KeyError if no ground truth exists for the given ID.
-    """
-    if case_id not in OBJECTIVE_GROUND_TRUTH:
-        raise KeyError(
-            f"No ground truth in verify_test_cases.py for case '{case_id}'"
-        )
-    return OBJECTIVE_GROUND_TRUTH[case_id][1]

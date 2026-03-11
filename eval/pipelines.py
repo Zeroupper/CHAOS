@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -55,9 +56,10 @@ def run_chaos(
     run_config: RunConfiguration,
     case: TestCase,
     repeat: int,
+    data_registry: DataRegistry | None = None,
 ) -> EvalResult:
     """Run a single test case through the CHAOS orchestrator."""
-    llm_config = LLMConfig(model=run_config.model, base_url=run_config.base_url) 
+    llm_config = LLMConfig(model=run_config.model, base_url=run_config.base_url)
     llm_client = InstrumentedLLMClient(llm_config)
 
     config = Config(
@@ -67,8 +69,9 @@ def run_chaos(
         auto_approve=True,
     )
 
-    data_registry = DataRegistry()
-    data_registry.auto_discover(config.datasets_dir)
+    if data_registry is None:
+        data_registry = DataRegistry()
+        data_registry.auto_discover(config.datasets_dir)
 
     orchestrator = Orchestrator(
         config=config,
@@ -82,10 +85,14 @@ def run_chaos(
         if agent and hasattr(agent, "system_prompt"):
             agent.system_prompt = prompt
 
+    query = case.query
+    if eval_config.use_hints and case.hint:
+        query = f"{query}\n\nHint: {case.hint}"
+
     start = time.time()
 
     try:
-        raw_result = orchestrator.run(case.query)
+        raw_result = orchestrator.run(query)
         duration = time.time() - start
         token_metrics = llm_client.get_metrics()
 
@@ -138,18 +145,79 @@ def run_chaos(
         )
 
 
+def _export_rag_run(
+    case: TestCase,
+    query: str,
+    raw_result: dict[str, Any],
+    duration: float,
+    token_metrics: dict[str, int],
+    output_dir: str = "exported_runs",
+) -> str:
+    """Export a RAG run to markdown and return the file path."""
+    out = Path(output_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    safe_id = case.id.replace(" ", "_")
+    path = out / f"{ts}_rag_{safe_id}.md"
+
+    chunks = raw_result.get("retrieved_chunks", [])
+    lines = [
+        "# RAG Run Export",
+        "",
+        f"**Date:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
+        f"**Case:** {case.id} ({case.difficulty})",
+        f"**Duration:** {duration:.2f}s",
+        f"**Tokens:** {token_metrics.get('total_tokens', 0)} "
+        f"(in: {token_metrics.get('input_tokens', 0)}, out: {token_metrics.get('output_tokens', 0)})",
+        "",
+        "## Query",
+        "",
+        f"> {query}",
+        "",
+        f"## Retrieved Chunks ({len(chunks)})",
+        "",
+    ]
+    for i, chunk in enumerate(chunks, 1):
+        preview = chunk[:500] + ("..." if len(chunk) > 500 else "")
+        lines += [f"### Chunk {i}", "", "```", preview, "```", ""]
+
+    lines += [
+        "## LLM Prompt",
+        "",
+        "```",
+        raw_result.get("prompt", "(not captured)"),
+        "```",
+        "",
+        "## Answer",
+        "",
+        f"```",
+        raw_result.get("answer", "(no answer)"),
+        "```",
+        "",
+    ]
+
+    path.write_text("\n".join(lines))
+    return str(path)
+
+
 def run_rag(
     run_config: RunConfiguration,
     case: TestCase,
     repeat: int,
     rag_index: Any,
+    use_hints: bool = True,
 ) -> EvalResult:
     """Run a single test case through the RAG baseline."""
-    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model, base_url=run_config.base_url)) 
+    llm_client = InstrumentedLLMClient(LLMConfig(model=run_config.model, base_url=run_config.base_url))
+
+    query = case.query
+    if use_hints and case.hint:
+        query = f"{query}\n\nHint: {case.hint}"
+
     start = time.time()
 
     try:
-        raw_result = rag_index.run(case.query, llm_client)
+        raw_result = rag_index.run(query, llm_client)
         duration = time.time() - start
         token_metrics = llm_client.get_metrics()
 
@@ -159,6 +227,8 @@ def run_rag(
             {"step": i + 1, "result": chunk, "success": True, "is_internal_context": True}
             for i, chunk in enumerate(chunks)
         ]
+
+        export_path = _export_rag_run(case, query, raw_result, duration, token_metrics)
 
         return EvalResult(
             case_id=case.id,
@@ -173,6 +243,7 @@ def run_rag(
             ),
             execution_evidence=evidence,
             raw_result=raw_result,
+            export_path=export_path,
         )
 
     except Exception as e:

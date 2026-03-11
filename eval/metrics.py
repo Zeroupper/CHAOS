@@ -3,55 +3,57 @@
 from __future__ import annotations
 
 import re
+from typing import TYPE_CHECKING, Any
 
 import numpy as np
+from pydantic import BaseModel
+
+if TYPE_CHECKING:
+    from chaos.llm.structured_client import StructuredLLMClient
 
 
 # --- Answer extraction ---
 
 
-def _parse_number(s: str) -> float:
-    """Parse a number string, stripping commas. '11,157' -> 11157.0"""
-    return float(s.replace(",", ""))
+class _ExtractedValue(BaseModel):
+    """LLM-extracted numeric answer."""
+    value: float | None = None
 
 
-# Matches numbers like: 155, 155.0, -1.5, 11,157, 14,005.0
-_NUMBER = r"-?\d[\d,]*(?:\.\d+)?"
+_EXTRACT_SYSTEM = (
+    "Extract the numeric answer to the query from the given text. "
+    "Return the value as a number, or null if the text does not contain a clear answer. "
+    "Do not compute or infer — only extract what is explicitly stated."
+)
 
 
-def extract_numeric(answer: str | None) -> float | None:
-    """Extract the primary numeric value from a free-text answer.
-
-    Tries to parse the answer as a plain number first, then falls back to
-    result-indicator patterns (e.g. "is 155.0"), then to the last number.
-    Skips answers that indicate failure.
-    """
+def extract_answer_for_query(
+    query: str,
+    answer: str | None,
+    llm_client: StructuredLLMClient,
+) -> float | None:
+    """Use a fast LLM call to extract the numeric answer from free text."""
     if answer is None:
         return None
 
     stripped = answer.strip()
-
-    # Skip error/failure answers — no valid numeric result to extract
     if stripped.lower().startswith("cannot complete"):
         return None
 
-    # Best case: answer is just a number (e.g. "155.0", "-1.5", "11,157")
-    if re.fullmatch(_NUMBER, stripped):
-        return _parse_number(stripped)
+    # Fast path: answer is already just a number
+    number_re = r"-?\d[\d,]*(?:\.\d+)?"
+    if re.fullmatch(number_re, stripped):
+        return float(stripped.replace(",", ""))
 
-    # Prefer numbers after result indicators like "is", "was", ":", "="
-    match = re.search(
-        rf"(?:is|was|equals?|=|:)\s*({_NUMBER})", answer, re.IGNORECASE
+    result = llm_client.chat(
+        messages=[{
+            "role": "user",
+            "content": f"Query: {query}\n\nAnswer text: {answer}\n\nWhat is the numeric answer?",
+        }],
+        response_model=_ExtractedValue,
+        system=_EXTRACT_SYSTEM,
     )
-    if match:
-        return _parse_number(match.group(1))
-
-    # Fallback: last number in the text (most likely the final answer)
-    numbers = re.findall(_NUMBER, answer)
-    if numbers:
-        return _parse_number(numbers[-1])
-
-    return None
+    return result.value
 
 
 # --- Accuracy ---

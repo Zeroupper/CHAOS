@@ -28,6 +28,7 @@ class TestCase:
     category: str  # "objective" | "subjective"
     difficulty: str  # "simple" | "medium" | "complex"
     query: str
+    hint: str = ""
 
     # Subjective fields
     rubric: list[RubricCriterion] = field(default_factory=list)

@@ -1,0 +1,451 @@
+# CHAOS Evaluation Test Cases — GLOBEM Dataset (INS-W_1 cohort)
+# Expected answers for objective cases are in verify_test_cases.py
+# Dataset: datasets/globem-dataset-multi-year-datasets-for-longitudinal-human-behavior-modeling-generalization-1.1/
+
+# Hints point to the correct datasets/columns. They are appended to the query
+# only when `use_hints: true` in the run configuration (default). Set
+# `use_hints: false` to benchmark without hints.
+
+test_cases:
+
+  # # ============================================================
+  # # OBJECTIVE — Simple (cohort-wide, no per-participant filter)
+  # # ============================================================
+
+  # - id: "obj_001"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: >
+  #     What is the maximum number of screen unlock episodes in any 14-day
+  #     period across all participants?
+  #   hint: >
+  #     The `screen` dataset contains pre-computed 14-day rolling counts in
+  #     column `f_screen:phone_screen_rapids_countepisodeunlock:14dhist`.
+
+  # - id: "obj_002"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: >
+  #     What is the average outgoing call count across all participants and
+  #     14-day periods, ignoring missing values? Round to 4 decimal places.
+  #   hint: >
+  #     The `call` dataset contains pre-computed 14-day rolling counts in
+  #     column `f_call:phone_calls_rapids_outgoing_count:14dhist`.
+
+  # - id: "obj_003"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: >
+  #     What is the minimum number of unique Bluetooth devices detected in
+  #     any 14-day period across all participants?
+  #   hint: >
+  #     The `bluetooth` dataset contains pre-computed 14-day rolling counts in
+  #     column `f_blue:phone_bluetooth_rapids_uniquedevices:14dhist`.
+
+  # - id: "obj_004"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: >
+  #     How many records are in the location dataset?
+  #   hint: >
+  #     The `location` dataset has one row per participant per day.
+
+  # - id: "obj_005"
+  #   category: "objective"
+  #   difficulty: "simple"
+  #   query: >
+  #     How many participants are there?
+  #   hint: >
+  #     The `platform` dataset has one row per participant.
+
+  # # ============================================================
+  # # OBJECTIVE — Medium
+  # # ============================================================
+
+  # - id: "obj_006"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What is the average sleep efficiency (main sleep, 14-day rolling) for
+  #     participant INS-W_009, ignoring missing values?
+  #   hint: >
+  #     The `sleep` dataset contains column
+  #     `f_slp:fitbit_sleep_summary_rapids_avgefficiencymain:14dhist`.
+
+  # - id: "obj_007"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What percentage of participants use iOS devices? Round to 2 decimal
+  #     places.
+  #   hint: >
+  #     The `platform` dataset has a `platform` column with values like
+  #     "ios" and "android".
+
+  # - id: "obj_008"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: >
+  #     How many participants were flagged as depressed at end-of-term?
+  #   hint: >
+  #     The `dep_endterm` dataset contains a `dep` column (binary flag,
+  #     1 = depressed).
+
+  # - id: "obj_009"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What is the average BDI-II depression score across all participants at
+  #     end-of-term, excluding missing values? Round to 4 decimal places.
+  #   hint: >
+  #     The `dep_endterm` dataset contains a `BDI2` column.
+
+  # - id: "obj_010"
+  #   category: "objective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What is the pre-study perceived stress score (PSS-10) for participant
+  #     INS-W_009?
+  #   hint: >
+  #     The `pre` dataset contains a `PSS_10items_PRE` column.
+
+  # # ============================================================
+  # # OBJECTIVE — Complex
+  # # ============================================================
+
+  - id: "obj_011"
+    category: "objective"
+    difficulty: "complex"
+    query: >
+      Among participants who completed the end-of-term depression assessment,
+      what is the difference in mean 14-day rolling screen unlock count
+      between those flagged as depressed and those not flagged? Report as
+      (depressed mean minus not-depressed mean), rounded to 4 decimal places.
+    hint: >
+      The `dep_endterm` dataset (SurveyData) has columns `pid` and `dep`
+      (boolean). The `screen` dataset (FeatureData) has column
+      `f_screen:phone_screen_rapids_countepisodeunlock:14dhist`. Join on
+      `pid`, group by `dep`, compute the mean of the screen column (ignoring
+      NaN), and subtract.
+
+  - id: "obj_012"
+    category: "objective"
+    difficulty: "complex"
+    query: >
+      Which participant has the highest average 14-day rolling intraday step
+      count? Report their end-of-term BDI-II depression score. If that
+      participant has no end-of-term score, report -1.
+    hint: >
+      The `steps` dataset (FeatureData) has column
+      `f_steps:fitbit_steps_intraday_rapids_sumsteps:14dhist`. Compute the
+      mean per participant (ignoring NaN) and find the participant with the
+      highest value. Then look up their `BDI2` score in the `dep_endterm`
+      dataset (SurveyData).
+
+  - id: "obj_013"
+    category: "objective"
+    difficulty: "complex"
+    query: >
+      For participant INS-W_009, what is the Pearson correlation between
+      their weekly self-reported depression score (feel_depressed) and the
+      weekly average of their daily 14-day rolling screen unlock count?
+      Match on the ISO week of each date. Round to 4 decimal places.
+    hint: >
+      The `dep_weekly` dataset (SurveyData) has columns `pid`, `date`, and
+      `feel_depressed`. The `screen` dataset (FeatureData) has column
+      `f_screen:phone_screen_rapids_countepisodeunlock:14dhist` with a
+      `date` column. Extract the ISO week from each date, average the daily
+      screen values per week, join on ISO week, drop rows with NaN, and
+      compute the Pearson correlation.
+
+  - id: "obj_014"
+    category: "objective"
+    difficulty: "complex"
+    query: >
+      How many participants were flagged as depressed at end-of-term AND had
+      an above-median average 14-day rolling screen unlock count? The median
+      is computed across all participants who have both sensor data and an
+      end-of-term assessment.
+    hint: >
+      Compute the per-participant mean of
+      `f_screen:phone_screen_rapids_countepisodeunlock:14dhist` from the
+      `screen` dataset (FeatureData). Inner-join with the `dep_endterm`
+      dataset (SurveyData) on `pid`. Compute the median of the screen means
+      within this joined set. Count participants where `dep` is True and
+      screen mean is above the median.
+
+  - id: "obj_015"
+    category: "objective"
+    difficulty: "complex"
+    query: >
+      What is the Pearson correlation between participants' pre-study
+      perceived stress (PSS-10) and their average 14-day rolling total
+      sleep duration (main)? Only include participants present in both
+      datasets. Round to 4 decimal places.
+    hint: >
+      The `pre` dataset (SurveyData) has column `PSS_10items_PRE`. The
+      `sleep` dataset (FeatureData) has column
+      `f_slp:fitbit_sleep_summary_rapids_sumdurationasleepmain:14dhist`.
+      Compute the per-participant mean sleep duration, join with `pre` on
+      `pid`, drop rows with NaN, and compute the Pearson correlation.
+
+  # # ============================================================
+  # # SUBJECTIVE — Simple
+  # # ============================================================
+
+  # - id: "sub_001"
+  #   category: "subjective"
+  #   difficulty: "simple"
+  #   query: >
+  #     Summarize participant INS-W_009's phone call activity.
+  #   hint: >
+  #     The `call` dataset has columns matching the pattern
+  #     `f_call:phone_calls_rapids_<type>_count:14dhist` where type is
+  #     incoming, outgoing, or missed.
+  #   rubric:
+  #     - criterion: "Uses call data"
+  #       weight: 0.3
+  #       description: "References actual call count values (incoming, outgoing, missed) from the call feature data"
+  #     - criterion: "Completeness"
+  #       weight: 0.3
+  #       description: "Covers all call types (incoming, outgoing, missed) and their counts"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.2
+  #       description: "Cites specific numeric values from the data"
+  #     - criterion: "Clarity"
+  #       weight: 0.2
+  #       description: "Presents findings in a clear, organized manner"
+
+  # - id: "sub_002"
+  #   category: "subjective"
+  #   difficulty: "simple"
+  #   query: >
+  #     Describe the sleep patterns for participant INS-W_009.
+  #   hint: >
+  #     The `sleep` dataset has columns matching the pattern
+  #     `f_slp:fitbit_sleep_summary_rapids_<metric>:14dhist` for metrics
+  #     like sumdurationasleepmain, avgefficiencymain, sumdurationinbedmain.
+  #   rubric:
+  #     - criterion: "Uses sleep data"
+  #       weight: 0.3
+  #       description: "References sleep duration, efficiency, or time-in-bed values from the sleep feature data"
+  #     - criterion: "Completeness"
+  #       weight: 0.3
+  #       description: "Covers key sleep metrics (duration, efficiency, awake time)"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.2
+  #       description: "Cites specific numeric values from the data"
+  #     - criterion: "Clarity"
+  #       weight: 0.2
+  #       description: "Presents findings clearly without over-interpretation"
+
+  # - id: "sub_003"
+  #   category: "subjective"
+  #   difficulty: "simple"
+  #   query: >
+  #     What does the platform data tell us about the device distribution
+  #     across participants?
+  #   hint: >
+  #     The `platform` dataset has a `platform` column with values like
+  #     "ios" and "android".
+  #   rubric:
+  #     - criterion: "Uses platform data"
+  #       weight: 0.3
+  #       description: "References the platform.csv data and its values"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.3
+  #       description: "Reports exact counts and percentages for iOS vs Android"
+  #     - criterion: "Completeness"
+  #       weight: 0.2
+  #       description: "Covers all platform types and total participant count"
+  #     - criterion: "Clarity"
+  #       weight: 0.2
+  #       description: "Presents the distribution clearly"
+
+  # # ============================================================
+  # # SUBJECTIVE — Medium
+  # # ============================================================
+
+  # - id: "sub_004"
+  #   category: "subjective"
+  #   difficulty: "medium"
+  #   query: >
+  #     Based on the weekly depression survey data, how did participant
+  #     INS-W_009's mental health change over the study period?
+  #   hint: >
+  #     The `dep_weekly` dataset has columns like `feel_anxious`,
+  #     `feel_depressed`, and `dep` (binary flag) with a `date` column.
+  #   rubric:
+  #     - criterion: "Uses depression data"
+  #       weight: 0.3
+  #       description: "References feel_anxious, feel_depressed, or dep flags from dep_weekly"
+  #     - criterion: "Identifies temporal patterns"
+  #       weight: 0.3
+  #       description: "Tracks changes across weekly survey entries over time"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.2
+  #       description: "Cites specific values or counts from the survey data"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.2
+  #       description: "Draws reasonable conclusions about mental health trajectory"
+
+  # - id: "sub_005"
+  #   category: "subjective"
+  #   difficulty: "medium"
+  #   query: >
+  #     Is participant INS-W_009 physically active or sedentary based on
+  #     their step count data?
+  #   hint: >
+  #     The `steps` dataset has columns like
+  #     `f_steps:fitbit_steps_intraday_rapids_sumsteps:14dhist` (total steps)
+  #     and `f_steps:fitbit_steps_summary_rapids_avgsumsteps:14dhist`
+  #     (average daily steps over 14 days).
+  #   rubric:
+  #     - criterion: "Uses step data"
+  #       weight: 0.3
+  #       description: "References step count values from the steps feature data"
+  #     - criterion: "Provides quantitative evidence"
+  #       weight: 0.3
+  #       description: "Cites specific step count values (daily averages, max, sedentary bouts)"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.2
+  #       description: "Logical chain from step data to activity level conclusion"
+  #     - criterion: "Contextualizes findings"
+  #       weight: 0.2
+  #       description: "Compares to standard benchmarks (e.g., 10k steps/day) or provides context"
+
+  # - id: "sub_006"
+  #   category: "subjective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What does the screen usage data reveal about participant INS-W_009's
+  #     phone habits?
+  #   hint: >
+  #     The `screen` dataset has columns like
+  #     `f_screen:phone_screen_rapids_countepisodeunlock:14dhist` (unlock
+  #     count) and `f_screen:phone_screen_rapids_sumdurationunlock:14dhist`
+  #     (total screen-on duration in minutes).
+  #   rubric:
+  #     - criterion: "Uses screen data"
+  #       weight: 0.3
+  #       description: "References screen unlock counts and duration metrics"
+  #     - criterion: "Identifies patterns"
+  #       weight: 0.25
+  #       description: "Notes trends in screen usage across time periods or locations"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.25
+  #       description: "Cites specific numeric values from the screen data"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.2
+  #       description: "Reasonable interpretation of screen usage patterns"
+
+  # - id: "sub_007"
+  #   category: "subjective"
+  #   difficulty: "medium"
+  #   query: >
+  #     What can we infer about participant INS-W_009's mobility patterns
+  #     from their location data?
+  #   hint: >
+  #     The `location` dataset has columns like
+  #     `f_loc:phone_locations_barnett_hometime:14dhist` (time at home),
+  #     `f_loc:phone_locations_barnett_siglocsvisited:14dhist` (unique
+  #     locations), and
+  #     `f_loc:phone_locations_barnett_disttravelled:14dhist` (distance).
+  #   rubric:
+  #     - criterion: "Uses location data"
+  #       weight: 0.3
+  #       description: "References home time, significant locations, flight distances, or radius of gyration"
+  #     - criterion: "Identifies patterns"
+  #       weight: 0.25
+  #       description: "Notes mobility trends such as time at home vs away, travel distances"
+  #     - criterion: "Quantitative evidence"
+  #       weight: 0.25
+  #       description: "Cites specific values from the location feature data"
+  #     - criterion: "Sound reasoning"
+  #       weight: 0.2
+  #       description: "Logical interpretation of mobility metrics"
+
+  # # ============================================================
+  # # SUBJECTIVE — Complex
+  # # ============================================================
+
+  # - id: "sub_008"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: >
+  #     Does participant INS-W_009's psychological state improve or worsen
+  #     over the study period?
+  #   hint: >
+  #     The `pre` and `post` datasets contain columns like
+  #     `CESD_10items_PRE/POST` (depression), `PSS_10items_PRE/POST`
+  #     (stress), `STAIS_10items_PRE/POST` (anxiety), and
+  #     `UCLA_10items_PRE/POST` (loneliness).
+  #   rubric:
+  #     - criterion: "Uses pre/post survey data"
+  #       weight: 0.3
+  #       description: "References specific scale scores from both pre.csv and post.csv (e.g., CESD, PSS, STAIS, UCLA)"
+  #     - criterion: "Comprehensive comparison"
+  #       weight: 0.25
+  #       description: "Compares multiple psychological scales, not just one"
+  #     - criterion: "Provides evidence"
+  #       weight: 0.25
+  #       description: "Cites exact numeric changes for each scale"
+  #     - criterion: "Acknowledges limitations"
+  #       weight: 0.2
+  #       description: "Notes that two time points are limited for drawing conclusions, or that scales measure different constructs"
+
+  # - id: "sub_009"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: >
+  #     Is there a relationship between participant INS-W_009's physical
+  #     activity (steps) and their social behavior (calls, Bluetooth
+  #     proximity)?
+  #   hint: >
+  #     The `steps` dataset has column
+  #     `f_steps:fitbit_steps_intraday_rapids_sumsteps:14dhist`, the `call`
+  #     dataset has column
+  #     `f_call:phone_calls_rapids_outgoing_count:14dhist`, and the
+  #     `bluetooth` dataset has column
+  #     `f_blue:phone_bluetooth_rapids_uniquedevices:14dhist`. All contain
+  #     pre-computed 14-day rolling values with a `date` column.
+  #   rubric:
+  #     - criterion: "Uses multiple data sources"
+  #       weight: 0.3
+  #       description: "References step data alongside call and/or Bluetooth data"
+  #     - criterion: "Cross-dataset analysis"
+  #       weight: 0.25
+  #       description: "Attempts to correlate or compare metrics across feature datasets by date"
+  #     - criterion: "Provides evidence"
+  #       weight: 0.25
+  #       description: "Cites specific numeric values or computed correlations"
+  #     - criterion: "Acknowledges limitations"
+  #       weight: 0.2
+  #       description: "Notes limitations of proxy measures (e.g., BT devices as social indicator)"
+
+  # - id: "sub_010"
+  #   category: "subjective"
+  #   difficulty: "complex"
+  #   query: >
+  #     What is the overall well-being profile of participant INS-W_009 in
+  #     based on sleep, activity, social behavior, and survey data?
+  #   hint: >
+  #     Relevant datasets and columns: `sleep` →
+  #     `f_slp:fitbit_sleep_summary_rapids_avgefficiencymain:14dhist`;
+  #     `steps` → `f_steps:fitbit_steps_intraday_rapids_sumsteps:14dhist`;
+  #     `call` → `f_call:phone_calls_rapids_outgoing_count:14dhist`;
+  #     `bluetooth` → `f_blue:phone_bluetooth_rapids_uniquedevices:14dhist`;
+  #     `pre`/`post` → CESD, PSS, STAIS, UCLA scale scores.
+  #   rubric:
+  #     - criterion: "Uses multiple data sources"
+  #       weight: 0.3
+  #       description: "References at least 3 different data types (sleep, steps, calls/BT, surveys)"
+  #     - criterion: "Synthesizes findings"
+  #       weight: 0.25
+  #       description: "Integrates findings into a coherent well-being profile rather than listing them separately"
+  #     - criterion: "Provides evidence"
+  #       weight: 0.25
+  #       description: "Cites specific values from the data to support claims"
+  #     - criterion: "Acknowledges limitations"
+  #       weight: 0.2
+  #       description: "Notes limitations of the data or uncertainty in the conclusions"

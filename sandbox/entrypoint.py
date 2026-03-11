@@ -16,7 +16,7 @@ import pandas as pd
 def load_datasets(data_dir: Path) -> dict[str, pd.DataFrame]:
     """Load all CSV files from the data directory."""
     datasets: dict[str, pd.DataFrame] = {}
-    for csv_path in sorted(data_dir.glob("*.csv")):
+    for csv_path in sorted(data_dir.glob("**/*.csv")):
         datasets[csv_path.stem] = pd.read_csv(csv_path)
     return datasets
 

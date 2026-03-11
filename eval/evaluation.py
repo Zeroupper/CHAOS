@@ -5,8 +5,11 @@ from __future__ import annotations
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import TYPE_CHECKING
 
+from chaos.core.config import LLMConfig
+from chaos.llm.structured_client import StructuredLLMClient
+
 from .judge import JudgeAgent
-from .metrics import check_accuracy, extract_numeric, relative_error
+from .metrics import check_accuracy, extract_answer_for_query, relative_error
 from .types import SubjectiveResult
 
 if TYPE_CHECKING:
@@ -14,19 +17,29 @@ if TYPE_CHECKING:
     from .types import EvalResult, TestCase
 
 
+_EXTRACT_MODEL = "openai/gpt-oss-20b:nitro"
+
+
 def evaluate_objective_results(
     results: list[EvalResult],
     case_map: dict[str, TestCase],
+    test_cases_path: str
 ) -> None:
     """Evaluate objective results in-place: extract numeric values and check accuracy."""
-    from .test_cases.verify_test_cases import get_expected_answer
+    from .test_cases import load_ground_truth
+
+    ground_truth = load_ground_truth(test_cases_path)
+    llm_client = StructuredLLMClient(LLMConfig(model=_EXTRACT_MODEL))
 
     for r in results:
         case = case_map.get(r.case_id)
         if not case or case.category != "objective":
             continue
-        expected = get_expected_answer(case.id)
-        r.extracted_value = extract_numeric(r.answer)
+        if case.id not in ground_truth:
+            print(f"  Warning: no ground truth for {case.id}, skipping evaluation")
+            continue
+        expected = ground_truth[case.id][1]
+        r.extracted_value = extract_answer_for_query(case.query, r.answer, llm_client)
         r.is_correct = check_accuracy(r.extracted_value, expected)
         r.relative_error = relative_error(r.extracted_value, expected)
 

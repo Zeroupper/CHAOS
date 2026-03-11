@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from .test_cases.verify_test_cases import get_expected_answer
 from .config import EvalConfig
+from .test_cases import load_ground_truth
 from .types import AggregateMetrics, EvalResult, TestCase
 
 
@@ -28,6 +28,7 @@ def generate_report(
     Returns:
         The full markdown report as a string.
     """
+    ground_truth = load_ground_truth(eval_config.test_cases_path)
     config_names = [c.name for c in eval_config.models]
     lines: list[str] = []
 
@@ -108,8 +109,8 @@ def generate_report(
 
     for case in cases:
         lines.append(f"### {case.id}: {case.query}")
-        if case.category == "objective":
-            lines.append(f"Expected: {get_expected_answer(case.id)}")
+        if case.category == "objective" and case.id in ground_truth:
+            lines.append(f"Expected: {ground_truth[case.id][1]}")
         lines.append("")
 
         for cfg in eval_config.models:
@@ -122,7 +123,7 @@ def generate_report(
 
             lines.append(f"**{cfg.name}**:")
             for r in cfg_results:
-                _render_run_line(lines, r, case, report_dir)
+                _render_run_line(lines, r, case, report_dir, ground_truth)
 
             lines.append("")
 
@@ -207,6 +208,7 @@ def _render_run_line(
     r: EvalResult,
     case: TestCase,
     report_dir: Path | None,
+    ground_truth: dict[str, tuple],
 ) -> None:
     """Render a single run with format depending on objective/subjective."""
     export_link = _make_export_link(r.export_path, report_dir)
@@ -224,7 +226,7 @@ def _render_run_line(
         return
 
     if case.category == "objective":
-        _render_objective_run(lines, r, case, export_link)
+        _render_objective_run(lines, r, case, export_link, ground_truth)
     else:
         _render_subjective_run(lines, r, case, export_link)
 
@@ -234,9 +236,10 @@ def _render_objective_run(
     r: EvalResult,
     case: TestCase,
     export_link: str,
+    ground_truth: dict[str, tuple],
 ) -> None:
     """Render an objective run: one-line verdict comparing extracted vs expected."""
-    expected = get_expected_answer(case.id)
+    expected = ground_truth.get(case.id, (None, None))[1]
     extracted = r.extracted_value
 
     rel_err_str = ""

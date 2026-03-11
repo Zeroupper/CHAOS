@@ -5,28 +5,28 @@
 test_cases:
 
   # ============================================================
-  # OBJECTIVE — Simple
+  # OBJECTIVE — Simple (no per-user filter)
   # ============================================================
 
   - id: "obj_001"
     category: "objective"
     difficulty: "simple"
-    query: "What was the highest heart rate recorded for user test004?"
+    query: "What was the highest heart rate recorded in the dataset?"
 
   - id: "obj_002"
     category: "objective"
     difficulty: "simple"
-    query: "How many total steps were taken according to the Garmin watch for user test004?"
+    query: "How many total steps were taken according to the Garmin watch?"
 
   - id: "obj_003"
     category: "objective"
     difficulty: "simple"
-    query: "How many times was the phone unlocked for user test004?"
+    query: "How many times was the phone unlocked?"
 
   - id: "obj_004"
     category: "objective"
     difficulty: "simple"
-    query: "How many different apps were used on the phone by user test004?"
+    query: "How many different apps were used on the phone?"
 
   # ============================================================
   # OBJECTIVE — Medium

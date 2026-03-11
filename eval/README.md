@@ -37,7 +37,7 @@ All settings are defined in a YAML config file. See [`configs/run_configuration.
 | `datasets_dir` | `datasets/gloss_sample` | Path to datasets used by CHAOS and RAG pipelines |
 | `test_cases_path` | `eval/test_cases/test_cases_small.yaml` | Path to test cases file |
 | `output_dir` | `eval_results` | Directory where results and reports are written |
-| `skip_subjective` | `false` | Skip LLM-as-judge evaluation for subjective queries |
+| `use_hints` | `true` | Append dataset/column hints to queries (set `false` to benchmark without hints) |
 
 ### Model Configuration
 

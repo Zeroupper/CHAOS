@@ -8,8 +8,6 @@ from typing import Any
 
 import yaml
 
-from chaos.core.config import LLMConfig
-
 from .types import RubricCriterion, TestCase
 
 
@@ -33,9 +31,9 @@ class EvalConfig:
     n_repeats: int = 5
     output_dir: str = "eval_results"
     datasets_dir: str = "datasets/gloss_sample"
-    test_cases_path: str = "eval/test_cases/test_cases.yaml"
+    test_cases_path: str = "eval/test_cases/gloss/test_cases.yaml"
     max_workers: int = 3
-    skip_subjective: bool = False
+    use_hints: bool = True
     models: list[RunConfiguration] = field(default_factory=list)
 
     @classmethod
@@ -62,7 +60,7 @@ class EvalConfig:
             datasets_dir=data.get("datasets_dir", cls.datasets_dir),
             test_cases_path=data.get("test_cases_path", cls.test_cases_path),
             max_workers=data.get("max_workers", cls.max_workers),
-            skip_subjective=data.get("skip_subjective", cls.skip_subjective),
+            use_hints=data.get("use_hints", cls.use_hints),
             models=models,
         )
 
@@ -90,6 +88,7 @@ def parse_test_cases(raw_cases: list[dict[str, Any]]) -> list[TestCase]:
             category=entry["category"],
             difficulty=entry["difficulty"],
             query=entry["query"],
+            hint=entry.get("hint", ""),
             rubric=rubric,
         ))
     return cases

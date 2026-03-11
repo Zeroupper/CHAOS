@@ -32,6 +32,7 @@ class _WorkItem:
     run_config: RunConfiguration
     case: TestCase
     repeat: int
+    data_registry: Any = None  # shared DataRegistry for chaos pipeline
     rag_index: Any = None  # shared RAG index, only set for rag pipeline
 
 
@@ -93,8 +94,8 @@ def _build_progress_table(progress: _ProgressState) -> Table:
 def _run_work_item(item: _WorkItem, eval_config: EvalConfig) -> EvalResult:
     """Dispatch a work item to the correct pipeline function."""
     if item.run_config.pipeline == "rag":
-        return run_rag(item.run_config, item.case, item.repeat, item.rag_index)
-    return run_chaos(eval_config, item.run_config, item.case, item.repeat)
+        return run_rag(item.run_config, item.case, item.repeat, item.rag_index, eval_config.use_hints)
+    return run_chaos(eval_config, item.run_config, item.case, item.repeat, item.data_registry)
 
 
 # ---------------------------------------------------------------------------
@@ -126,6 +127,17 @@ class EvalRunner:
         set_quiet(True)
 
         try:
+            # Build shared data registry (loaded once, reused by all work items)
+            from chaos.data.registry import DataRegistry
+
+            progress_console.print("Loading datasets...")
+            shared_registry = DataRegistry()
+            shared_registry.auto_discover(Path(self.config.datasets_dir))
+            shared_registry.get_all_dataframes()  # eagerly load all CSVs
+            progress_console.print(
+                f"Loaded {len(shared_registry.list_sources())} datasets"
+            )
+
             # Build shared RAG index if any config uses it
             rag_index = None
             if any(cfg.pipeline == "rag" for cfg in self.config.models):
@@ -147,6 +159,7 @@ class EvalRunner:
                             run_config=run_config,
                             case=case,
                             repeat=repeat,
+                            data_registry=shared_registry,
                             rag_index=rag_index if run_config.pipeline == "rag" else None,
                         ))
 
@@ -157,7 +170,8 @@ class EvalRunner:
                 _build_progress_table(progress),
                 console=progress_console,
                 refresh_per_second=4,
-                vertical_overflow="visible",
+                redirect_stdout=True,
+                redirect_stderr=True,
             ) as live:
                 with ThreadPoolExecutor(max_workers=max_workers) as executor:
                     future_to_item = {}
