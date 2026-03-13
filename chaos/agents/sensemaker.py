@@ -39,7 +39,7 @@ class SensemakerAgent(BaseAgent):
         self._system_prompt = """Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
 
 WHEN TO USE EACH TYPE:
-- "execute": Default. Use to run the next pending step or re-run a failed step with fixed instructions.
+- "execute": Use to run the next pending step or re-run a failed step with fixed instructions.
 - "complete": All steps are done and results are available. Provide the final answer.
 - "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
 

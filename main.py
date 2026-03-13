@@ -26,7 +26,6 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "query",
         nargs="?",
-        default="This is an example query. Replace it with your own.",
         help="Natural language query to process",
     )
     return parser.parse_args()

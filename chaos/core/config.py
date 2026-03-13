@@ -16,7 +16,6 @@ class LLMConfig(BaseSettings):
     # model: str = "qwen3.5:2b"
     # base_url: str | None = "http://localhost:11434/v1"
     api_key: str | None = None
-    max_tokens: int = 16000
 
     @property
     def is_local(self) -> bool:

@@ -9,13 +9,13 @@
 
 # --- Global settings --------------------------------------------------------
 
-# LLM used as judge for subjective rubric scoring (default: anthropic/claude-sonnet-4-20250514)
+# LLM used as judge for subjective rubric scoring
 judge_model: "anthropic/claude-haiku-4.5"
 
-# How many times to repeat each (configuration × query) pair (default: 5)
-n_repeats: 1
+# How many times to repeat each (configuration × query) pair
+n_repeats: 5
 
-# Max concurrent workers for the parallel runner (default: 3)
+# Max concurrent workers for the parallel runner
 max_workers: 6
 
 # Path to datasets used by CHAOS and RAG pipelines
@@ -29,9 +29,9 @@ test_cases_path: "eval/test_cases/globem/test_cases.yaml"
 # Directory where results and reports are written
 output_dir: "eval_results"
 
-# Append column/dataset hints to queries (default: true). Set to false to
+# Append column/dataset hints to queries. Set to false to
 # test without hints.
-use_hints: True
+use_hints: False
 
 # --- Models ----------------------------------------------------------------
 # Each entry runs as an independent pipeline. The runner executes ALL
@@ -48,10 +48,11 @@ use_hints: True
 
 models:
   # -- CHAOS pipeline variants -----------------------------------------------
-  # - name: chaos_deepseek-r1-32b
-  #   model: deepseek/deepseek-r1-distill-qwen-32b
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: chaos_qwen/qwen3.5-9b
+    model: qwen/qwen3.5-9b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
 
   - name: chaos_qwen-3.5-35b-a3b
     model: qwen/qwen3.5-35b-a3b
@@ -59,24 +60,24 @@ models:
     pipeline: chaos
     sandbox: true
 
-  # - name: chaos_qwen-3.5-35b-a3b
-  #   model: qwen/qwen3.5-35b-a3b
-  #   base_url: "https://openrouter.ai/api/v1"
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: chaos_qwen/qwen3.5-122b-a10b
+    model: qwen/qwen3.5-122b-a10b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
 
-  # - name: qwen/qwen3.5-397b-a17b
-  #   model: qwen/qwen3.5-397b-a17b
-  #   base_url: "https://openrouter.ai/api/v1"
-  #   pipeline: chaos
-  #   sandbox: true
+  - name: qwen/qwen3.5-397b-a17b
+    model: qwen/qwen3.5-397b-a17b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
 
   # -- RAG baseline variants -------------------------------------------------
 
-  # - name: rag_qwen/qwen3.5-35b-a3b
-  #   model: qwen/qwen3.5-35b-a3b
-  #   base_url: "https://openrouter.ai/api/v1"
-  #   pipeline: rag
+  - name: rag_qwen/qwen3.5-35b-a3b
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: rag
 
   # -- Local models (Ollama / vLLM) ------------------------------------------
   # Requires a running local inference server. No API key needed.

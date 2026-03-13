@@ -28,7 +28,5 @@
 
 ## Evaluation Metric Fragility
 
-- Numeric answer extraction is regex-based — fragile to phrasing variations
-- Falls back to "last number in text" which can extract wrong values
 - Hardcoded 0.5% relative tolerance
 - LLM-as-judge for subjective questions has no inter-rater reliability checks

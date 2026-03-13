@@ -80,7 +80,6 @@ class StructuredLLMClient:
             messages=messages,
             response_model=response_model,
             max_retries=self.max_retries,
-            max_tokens=self.config.max_tokens,
         )
 
         self.transcript.append({

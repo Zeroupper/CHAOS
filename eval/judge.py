@@ -39,8 +39,8 @@ Provide reasoning in 1-2 sentences. List only unsupported claims, if any.
 
 
 class JudgeAgent:
-    def __init__(self, judge_model: str) -> None:
-        self._client = StructuredLLMClient(LLMConfig(model=judge_model))
+    def __init__(self, judge_model: str, base_url: str = "https://openrouter.ai/api/v1") -> None:
+        self._client = StructuredLLMClient(LLMConfig(model=judge_model, base_url=base_url))
 
     def judge_result(self, r: EvalResult, case: TestCase) -> SubjectiveEvaluation:
         """Score a subjective result: rubric criteria + faithfulness."""
