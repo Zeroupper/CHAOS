@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import gc
 import sys
 
 from .aggregation import compute_aggregates
@@ -10,7 +11,7 @@ from .config import EvalConfig, load_test_cases, parse_test_cases
 from .evaluation import evaluate_objective_results, evaluate_subjective_results
 from .report import generate_report
 from .runner import EvalRunner, save_results
-from .types import AggregateMetrics
+from .types import AggregateMetrics, strip_heavy_fields
 
 
 def main() -> None:
@@ -47,6 +48,12 @@ def main() -> None:
 
     evaluate_objective_results(results, case_map, eval_config.test_cases_path)
     evaluate_subjective_results(results, case_map, eval_config)
+
+    # Heavy fields (execution_evidence, run_log_entries, raw_result) are no
+    # longer needed after judging.  Strip them to free memory before the
+    # serialization-heavy save + report phase.
+    strip_heavy_fields(results)
+    gc.collect()
 
     # Compute aggregates once
     rag_config_name = None

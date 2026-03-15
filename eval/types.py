@@ -130,6 +130,19 @@ class EvalResult:
     error: str | None = None
 
 
+def strip_heavy_fields(results: list[EvalResult]) -> None:
+    """Drop bulky evidence/log data from results to free memory.
+
+    Call this after subjective evaluation is done — the heavy fields are only
+    needed by the judge for faithfulness scoring.  The per-run markdown exports
+    (via export_path) already contain the full evidence.
+    """
+    for r in results:
+        r.execution_evidence.clear()
+        r.run_log_entries.clear()
+        r.raw_result.clear()
+
+
 @dataclass
 class AggregateMetrics:
     """Aggregated metrics across multiple runs for a config+case."""
