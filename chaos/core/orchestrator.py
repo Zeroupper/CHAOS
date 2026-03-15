@@ -27,7 +27,7 @@ from ..ui.export import RunLog, export_verbose_transcript, offer_export_to_user
 from ..ui.prompts import approve_plan, final_review, get_explain_question, get_plan_feedback
 from .code_executor import CodeExecutor
 from .config import Config
-from .execution import SensemakingLoop
+from .sensemaking_loop import SensemakingLoop
 from .state import ExecutionState
 
 
@@ -117,7 +117,7 @@ class Orchestrator:
             if self.config.auto_approve:
                 console.print("[dim]Auto-approved plan.[/dim]")
             else:
-                plan_decision = self._approve_plan_loop(plan)
+                plan_decision, plan = self._approve_plan_loop(plan)
                 if plan_decision == "reject":
                     console.print("[yellow]Plan rejected.[/yellow]")
                     return REJECTED_RESULT
@@ -166,19 +166,19 @@ class Orchestrator:
                 console.print("[yellow]Operation cancelled.[/yellow]")
                 return CANCELLED_RESULT
 
-    def _approve_plan_loop(self, plan: Plan) -> str | None:
+    def _approve_plan_loop(self, plan: Plan) -> tuple[str | None, Plan]:
         """Loop plan approval until user approves, rejects, or cancels."""
         while True:
             decision = approve_plan()
             if decision == "approve":
-                return "approve"
+                return "approve", plan
             elif decision == "reject":
-                return "reject"
+                return "reject", plan
             elif decision == "modify":
                 plan = self._modify_plan(plan)
                 display_plan(plan)
             elif decision is None:
-                return None
+                return None, plan
 
     def _final_review_loop(
         self,
