@@ -65,7 +65,7 @@ def _aggregate(
             correctness.append(correct)
             correctness_by_diff[case.difficulty].append(correct)
             if r.relative_error is not None:
-                rel_errors.append(r.relative_error)
+                rel_errors.append(min(r.relative_error, 2.0))
         case_consistencies.append(
             consistency_score([r.extracted_value for r in runs])
         )
