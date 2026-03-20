@@ -1,0 +1,2041 @@
+{
+  "config": {
+    "judge_model": "anthropic/claude-haiku-4.5",
+    "n_repeats": 4,
+    "datasets_dir": "datasets/gloss_sample",
+    "models": [
+      {
+        "name": "chaos_qwen/qwen3.5-9b",
+        "model": "qwen/qwen3.5-9b",
+        "pipeline": "chaos",
+        "sandbox": true
+      }
+    ]
+  },
+  "results": [
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 5941,
+        "input_tokens": 4516,
+        "output_tokens": 1425,
+        "duration_seconds": 28.97148036956787,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215804_How_many_times_was_the_phone_unlocked.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "6 (There are 6 unique app names in the app usage logs)",
+      "extracted_value": 6.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 7304,
+        "input_tokens": 6010,
+        "output_tokens": 1294,
+        "duration_seconds": 36.05711650848389,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215811_How_many_different_apps_were_used_on_the.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "6 (There are 6 distinct app names from the app usage logs.)",
+      "extracted_value": 6.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 7729,
+        "input_tokens": 5948,
+        "output_tokens": 1781,
+        "duration_seconds": 51.95993089675903,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215827_How_many_different_apps_were_used_on_the.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 7652,
+        "input_tokens": 4531,
+        "output_tokens": 3121,
+        "duration_seconds": 61.939366817474365,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215837_What_was_the_average_heart_rate_measured.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "670 (total records in the ios_lock_unlock dataset, where each record represents a lock or unlock event).",
+      "extracted_value": 670.0,
+      "is_correct": false,
+      "relative_error": 1.0059880239520957,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9468,
+        "input_tokens": 7099,
+        "output_tokens": 2369,
+        "duration_seconds": 62.288214683532715,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215837_How_many_times_was_the_phone_unlocked.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 8964,
+        "input_tokens": 4518,
+        "output_tokens": 4446,
+        "duration_seconds": 72.39378023147583,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215847_How_many_different_apps_were_used_on_the.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "12 unique WiFi SSIDs",
+      "extracted_value": 12.0,
+      "is_correct": false,
+      "relative_error": 3.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9641,
+        "input_tokens": 6309,
+        "output_tokens": 3332,
+        "duration_seconds": 72.96298336982727,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215848_How_many_different_WiFi_networks_did_use.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 8120,
+        "input_tokens": 4527,
+        "output_tokens": 3593,
+        "duration_seconds": 74.6348226070404,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215849_What_was_the_lowest_resting_heart_rate_f.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "6",
+      "extracted_value": 6.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9091,
+        "input_tokens": 6714,
+        "output_tokens": 2377,
+        "duration_seconds": 76.76334500312805,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215851_How_many_different_apps_were_used_on_the.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9322,
+        "input_tokens": 4516,
+        "output_tokens": 4806,
+        "duration_seconds": 90.01872968673706,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215905_How_many_times_was_the_phone_unlocked.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11268,
+        "input_tokens": 4527,
+        "output_tokens": 6741,
+        "duration_seconds": 93.01570677757263,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215908_What_was_the_lowest_resting_heart_rate_f.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "155.0, the maximum heart rate value from the monitoring data.",
+      "extracted_value": 155.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9212,
+        "input_tokens": 7131,
+        "output_tokens": 2081,
+        "duration_seconds": 98.57107257843018,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215914_What_was_the_highest_heart_rate_recorded.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "9,852,389 (sum of total_steps column from garmin_steps dataset)",
+      "extracted_value": 9852389.0,
+      "is_correct": false,
+      "relative_error": 702.4908247054624,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9804,
+        "input_tokens": 7198,
+        "output_tokens": 2606,
+        "duration_seconds": 101.48266863822937,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215917_How_many_total_steps_were_taken_accordin.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 6201,
+        "input_tokens": 4531,
+        "output_tokens": 1670,
+        "duration_seconds": 31.1925311088562,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215919_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9179,
+        "input_tokens": 4519,
+        "output_tokens": 4660,
+        "duration_seconds": 104.60143232345581,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215919_What_was_the_highest_heart_rate_recorded.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "9852389.9 (sum of total_steps from 2942 records in garmin_steps dataset)",
+      "extracted_value": 9852389.9,
+      "is_correct": false,
+      "relative_error": 702.4908889682257,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11325,
+        "input_tokens": 7313,
+        "output_tokens": 4012,
+        "duration_seconds": 108.44966340065002,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215923_How_many_total_steps_were_taken_accordin.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "334 phone unlock events were found in the dataset.",
+      "extracted_value": 334.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10809,
+        "input_tokens": 8324,
+        "output_tokens": 2485,
+        "duration_seconds": 110.24687695503235,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215925_How_many_times_was_the_phone_unlocked.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "5 unique SSIDs were found for user test004 in the WiFi logs.",
+      "extracted_value": 5.0,
+      "is_correct": false,
+      "relative_error": 0.6666666666666666,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11475,
+        "input_tokens": 8249,
+        "output_tokens": 3226,
+        "duration_seconds": 118.63538432121277,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215934_How_many_different_WiFi_networks_did_use.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any data analysis despite the query explicitly asking about physical activity levels, which requires examining step data. Instead of retrieving and analyzing actual step counts for user test004, the system dismissed the query as needing no analysis, providing no evidence of data gathering or reasoning."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no quantitative data, metrics, or numeric values whatsoever. A proper response should have examined activity data (steps, duration, frequency) to classify the user's activity level, but instead the system refused to engage with the analytical task."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.1,
+            "reasoning": "The system failed to perform any analysis despite having a clear, answerable query. Rather than investigating available data about user test004's activity levels, it dismissed the query outright with 'No data analysis needed,' providing no logical chain from data to conclusion. This represents a fundamental failure in analytical methodology."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.0,
+            "reasoning": "The system failed to execute any analysis whatsoever, providing no data examination, benchmark comparisons, or contextual framing. A complete abdication of analytical responsibility results in zero credit for contextualization."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 5796,
+        "input_tokens": 4526,
+        "output_tokens": 1270,
+        "duration_seconds": 24.15815567970276,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215941_Based_on_the_data_is_user_test004_physi.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "14005.0 (sum of all steps from garmin_steps dataset)",
+      "extracted_value": 14005.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10941,
+        "input_tokens": 7120,
+        "output_tokens": 3821,
+        "duration_seconds": 130.7551817893982,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215946_How_many_total_steps_were_taken_accordin.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "N/A",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11326,
+        "input_tokens": 8149,
+        "output_tokens": 3177,
+        "duration_seconds": 132.5959300994873,
+        "code_executions": 3,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_215947_What_was_the_average_heart_rate_for_user.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "9,852,389 steps",
+      "extracted_value": 9852389.0,
+      "is_correct": false,
+      "relative_error": 702.4908247054624,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11557,
+        "input_tokens": 7124,
+        "output_tokens": 4433,
+        "duration_seconds": 154.6584131717682,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220009_How_many_total_steps_were_taken_accordin.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.0,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.0,
+            "reasoning": "The system completely failed to perform any data analysis. It provided no step count values, no reference to garmin_steps or ios_steps data, and no actual investigation into user test004's activity level. The response dismisses the query entirely rather than retrieving and analyzing the relevant fitness data."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system failed to conduct any data analysis and provided no quantitative evidence whatsoever. The final answer explicitly states 'No data analysis needed,' which is inappropriate for a query requiring examination of user activity data to classify physical activity levels."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.0,
+            "reasoning": "The system completely abdicated its analytical responsibility by claiming 'no data analysis needed' rather than investigating user test004's activity data. Without executing any analysis, gathering relevant metrics, or reasoning through activity indicators, no sound logical chain from data to conclusion was established. A proper response required examining available movement/activity data to classify the user's physical activity level."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.0,
+            "reasoning": "The system failed to engage with the query entirely by stating 'No data analysis needed,' without attempting to retrieve user test004's activity data, compare it to any benchmarks (e.g., WHO recommendations of 10k steps/day or sedentary thresholds), or provide any contextual framework for the assessment."
+          }
+        ],
+        "summary": "Rubric: 0.00 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 7996,
+        "input_tokens": 4526,
+        "output_tokens": 3470,
+        "duration_seconds": 63.425394773483276,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220018_Based_on_the_data_is_user_test004_physi.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "54.485022618902065 (average heart_rate from test004 VALID records)",
+      "extracted_value": 54.485022618902065,
+      "is_correct": true,
+      "relative_error": 4.1513998467686656e-07,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 13651,
+        "input_tokens": 9195,
+        "output_tokens": 4456,
+        "duration_seconds": 172.55475068092346,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220028_What_was_the_average_heart_rate_measured.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "54.485022618902065 (mean heart_rate for user test004 with status VALID)",
+      "extracted_value": 54.485022618902065,
+      "is_correct": true,
+      "relative_error": 4.1513998467686656e-07,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12930,
+        "input_tokens": 7264,
+        "output_tokens": 5666,
+        "duration_seconds": 173.4130825996399,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220028_What_was_the_average_heart_rate_measured.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "15 (15 distinct WiFi networks by bssid for user test004)",
+      "extracted_value": 15.0,
+      "is_correct": false,
+      "relative_error": 4.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15902,
+        "input_tokens": 8613,
+        "output_tokens": 7289,
+        "duration_seconds": 194.79204392433167,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220050_How_many_different_WiFi_networks_did_use.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "54.485022618902065 (Average heart_rate from garmin_stress table filtered by uid='test004' and status='VALID', 1165264 records).",
+      "extracted_value": 54.485022618902065,
+      "is_correct": true,
+      "relative_error": 4.1513998467686656e-07,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 14191,
+        "input_tokens": 7211,
+        "output_tokens": 6980,
+        "duration_seconds": 199.95807766914368,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220055_What_was_the_average_heart_rate_measured.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "16",
+      "extracted_value": 16.0,
+      "is_correct": false,
+      "relative_error": 4.333333333333333,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 16363,
+        "input_tokens": 8468,
+        "output_tokens": 7895,
+        "duration_seconds": 201.36170601844788,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220056_How_many_different_WiFi_networks_did_use.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "100.0 (heart rate difference for test004 valid measurements)",
+      "extracted_value": 100.0,
+      "is_correct": false,
+      "relative_error": 0.06542056074766354,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 19582,
+        "input_tokens": 10504,
+        "output_tokens": 9078,
+        "duration_seconds": 216.25526642799377,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220111_What_is_the_difference_between_the_highe.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.025,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses relevant data sources",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis whatsoever, citing lack of a 'specific analytical query,' despite sleep habits being inferrable from standard IoT/smartphone data (lock/unlock timing, activity patterns, heart rate if available). The system should have explored available data sources rather than refusing the exploratory query outright."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, claiming no data analysis was needed, thus completely failed to identify or examine any temporal patterns related to sleep/wake cycles for user test004."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no data points, computed values, or evidence whatsoever to address the user's question about test004's sleep habits. A complete absence of analytical work or data citation constitutes a failure on this criterion."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.1,
+            "reasoning": "The system's reasoning is fundamentally flawed\u2014it dismisses a legitimate analytical query without attempting any data exploration. A proper analysis would query available data (device logs, timestamps, activity patterns, biometric data) to infer sleep habits, rather than declaring 'no data analysis needed' for an exploratory question that explicitly asks what 'can be figured out.'"
+          }
+        ],
+        "summary": "Rubric: 0.03 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 6948,
+        "input_tokens": 4567,
+        "output_tokens": 2381,
+        "duration_seconds": 46.361525774002075,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220115_What_can_we_figure_out_about_user_test00.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "100.42937853107344 (average heart rate for user test004 from Garmin HR readings matched to iOS walking activity within 30-second windows).",
+      "extracted_value": 100.42937853107344,
+      "is_correct": false,
+      "relative_error": 0.04439523316431083,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17312,
+        "input_tokens": 11913,
+        "output_tokens": 5399,
+        "duration_seconds": 197.94481420516968,
+        "code_executions": 5,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220122_What_was_the_average_heart_rate_for_user.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "48.0",
+      "extracted_value": 48.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17423,
+        "input_tokens": 8106,
+        "output_tokens": 9317,
+        "duration_seconds": 231.8032910823822,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220127_What_was_the_lowest_resting_heart_rate_f.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.025,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses lock/unlock data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any data analysis and provided no execution context, code, results, or findings. Without examining lock/unlock patterns or any phone usage data, the criterion of referencing lock/unlock events cannot be met."
+          },
+          {
+            "criterion": "Uses app usage data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no data insights about app usage patterns, usage logs, or which apps user test004 utilized. A proper response would require extracting and analyzing phone usage data to identify daily routine patterns."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.0,
+            "reasoning": "The system failed to conduct any analysis despite the query explicitly requesting identification of daily routine patterns from phone usage data. Declaring 'no data analysis needed' without attempting to examine temporal usage patterns, peak activity times, or application usage sequences represents a complete failure to address the core analytical requirement."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.1,
+            "reasoning": "The system failed to engage with the query substantively. Rather than analyzing available phone usage data to extract routine patterns, it dismissed the query outright without demonstrating any logical reasoning about what phone usage data could reveal about daily routines (e.g., app usage times, frequency patterns, device activity hours). The response shows no attempt at pattern interpretation."
+          }
+        ],
+        "summary": "Rubric: 0.03 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 7911,
+        "input_tokens": 4526,
+        "output_tokens": 3385,
+        "duration_seconds": 149.63288712501526,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220153_What_can_you_tell_about_user_test004s_d.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "155.0 (maximum heart rate value from combined Garmin heart rate monitoring data)",
+      "extracted_value": 155.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17612,
+        "input_tokens": 9599,
+        "output_tokens": 8013,
+        "duration_seconds": 259.54174423217773,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220154_What_was_the_highest_heart_rate_recorded.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "100.0 (range calculated as max - min for user test004 with VALID status).",
+      "extracted_value": 100.0,
+      "is_correct": false,
+      "relative_error": 0.06542056074766354,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 21951,
+        "input_tokens": 9685,
+        "output_tokens": 12266,
+        "duration_seconds": 261.39516019821167,
+        "code_executions": 4,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220156_What_is_the_difference_between_the_highe.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.163,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses relevant data sources",
+            "score": 0.2,
+            "reasoning": "The system correctly identified that explicit sleep columns don't exist but failed to recognize that heart rate patterns, device lock states, screen brightness, and activity data are viable proxies for inferring sleep habits\u2014these should have triggered analysis rather than dismissal. A competent system should have constructed a multi-signal approach to answer the query despite the absence of direct sleep metrics."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.2,
+            "reasoning": "The system correctly identified that explicit sleep data is unavailable, but failed to recognize that temporal patterns in activity, heart rate, screen brightness, and lock states could infer sleep/wake cycles. A competent analysis would extract time-series data to identify periods of inactivity, reduced heart rate variability, and locked screens correlating with likely sleep windows."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.1,
+            "reasoning": "The system declined to analyze without providing any specific data points, dataset schema details, or evidence about what columns were actually examined. A proper response would cite the available datasets, show what columns exist, and explain why sleep inference isn't possible from activity/heart rate/screen data."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.15,
+            "reasoning": "The system correctly identified that explicit sleep columns are absent from available datasets, but failed to recognize that sleep patterns can be inferred from indirect indicators (e.g., device lock state, absence of activity, heart rate patterns, screen brightness). A sound analysis would have explored these proxy variables rather than immediately dismissing the query as unanswerable."
+          }
+        ],
+        "summary": "Rubric: 0.16 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 10140,
+        "input_tokens": 4592,
+        "output_tokens": 5548,
+        "duration_seconds": 93.57645678520203,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220202_What_can_we_figure_out_about_user_test00.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.212,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses heart rate data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, providing no engagement with heart rate data or stress indicators. The final answer 'No data analysis needed for this query' demonstrates a complete failure to utilize available garmin_hr data to address the stress assessment question."
+          },
+          {
+            "criterion": "Uses stress data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no reference to garmin_stress data, heart rate measurements, or stress sensor status values. The final answer explicitly stated 'No data analysis needed' without attempting to investigate available stress data."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.0,
+            "reasoning": "The system refused to analyze the query entirely, providing no data, no specific numeric values, and no evidence whatsoever to address whether user test004 seems stressed. This represents a complete failure to engage with the analytical task."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.85,
+            "reasoning": "The system appropriately recognized that the query cannot be answered without relevant data and declined to perform unnecessary analysis. However, the response could have been more specific about what data would be needed (e.g., stress biomarkers, user activity patterns, behavioral indicators) or what limitations prevent assessment of user stress levels."
+          }
+        ],
+        "summary": "Rubric: 0.21 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 9228,
+        "input_tokens": 4524,
+        "output_tokens": 4704,
+        "duration_seconds": 170.36510729789734,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220225_Does_user_test004_seem_stressed_What_do.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "99.0 beats per minute (Difference between max 100.0 and min 1.0 valid heart_rate values).",
+      "extracted_value": 99.0,
+      "is_correct": false,
+      "relative_error": 0.07476635514018691,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 22105,
+        "input_tokens": 13075,
+        "output_tokens": 9030,
+        "duration_seconds": 302.5668692588806,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220238_What_is_the_difference_between_the_highe.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.1,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses relevant data sources",
+            "score": 0.2,
+            "reasoning": "The system correctly identified that explicit sleep data is unavailable in the schema, but failed to explore potentially relevant proxy indicators (heart rate patterns, activity cessation, device lock/unlock timing, or brightness data) that could provide indirect sleep habit insights. The decision to provide no analysis was overly conservative rather than attempting reasonable inference from available data."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.0,
+            "reasoning": "The system refused to perform any analysis, claiming no sleep data exists in the schema. However, temporal patterns in activity data (e.g., zero steps, low heart rate, sensor inactivity during nighttime hours) could legitimately infer sleep/wake cycles without explicit sleep columns. The system's strict interpretation prevented exploration of available temporal data that could reveal sleep habits."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no data points, computed values, or evidence whatsoever. While the reasoning about lack of explicit sleep metrics in the schema is technically valid, the appropriate response would be to attempt reasonable inferences (e.g., from activity patterns, heart rate variability, or device sensor data) or clearly explain limitations while still engaging analytically with available data."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.2,
+            "reasoning": "While the system correctly identifies that explicit sleep columns are absent from the schema, it prematurely abandons analysis without attempting reasonable inference methods (e.g., analyzing low activity periods, heart rate patterns, or timestamps) that are standard practice in wearable data analysis. The decision to perform 'no data analysis' is overly rigid and fails to explore what can legitimately be derived from available metrics."
+          }
+        ],
+        "summary": "Rubric: 0.10 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 13526,
+        "input_tokens": 4618,
+        "output_tokens": 8908,
+        "duration_seconds": 155.4030749797821,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220253_What_can_we_figure_out_about_user_test00.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.04,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Computes HRV metrics",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, stating 'No data analysis needed for this query,' without attempting to calculate SDNN, RMSSD, or other HRV metrics from user test004's data. This represents a complete failure to address the criterion's requirement to compute standard HRV metrics."
+          },
+          {
+            "criterion": "Uses correct methodology",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no methodology at all. It failed to retrieve or process IBI (inter-beat interval) data, apply outlier filtering, or use appropriate time windows to assess heart rate variability, which are essential for answering this query."
+          },
+          {
+            "criterion": "Interprets results",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any data analysis or interpretation. It provided no HRV values, no comparison against healthy ranges, and no clinical context\u2014simply stating 'No data analysis needed' is a complete abdication of the analytical task rather than a legitimate interpretation of results."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The system failed to engage with the query substantively and provided no analysis whatsoever. While it implicitly acknowledges that no data analysis was performed, it does not explicitly discuss limitations of wrist-based IBI measurement, data quality issues, or why the query cannot be answered\u2014it simply refuses without explanation."
+          }
+        ],
+        "summary": "Rubric: 0.04 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 10643,
+        "input_tokens": 4520,
+        "output_tokens": 6123,
+        "duration_seconds": 120.8071813583374,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220255_Is_user_test004s_heart_rate_variability.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "95.419 (average heart rate from garmin_hr dataset for user test004, where readings were matched to walking activities within 30 seconds from ios_activity dataset).",
+      "extracted_value": 95.419,
+      "is_correct": false,
+      "relative_error": 0.09206994426952356,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 25941,
+        "input_tokens": 15072,
+        "output_tokens": 10869,
+        "duration_seconds": 330.6286325454712,
+        "code_executions": 7,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220306_What_was_the_average_heart_rate_for_user.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "User test004 primarily uses Snapchat (291 sessions), Instagram (223), Spotify (100), WhatsApp (93), IM (92), and Twitter (10) across a full 24-hour cycle, with peak activity concentrated in Snapchat and Instagram.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.562,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses lock/unlock data",
+            "score": 0.0,
+            "reasoning": "The analysis does not reference or utilize any lock/unlock event data. The execution focused entirely on app usage logs (appName, timestamp, status) without examining device lock/unlock patterns, which would be necessary to assess this criterion."
+          },
+          {
+            "criterion": "Uses app usage data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully filtered and analyzed app_usage_logs for user test004, extracting app names, timestamps, and usage counts. The system executed multiple queries on the actual dataset (Steps 1-6), identifying 6 distinct applications (SNAP, IG, SPOT, WHT, IM, TWIT) with specific session counts, directly fulfilling the requirement to reference app usage logs and which apps are used."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.65,
+            "reasoning": "The analysis successfully identified app frequency rankings and attempted hourly analysis, but failed to fully execute temporal pattern detection\u2014the hourly grouping code ran but the final answer doesn't mention specific peak hours, and time interval calculations encountered execution issues. The final answer provides app popularity but lacks substantive insights into daily routine patterns (e.g., morning vs. evening usage, work hours vs. leisure time)."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.65,
+            "reasoning": "The analysis correctly identified app usage frequency and attempted to extract temporal patterns through hourly grouping, but the reasoning connecting app usage counts to 'daily routine' insights is incomplete. The system gathered relevant data (app frequencies, hourly distribution) but failed to synthesize this into coherent routine patterns (e.g., morning vs. evening usage, work vs. leisure times, usage consistency). The final answer lists app names and session counts without explaining what this reveals about actual daily behavioral routines or lifestyle patterns."
+          }
+        ],
+        "summary": "Rubric: 0.56 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. Step 3 explicitly shows the app usage counts for test004: SNAP (291), IG (223), SPOT (100), WHT (93), IM (92), and TWIT (10), which exactly match the numbers cited in the answer. The claim about peak activity in Snapchat and Instagram is supported by these being the top two apps by session count.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 23164,
+        "input_tokens": 15109,
+        "output_tokens": 8055,
+        "duration_seconds": 265.9461934566498,
+        "code_executions": 7,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220351_What_can_you_tell_about_user_test004s_d.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "0.4829297040514975 (Pearson correlation from hourly aggregated step counts).",
+      "extracted_value": 0.4829297040514975,
+      "is_correct": true,
+      "relative_error": 6.151180678710338e-05,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 27832,
+        "input_tokens": 15211,
+        "output_tokens": 12621,
+        "duration_seconds": 306.254531621933,
+        "code_executions": 7,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220353_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "100.43 bpm (average heart rate from 30-second window analysis of walking events for user test004).",
+      "extracted_value": 100.43,
+      "is_correct": false,
+      "relative_error": 0.044389319768476314,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 26825,
+        "input_tokens": 13774,
+        "output_tokens": 13051,
+        "duration_seconds": 384.3116137981415,
+        "code_executions": 7,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220400_What_was_the_average_heart_rate_for_user.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": null,
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "duration_seconds": 288.28799772262573,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": null,
+      "error": "DataFrame columns must be unique for orient='columns'."
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "Analysis shows 43,019 app usage events, 329 screen sessions, with ~358s average screen-on time and ~166s average screen-off time, predominantly stationary activity states throughout the day.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.787,
+        "faithfulness_score": 0.75,
+        "criteria_scores": [
+          {
+            "criterion": "Uses lock/unlock data",
+            "score": 0.9,
+            "reasoning": "The analysis thoroughly extracted and analyzed ios_lock_unlock data (Step 2), calculated 329 lock/unlock transitions with average durations (~358s unlocked, ~166s locked), and incorporated these findings into the final answer. The lock/unlock analysis directly informed understanding of usage patterns and screen-on/off behavior."
+          },
+          {
+            "criterion": "Uses app usage data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully filtered app_usage_logs for test004 and extracted appName/timestamp data, identifying specific apps used (WHT, IG, SNAP, SPOT, IM) and clustering by hourly frequency to identify peak usage times. However, the final answer lacks specific app names and detailed usage patterns (e.g., which apps dominate which hours), missing an opportunity to provide richer insights about the actual daily routine despite having this data extracted."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.75,
+            "reasoning": "The analysis successfully identified several key temporal patterns: peak app usage hours (12:00-14:00 with 73 events), lock/unlock cycles revealing screen-on/off behavior (~358s and ~166s averages), and predominantly stationary activity states. However, the final answer underutilizes this rich data\u2014it presents raw statistics rather than synthesizing them into coherent daily routine insights (e.g., morning/evening usage habits, lunch-time peaks, work vs. leisure patterns), leaving pattern interpretation incomplete."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.65,
+            "reasoning": "The analysis executed a methodologically sound plan with appropriate data filtering, aggregation, and statistical calculations (lock/unlock durations, hourly app clustering, activity correlation). However, the final answer fails to translate these findings into meaningful routine insights\u2014it merely reports raw statistics (43,019 events, 329 sessions, averages) without synthesizing patterns into actual daily behavior (e.g., peak usage times, app preferences, activity correlations, or temporal structure of the routine)."
+          }
+        ],
+        "summary": "Rubric: 0.79 | Faithfulness: 0.75",
+        "faithfulness_reasoning": "Most claims are supported by execution evidence, but the 43,019 app usage events figure is unsupported. The evidence shows 329 screen sessions (Step 5), ~358s average screen-on time and ~166s average screen-off time (Step 5), and predominantly stationary activity (Step 4). However, the 43,019 app usage events cannot be verified from the provided execution steps - Step 1 only shows a sample of app usage records without a total count.",
+        "unsupported_claims": [
+          "43,019 app usage events - no execution evidence shows this total count; Step 1 only displays sample records without computing the total number of events for test004"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 25553,
+        "input_tokens": 14491,
+        "output_tokens": 11062,
+        "duration_seconds": 294.97147274017334,
+        "code_executions": 6,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220414_What_can_you_tell_about_user_test004s_d.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "48.0 beats per minute (minimum resting heart rate for user 'test004', excluding invalid readings)",
+      "extracted_value": 48.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 27602,
+        "input_tokens": 11853,
+        "output_tokens": 15749,
+        "duration_seconds": 412.6279273033142,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220427_What_was_the_lowest_resting_heart_rate_f.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "0.5039787675341177 (Pearson correlation coefficient between Garmin and iPhone step counts).",
+      "extracted_value": 0.5039787675341177,
+      "is_correct": false,
+      "relative_error": 0.04365037799568803,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 31269,
+        "input_tokens": 20921,
+        "output_tokens": 10348,
+        "duration_seconds": 364.26293182373047,
+        "code_executions": 8,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220453_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "25.7% Coefficient of Variation (HRV assessment: moderate health status, CV below 30% is generally healthy for young-adult demographics). Key metrics: Mean BBI = 740ms (corresponding to ~67-70 BPM resting heart rate), Standard Deviation = 189.8ms, Average Heart Rate = 78.5 BPM.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.607,
+        "faithfulness_score": 0.92,
+        "criteria_scores": [
+          {
+            "criterion": "Computes HRV metrics",
+            "score": 0.6,
+            "reasoning": "The system successfully calculated coefficient of variation (CV = 25.7%) and basic statistics (mean BBI, std BBI) from IBI data, which are valid HRV indicators. However, it did not compute standard clinical HRV metrics like SDNN (Standard Deviation of NN intervals) or RMSSD (Root Mean Square of Successive Differences), which are the gold-standard measures for HRV assessment. The CV approach is useful but incomplete for comprehensive HRV evaluation."
+          },
+          {
+            "criterion": "Uses correct methodology",
+            "score": 0.72,
+            "reasoning": "The analysis correctly filters user data and calculates standard HRV metrics (mean BBI, std dev, coefficient of variation) from IBI data. However, the methodology has gaps: no outlier filtering on BBI values (which can skew results), no time-window segmentation (HRV is typically analyzed in fixed windows like 5-min or hourly periods), and inconsistent handling of stress/body_battery data (extracted but then ignored, showing incomplete integration of contextual factors needed for proper HRV assessment)."
+          },
+          {
+            "criterion": "Interprets results",
+            "score": 0.75,
+            "reasoning": "The system correctly calculated HRV metrics (CV=25.7%, std_bbi=189.8ms) and contextualizes them against healthy ranges (CV<30% is healthy, std_bbi>150 indicates health). However, the final answer contains a minor inconsistency: it states CV below 30% is 'generally healthy for young-adult demographics' while earlier execution flagged std_bbi>150 as the threshold, and the resting HR of 67-70 BPM doesn't match the calculated 78.5 BPM average\u2014these discrepancies slightly weaken the interpretation's accuracy and clarity."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.3,
+            "reasoning": "The analysis briefly notes that 'Garmin stress data unavailable' but fails to acknowledge critical limitations of wrist-based IBI measurements, data quality concerns, or the fact that a CV of 25.7% falls in an ambiguous range where clinical interpretation requires demographic context (age, fitness level, measurement conditions) that wasn't established or validated."
+          }
+        ],
+        "summary": "Rubric: 0.61 | Faithfulness: 0.92",
+        "faithfulness_reasoning": "The answer is largely faithful to the execution evidence. The key metrics are all supported: CV of 25.7% (matches 0.2566 rounded), Mean BBI = 740ms (matches 739.8ms), Standard Deviation = 189.8ms (exact match), and Average Heart Rate = 78.5 BPM (matches 78.50 BPM). The interpretation that CV below 30% is generally healthy is a reasonable clinical assessment, though this specific threshold claim is not explicitly computed or verified in the evidence provided.",
+        "unsupported_claims": [
+          "The claim that 'CV below 30% is generally healthy for young-adult demographics' is a clinical interpretation not directly verified in the execution evidence"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 21745,
+        "input_tokens": 13772,
+        "output_tokens": 7973,
+        "duration_seconds": 222.53247809410095,
+        "code_executions": 5,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220454_Is_user_test004s_heart_rate_variability.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "The physical activity level for user 'test004' is classified as ACTIVE based on 14,005 total steps recorded (significant daily activity level), with 101 walking activity entries out of 1,722 total activity instances captured from both wearable and sensor data.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.79,
+        "faithfulness_score": 0.15,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully retrieved and used the actual step count data (14,005 total steps for user test004 from garmin_steps), incorporating it into the activity classification logic. However, the execution showed multiple failed attempts and data processing issues before arriving at the final answer, suggesting some inefficiency in accessing the step data despite ultimately using it correctly."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The analysis successfully identifies and cites specific quantitative metrics (14,005 total steps, 101 walking entries out of 1,722 total activities, 76.6% stationary rate), though the final answer oversimplifies the classification from 'moderately_active' (supported by data showing 76.6% stationary) to simply 'ACTIVE' without acknowledging the high sedentary component that contradicts this label."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.65,
+            "reasoning": "The analysis correctly identified 14,005 total steps and 101 walking entries, and ultimately concluded the user is ACTIVE. However, the reasoning is contradictory: the data shows 1,354/1,722 (78.6%) stationary entries, which should suggest sedentary behavior, yet the classification as 'ACTIVE' is based on high step counts without adequately reconciling this conflict. The logical chain is weakened by multiple failed execution attempts and unclear reasoning about how high steps reconcile with predominantly stationary activity patterns."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.75,
+            "reasoning": "The analysis effectively contextualizes the 14,005 total steps against standard activity benchmarks (\u226510,000 steps indicates active), and provides detailed breakdowns of activity patterns (76.6% stationary vs 5.9% walking). However, it lacks temporal context (steps per day vs total accumulated), doesn't compare to WHO/medical guidelines for sedentary time thresholds, and the final 'ACTIVE' classification contradicts the high stationary percentage, creating ambiguity in the contextual framing."
+          }
+        ],
+        "summary": "Rubric: 0.79 | Faithfulness: 0.15",
+        "faithfulness_reasoning": "The answer's classification of test004 as 'ACTIVE' is directly contradicted by the execution evidence. The data shows test004 is predominantly stationary (1,354 out of 1,722 activity entries = 78.6% stationary) with only 101 walking entries (5.9%), and the step count of 14,005 total steps is spread across the entire dataset rather than representing 'significant daily activity.' The evidence supports a 'sedentary' classification, not 'active.'",
+        "unsupported_claims": [
+          "User test004 is classified as ACTIVE - evidence shows 78.6% stationary activities vs 5.9% walking",
+          "14,005 steps represents a 'significant daily activity level' - this appears to be total steps across the entire measurement period, not daily",
+          "101 walking activity entries demonstrates physical activity - walking comprises only 5.9% of all activities recorded"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 39455,
+        "input_tokens": 27703,
+        "output_tokens": 11752,
+        "duration_seconds": 360.3780608177185,
+        "code_executions": 6,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220505_Based_on_the_data_is_user_test004_physi.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "156.0 (heart rate range for user test004 calculated as max - min from valid measurements).",
+      "extracted_value": 156.0,
+      "is_correct": false,
+      "relative_error": 0.45794392523364486,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 29544,
+        "input_tokens": 13582,
+        "output_tokens": 15962,
+        "duration_seconds": 471.70988297462463,
+        "code_executions": 5,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220526_What_is_the_difference_between_the_highe.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "HRV metrics for test004: RMSSD = 39.04ms (Suboptimal), SDNN = 189.83ms (Optimal). Overall assessment shows good overall heart rate variability with strong SDNN indicating stable autonomic regulation, but RMSSD indicates potentially elevated stress levels or reduced vagal tone.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.7,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Computes HRV metrics",
+            "score": 0.95,
+            "reasoning": "The system successfully computed both RMSSD (39.04ms) and SDNN (189.83ms) from beat-to-beat interval data using proper mathematical formulas (successive differences for RMSSD, standard deviation for SDNN). Minor deduction only because the RMSSD threshold interpretation (40ms) appears slightly arbitrary without source citation, though the calculations themselves are mathematically sound."
+          },
+          {
+            "criterion": "Uses correct methodology",
+            "score": 0.75,
+            "reasoning": "The analysis correctly filters user data, extracts BBI intervals, sorts chronologically, and applies standard HRV formulas (RMSSD and SDNN). However, it lacks outlier detection/handling (e.g., the 738ms spike at index 38 appears unchecked) and doesn't validate data quality or mention time window considerations, which are best practices for physiologically meaningful HRV analysis."
+          },
+          {
+            "criterion": "Interprets results",
+            "score": 0.75,
+            "reasoning": "The system correctly calculated HRV metrics (RMSSD=39.04ms, SDNN=189.83ms) and compared them against thresholds, accurately identifying RMSSD as suboptimal and SDNN as optimal. However, the interpretation lacks depth\u2014the final answer provides surface-level assessment without adequately explaining that the borderline RMSSD (39.04 vs 40ms threshold) is clinically less significant than the excellent SDNN value, and doesn't clarify that SDNN>180ms is actually very strong HRV, potentially indicating good overall cardiovascular health despite marginal RMSSD."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis fails to acknowledge any limitations of wrist-based IBI measurement, data quality concerns, or the borderline nature of the RMSSD result (39.04ms vs 40ms threshold). No discussion of measurement precision, artifact potential, or contextual factors affecting HRV interpretation is provided."
+          }
+        ],
+        "summary": "Rubric: 0.70 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "Most factual claims are supported by execution evidence. The specific HRV metric values (RMSSD = 39.04ms, SDNN = 189.83ms) and their classifications (Suboptimal and Optimal respectively) are directly computed and verified in the execution steps. However, the interpretive claims about what these metrics indicate (e.g., 'elevated stress levels or reduced vagal tone') are not directly supported by the executed code\u2014the code only compares against thresholds without providing physiological interpretation.",
+        "unsupported_claims": [
+          "RMSSD indicates potentially elevated stress levels or reduced vagal tone - this interpretation is not computed or evidenced in the execution steps; only the threshold comparison (39.04 < 40) was performed"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 33434,
+        "input_tokens": 20714,
+        "output_tokens": 12720,
+        "duration_seconds": 296.1280360221863,
+        "code_executions": 8,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220553_Is_user_test004s_heart_rate_variability.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "78.5 BPM mean heart rate, 155 BPM max heart rate, complete absence of body battery data, with 8179 valid stress intensity readings available. Body battery and body battery_status columns are 100% null for this user.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.825,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses heart rate data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and analyzed heart rate data from garmin_hr for user test004, calculating mean (78.5 BPM) and maximum (155 BPM) values. The execution properly filtered the dataset and retrieved concrete heart rate measurements to support stress assessment."
+          },
+          {
+            "criterion": "Uses stress data",
+            "score": 0.65,
+            "reasoning": "The analysis successfully accessed garmin_stress dataset and identified 8,179 valid stress intensity readings, but critically failed to extract or report the actual stress_intensity values themselves\u2014the primary stress metric. Instead, it pivoted to heart rate data from garmin_hr as a proxy indicator. The execution demonstrated good data discovery (finding complete nulls in body_battery fields) but incomplete utilization of the primary stress measurement column available in the garmin_stress source."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.85,
+            "reasoning": "The final answer cites specific numeric values (78.5 BPM mean, 155 BPM max, 8179 valid stress readings, 100% null body battery) directly extracted from executed queries, effectively supporting the analysis. However, the answer lacks contextual interpretation of what these values mean for stress assessment\u2014whether 78.5 BPM is normal/elevated, or what the absence of body battery data implies about stress conclusions."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.85,
+            "reasoning": "The analysis explicitly identifies significant data limitations\u2014complete absence of body_battery data (100% null), stress_intensity unavailable, and reliance on heart rate as a proxy measure. However, the final answer could have been more explicit about what these limitations mean for confidence in stress conclusions (e.g., 'cannot definitively assess stress without stress_intensity data')."
+          }
+        ],
+        "summary": "Rubric: 0.82 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The mean heart rate of 78.5 BPM is confirmed in Step 3 result, the max heart rate of 155 BPM is confirmed in Step 3 result, the complete absence of body battery data is confirmed in Step 4 result (both columns 100% null with 17283/17283 null values), and the 8179 valid stress intensity readings are confirmed in Step 1 result (has_data_per_column showing 8179 non-null values in the stress intensity column).",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 26168,
+        "input_tokens": 13926,
+        "output_tokens": 12242,
+        "duration_seconds": 376.14525413513184,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220557_Does_user_test004_seem_stressed_What_do.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "N/A - Full stress assessment could not be completed due to missing 'test_id' column in garmin_hr dataset for filtering heart rate correlation data.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.362,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses heart rate data",
+            "score": 0.3,
+            "reasoning": "The analysis retrieved heart rate data for test004 (10,708 records with mean 78.5 bpm) and attempted correlation steps, but ultimately could not complete heart rate-stress correlation analysis due to missing/invalid column references ('test_id' error). The heart rate data was accessed but not meaningfully integrated into a stress assessment conclusion."
+          },
+          {
+            "criterion": "Uses stress data",
+            "score": 0.15,
+            "reasoning": "The analysis attempted to use garmin_stress dataset but found all stress metric columns (average_stress_intensity, body_battery, body_battery_status) contained only null values for test004, making stress assessment impossible. The system pivoted to heart rate data instead, which is a different sensor modality that doesn't directly measure stress. The execution documented this data quality limitation but could not fulfill the core requirement of analyzing actual stress metrics."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.15,
+            "reasoning": "The system retrieved relevant datasets and obtained some numeric data (e.g., mean heart rate of 78.5 bpm for test004), but the final answer 'N/A' provides no specific numeric evidence to the user. The execution revealed all stress metric columns contained null values, making stress assessment impossible, yet this critical finding wasn't communicated with supporting statistics in the final answer."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.85,
+            "reasoning": "The analysis explicitly identified and documented that the garmin_stress dataset contained all null values for stress metrics (average_stress_intensity, body_battery, body_battery_status), preventing stress correlation analysis. However, the final answer could have been more specific about what data quality issues were encountered and what partial insights were available from heart rate data."
+          }
+        ],
+        "summary": "Rubric: 0.36 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "The answer is fully faithful to the execution evidence. The response correctly states that a full stress assessment could not be completed and accurately identifies the reason: the 'test_id' column was missing from the garmin_hr dataset (evidenced by the 'test_id' error in Step 1). The answer appropriately reports 'N/A' given this limitation, and does not make any unsupported claims about user test004's stress level.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 29748,
+        "input_tokens": 14248,
+        "output_tokens": 15500,
+        "duration_seconds": 397.554363489151,
+        "code_executions": 2,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220624_Does_user_test004_seem_stressed_What_do.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "User test004: RMSSD = 39.04 ms (below healthy threshold of \u226550 ms), SDNN = 189.83 ms (normal range, >50 ms). Overall: Mixed - RMSSD indicates potentially reduced heart rate variability suggesting possible stress or recovery issues, while SDNN remains within normal range.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.67,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Computes HRV metrics",
+            "score": 0.85,
+            "reasoning": "The system successfully calculated both RMSSD (39.04 ms) and SDNN (189.83 ms) from beat-to-beat interval data using appropriate formulas (RMSSD as root mean square of successive differences, SDNN as standard deviation). However, execution had multiple missteps (syntax errors, data type confusion) before reaching correct results, and the final answer's presentation could be clearer."
+          },
+          {
+            "criterion": "Uses correct methodology",
+            "score": 0.75,
+            "reasoning": "The system correctly extracted BBI data, calculated RMSSD and SDNN using standard HRV formulas (successive differences and standard deviation), and compared against evidence-based thresholds (RMSSD >50ms, SDNN >50ms). However, the execution showed minor issues: incomplete error handling in Step 6, no explicit outlier filtering or time-window validation mentioned, and some code failures that required workarounds, though final calculations appear sound."
+          },
+          {
+            "criterion": "Interprets results",
+            "score": 0.75,
+            "reasoning": "The system correctly identified that RMSSD (39.04 ms) falls below the healthy threshold of 50 ms and SDNN (189.83 ms) is within normal range, properly contextualizing both metrics against established baselines. However, the interpretation could be stronger\u2014while the conclusion acknowledges a 'mixed' pattern, it could better explain the clinical significance (e.g., low RMSSD may indicate sympathetic dominance or stress response) and the apparent contradiction between low RMSSD and high SDNN values."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis does not acknowledge limitations of wrist-based IBI measurement, data quality, or the validity of the HRV thresholds used. The system extracted and calculated metrics correctly but provided no caveats about measurement reliability, sample size adequacy, or whether single-point assessments are clinically meaningful."
+          }
+        ],
+        "summary": "Rubric: 0.67 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The RMSSD value of 39.04 ms matches Step 2 result, the SDNN value of 189.83 ms matches Step 3 result, the healthy threshold of \u226550 ms for RMSSD is confirmed in Step 5, and the characterization as 'mixed' with RMSSD below threshold and SDNN in normal range is consistent with Step 5's assessment.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 35300,
+        "input_tokens": 23035,
+        "output_tokens": 12265,
+        "duration_seconds": 362.6041057109833,
+        "code_executions": 8,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220652_Is_user_test004s_heart_rate_variability.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Elevated stress level for user test004",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.675,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses heart rate data",
+            "score": 0.9,
+            "reasoning": "The analysis successfully loaded and analyzed garmin_hr data for test004, calculated mean heart rate (78.5 bpm), standard deviation (24.65), and compared it against threshold values. The only minor gap is that the analysis didn't deeply explore heart rate patterns over time or compare against baseline/normal ranges for the user."
+          },
+          {
+            "criterion": "Uses stress data",
+            "score": 0.75,
+            "reasoning": "The analysis successfully accessed and analyzed garmin_stress data, extracting mean heart rate (54.49) and variance (1014.99) for test004. However, the primary stress metric ('average_stress_intensity') returned all null values, limiting the direct stress assessment to heart rate patterns rather than actual stress intensity readings from the Garmin stress sensor."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and presented specific numeric values (mean heart rate: 78.5 bpm, mean stress intensity: 54.5, stress variance: 1014.99) from multiple data sources to support the stress conclusion. However, the final answer is extremely terse\u2014just 'Elevated stress level for user test004'\u2014which fails to communicate the supporting evidence clearly to the user, despite the thorough computational work done."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis encountered significant data limitations (all average_stress_intensity values were null, stress_intensity field didn't exist) but the final answer makes a confident conclusion without acknowledging these gaps or the reliance on indirect stress proxies like heart rate and variance instead of direct stress measurements."
+          }
+        ],
+        "summary": "Rubric: 0.68 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The answer's main claim of 'elevated stress level' is supported by execution evidence (Step 7 result shows 'overall_stress_level': 'elevated'). However, the answer lacks specific data support - it doesn't mention the actual metrics that back this conclusion (mean stress of 54.49, heart rate of 78.5, stress variance of 1014.99, etc.), making the answer incomplete in explaining what the data shows.",
+        "unsupported_claims": [
+          "The answer claims 'elevated stress level' but provides no supporting metrics or explanation of which data points led to this conclusion"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 52235,
+        "input_tokens": 31935,
+        "output_tokens": 20300,
+        "duration_seconds": 448.64626812934875,
+        "code_executions": 9,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220716_Does_user_test004_seem_stressed_What_do.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "N/A (Correlation cannot be calculated as average_stress_intensity column has 100% null values).",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 46016,
+        "input_tokens": 21320,
+        "output_tokens": 24696,
+        "duration_seconds": 597.7457540035248,
+        "code_executions": 9,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220835_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "-0.1130728781507825 (Pearson correlation between Garmin and iOS hourly step counts for user test004).",
+      "extracted_value": -0.1130728781507825,
+      "is_correct": false,
+      "relative_error": 1.2341538168374042,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 40203,
+        "input_tokens": 23103,
+        "output_tokens": 17100,
+        "duration_seconds": 593.0343494415283,
+        "code_executions": 9,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220844_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "N/A - Pearson correlation could not be computed. The garmin_stress dataset for user 'test004' contained no valid average_stress_intensity values (all 17,283 rows had NaN/empty values).",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 43043,
+        "input_tokens": 21105,
+        "output_tokens": 21938,
+        "duration_seconds": 676.1742746829987,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_220954_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "MODERATELY ACTIVE (Total: 33,716 steps = 19,711 iOS + 14,005 Garmin; ~13km distance; ~5,620 avg daily steps; 78.5 bpm avg heart rate). The user exceeds sedentary thresholds with consistent moderate activity.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.864,
+        "faithfulness_score": 0.75,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and aggregated step data from both garmin_steps (14,005 total) and ios_steps (19,711 total), calculated daily averages, and used these concrete values to classify the user as moderately active. The final answer correctly cites the specific step metrics gathered during execution."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis provides strong quantitative support with specific metrics: 33,716 total steps (19,711 iOS + 14,005 Garmin), ~13km distance, 5,620 average daily steps, and 78.5 bpm heart rate. The execution successfully aggregated data from multiple sources and performed comparative benchmarking against activity thresholds (5,000+ steps for active classification), demonstrating thorough numerical analysis despite some execution errors that were eventually resolved."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.72,
+            "reasoning": "The analysis follows a logical progression through 8 planned steps, successfully aggregating data from multiple sources (iOS/Garmin steps, heart rate, activity types) to reach a MODERATELY ACTIVE classification. However, the execution encountered multiple code failures (timestamp column issues, pandas syntax errors, boolean ambiguity) that required repeated corrections, and the final step 8 code never successfully executed\u2014the classification was made from intermediate results rather than the intended merged analysis. The reasoning chain (total steps 33,716 + 78.5 bpm heart rate + 5,620 daily average = moderate activity) is sound, but the analytical pathway was inefficient and incomplete."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.75,
+            "reasoning": "The analysis successfully contextualizes findings against sedentary (<5,000 steps/day) and active (>5,000 steps/day) benchmarks, correctly classifying test004 as MODERATELY ACTIVE based on 33,716 total steps and ~5,620 average daily steps. However, the final answer could have provided deeper context such as WHO activity guidelines (10,000 steps/day standard) or health implications of moderate activity levels to make the contextualization more comprehensive."
+          }
+        ],
+        "summary": "Rubric: 0.86 | Faithfulness: 0.75",
+        "faithfulness_reasoning": "Most key metrics in the answer are supported by execution evidence: total steps (33,716 = 19,711 + 14,005 \u2713), distance (~13km \u2713), and average heart rate (78.5 bpm \u2713). However, the claimed average daily steps (5,620) cannot be verified from the execution results, and the conclusion about 'moderate activity' exceeding 'sedentary thresholds' lacks supporting data or threshold definitions in the evidence.",
+        "unsupported_claims": [
+          "~5,620 avg daily steps - Step 8 shows daily steps ranging from 0 to 13,784 across 3 days, but no daily average of 5,620 is computed",
+          "The user 'exceeds sedentary thresholds' - No sedentary threshold values or comparative analysis is provided in the execution evidence"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 70318,
+        "input_tokens": 39137,
+        "output_tokens": 31181,
+        "duration_seconds": 796.7933368682861,
+        "code_executions": 10,
+        "code_successes": 8
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_221225_Based_on_the_data_is_user_test004_physi.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "155.0 bpm",
+      "extracted_value": 155.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20208,
+        "input_tokens": 16187,
+        "output_tokens": 4021,
+        "duration_seconds": 1066.345562696457,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_221521_What_was_the_highest_heart_rate_recorded.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "0.8986467912257876 (Pearson correlation coefficient from joined heart rate and stress data aligned by timestamp within 1 second tolerance)",
+      "extracted_value": 0.8986467912257876,
+      "is_correct": true,
+      "relative_error": 5.20712505983272e-05,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 99650,
+        "input_tokens": 18804,
+        "output_tokens": 80846,
+        "duration_seconds": 1314.7272412776947,
+        "code_executions": 7,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_222006_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "Strong evidence of consistent sleep pattern for user test004 during 23:00-06:00 window with avg night brightness 0.298, resting heart rate 78.5 bpm, 11.5 steps per night record, and zero device unlocks.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.76,
+        "faithfulness_score": 0.65,
+        "criteria_scores": [
+          {
+            "criterion": "Uses relevant data sources",
+            "score": 0.85,
+            "reasoning": "The analysis systematically accessed 7 relevant datasets (ios_brightness, ios_activity, garmin_hr, ios_steps, ios_lock_unlock, garmin_stress, garmin_lock_unlock) and successfully extracted meaningful metrics: average night brightness (0.298), resting heart rate (78.5 bpm), low night steps (11.5), and zero device unlocks during sleep hours. However, the execution encountered multiple code errors, some data columns had high null rates (52.7% for heart_rate, 100% for stress intensity), and Step 7's sleep window analysis was incomplete due to timestamp format issues. Despite these implementation challenges, the core analytical approach was sound and most key data sources were appropriately leveraged."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.72,
+            "reasoning": "The analysis successfully identified a consistent 23:00-06:00 sleep window with supporting metrics (low brightness 0.298, resting heart rate 78.5 bpm, minimal steps 11.5/night, zero device unlocks). However, execution was inefficient with multiple failed attempts, incomplete cross-validation of temporal patterns (Step 7 sleep window correlation failed), and missing stress/activity type analysis that would strengthen temporal conclusions."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.75,
+            "reasoning": "The system gathered substantial data across multiple sources (brightness: 0.298, heart rate: 78.5 bpm, steps: 11.5, device unlocks: 0) and executed 7-step analysis plan with mostly successful data extraction. However, execution was inefficient with multiple failed attempts, syntax errors, and data gaps (stress data 100% null, heart rate 52.7% null), yet still synthesized available metrics into a coherent sleep pattern conclusion supported by concrete numbers."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.72,
+            "reasoning": "The analysis demonstrates solid logical inference by systematically combining multiple sensor modalities (brightness, heart rate, steps, activity, device unlocks) to triangulate sleep patterns where direct sleep data is unavailable. The conclusion about a consistent 23:00-06:00 sleep window is well-supported by convergent evidence (low brightness 0.298, low steps 11.5, resting HR 78.5 bpm, zero night unlocks). However, the execution was inefficient with multiple failed attempts and syntax errors, and Step 7's intended sleep window validation was incomplete, somewhat weakening the rigor of the final inference chain despite reaching reasonable conclusions."
+          }
+        ],
+        "summary": "Rubric: 0.76 | Faithfulness: 0.65",
+        "faithfulness_reasoning": "Most quantitative claims are supported by execution evidence, but the claim about the 23:00-06:00 window and the characterization of 'strong evidence of consistent sleep pattern' are problematic. Step 1 only returned data for hour 0 (midnight), Step 5 found zero device unlocks (supporting that claim), Step 3 confirmed 78.5 bpm heart rate, and Step 4 confirmed 11.5 steps average. However, the execution evidence shows significant data quality issues (all stress data is null, high null rates in other fields) and the sleep pattern inference is incomplete.",
+        "unsupported_claims": [
+          "Strong evidence of consistent sleep pattern during 23:00-06:00 window - Step 1 only returned brightness data for hour 0, not a complete 23:00-06:00 picture",
+          "avg night brightness 0.298 - Only one hour (hour 0) of brightness data was retrieved, not an average across the full night window",
+          "The characterization of 'consistent sleep pattern' - Execution evidence shows zero device unlocks and high steps (11.5/night) which could suggest activity, contradicting deep sleep interpretation"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 134368,
+        "input_tokens": 96540,
+        "output_tokens": 37828,
+        "duration_seconds": 1200.0498371124268,
+        "code_executions": 13,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_222009_What_can_we_figure_out_about_user_test00.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "0.898647 (Pearson correlation coefficient between garmin_hr and garmin_stress heart_rate values for user test004, matched within 1-second timestamp tolerance).",
+      "extracted_value": 0.898647,
+      "is_correct": true,
+      "relative_error": 5.230358335190213e-05,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 85640,
+        "input_tokens": 15170,
+        "output_tokens": 70470,
+        "duration_seconds": 1980.1519615650177,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260316_223127_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    }
+  ],
+  "timestamp": "20260316_223200"
+}

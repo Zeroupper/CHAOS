@@ -293,6 +293,38 @@ CHAOS includes an evaluation framework for benchmarking against a RAG baseline a
 
 See [`eval/README.md`](eval/README.md) for full documentation on configuration, test cases, and metrics.
 
+## Results
+
+Evaluation across two datasets (**GLOSS** and **GLOBEM**), 4 models from qwen3.5 family, and a RAG baseline. Each configuration was run 4 times. Cohen's *d* is measured against the RAG baseline.
+
+### GLOSS (4 repeats, 16 test cases)
+
+| Metric | 9B | 35B-A3B | 122B-A10B | 397B-A17B | RAG (35B) |
+|---|---|---|---|---|---|
+| Obj. Accuracy | 36% | 59% | 66% | 77% | 32% |
+| Consistency | 73% | 81% | 93% | 89% | 97% |
+| Avg. Rel. Error | 10.7% | 25.1% | 21.8% | 11.1% | 16.6% |
+| Rubric Score | 0.43 | 0.67 | 0.70 | 0.73 | 0.56 |
+| Faithfulness | 0.47 | 0.71 | 0.87 | 0.78 | 0.92 |
+| Code Success Rate | 84% | 77% | 84% | 92% | N/A |
+| Avg. Tokens | 23,060 | 22,537 | 16,907 | 17,469 | 16,274 |
+| Avg. Latency (s) | 294.6 | 133.4 | 112.4 | 207.0 | 28.9 |
+| Cohen's *d* vs. RAG | +0.09 | +0.56 | +0.72 | +1.01 | — |
+
+### GLOBEM (4 repeats, 25 test cases)
+
+| Metric | 9B | 35B-A3B | 122B-A10B | 397B-A17B | RAG (35B) |
+|---|---|---|---|---|---|
+| Obj. Accuracy | 71.7% | 76.7% | 88.3% | 86.7% | 30.0% |
+| Consistency | 78.3% | 83.3% | 88.3% | 86.7% | 91.7% |
+| Avg. Rel. Error | 10.7% | 9.1% | 2.6% | 7.5% | 10.0% |
+| Rubric Score | 0.52 | 0.78 | 0.83 | 0.80 | 0.26 |
+| Faithfulness | 0.54 | 0.71 | 0.88 | 0.83 | 0.99 |
+| Code Success Rate | 77.4% | 78.2% | 90.1% | 89.8% | N/A |
+| Avg. Tokens | 24,385 | 24,547 | 18,530 | 21,443 | 10,425 |
+| Avg. Latency (s) | 184.7 | 153.0 | 122.2 | 180.4 | 13.0 |
+| Cohen's *d* vs. RAG | +0.91 | +1.05 | +1.46 | +1.39 | — |
+
 ## Documentation
 
 - [Evaluation Framework](eval/README.md) — benchmarking, test cases, metrics

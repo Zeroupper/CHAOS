@@ -1,5 +1,12 @@
-eval_results/
-exported_runs/
+# Eval results - ignore all except specific suites
+eval_results/*
+!eval_results/20260314_*_suite/
+!eval_results/20260316_*_suite/
+
+# Exported runs - ignore all except specific dates
+exported_runs/*
+!exported_runs/20260314_*
+!exported_runs/20260316_*
 
 # Python
 __pycache__/

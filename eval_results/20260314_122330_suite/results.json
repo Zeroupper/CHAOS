@@ -1,0 +1,3404 @@
+{
+  "config": {
+    "judge_model": "anthropic/claude-haiku-4.5",
+    "n_repeats": 4,
+    "datasets_dir": "datasets/globem-dataset-multi-year-datasets-for-longitudinal-human-behavior-modeling-generalization-1.1/INS-W_1",
+    "models": [
+      {
+        "name": "chaos_qwen/qwen3.5-9b",
+        "model": "qwen/qwen3.5-9b",
+        "pipeline": "chaos",
+        "sandbox": true
+      }
+    ]
+  },
+  "results": [
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 8746,
+        "input_tokens": 6772,
+        "output_tokens": 1974,
+        "duration_seconds": 27.9246928691864,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112617_What_is_the_maximum_number_of_screen_unl.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 8456,
+        "input_tokens": 6780,
+        "output_tokens": 1676,
+        "duration_seconds": 16.953322410583496,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112634_What_is_the_average_outgoing_call_count.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12596,
+        "input_tokens": 6780,
+        "output_tokens": 5816,
+        "duration_seconds": 52.05480647087097,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112641_What_is_the_average_outgoing_call_count.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11599,
+        "input_tokens": 6780,
+        "output_tokens": 4819,
+        "duration_seconds": 42.38593792915344,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112716_What_is_the_average_outgoing_call_count.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "3955.0 (maximum screen unlock episodes over 14-day history across all participants)",
+      "extracted_value": 3955.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15468,
+        "input_tokens": 9908,
+        "output_tokens": 5560,
+        "duration_seconds": 91.78063654899597,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112721_What_is_the_maximum_number_of_screen_unl.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "3955.0 (maximum value from 14-day screen unlock episode history across all participants).",
+      "extracted_value": 3955.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 18829,
+        "input_tokens": 11654,
+        "output_tokens": 7175,
+        "duration_seconds": 111.45363450050354,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112740_What_is_the_maximum_number_of_screen_unl.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "3955.0 (maximum screen unlock episode count in 14-day history window across all participants)",
+      "extracted_value": 3955.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 18173,
+        "input_tokens": 10932,
+        "output_tokens": 7241,
+        "duration_seconds": 126.18527412414551,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112755_What_is_the_maximum_number_of_screen_unl.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "14260",
+      "extracted_value": 14260.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9598,
+        "input_tokens": 8116,
+        "output_tokens": 1482,
+        "duration_seconds": 29.878950357437134,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112825_How_many_records_are_in_the_location_dat.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "1.0 (minimum value from f_blue:phone_bluetooth_rapids_uniquedevices:14dhist column across all records).",
+      "extracted_value": 1.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20078,
+        "input_tokens": 10642,
+        "output_tokens": 9436,
+        "duration_seconds": 143.35723209381104,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112904_What_is_the_minimum_number_of_unique_Blu.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "15.372 (mean of outgoing call count from 14-day historical data, filtered to exclude null values)",
+      "extracted_value": 15.372,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20248,
+        "input_tokens": 13533,
+        "output_tokens": 6715,
+        "duration_seconds": 215.07387113571167,
+        "code_executions": 6,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112924_What_is_the_average_outgoing_call_count.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "1.0 (minimum value of unique Bluetooth device counts across all participant records in the 14-day historical data).",
+      "extracted_value": 1.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 18871,
+        "input_tokens": 10922,
+        "output_tokens": 7949,
+        "duration_seconds": 129.4326045513153,
+        "code_executions": 3,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112926_What_is_the_minimum_number_of_unique_Blu.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "1.0 (minimum value of unique Bluetooth devices across all participants in 14-day sliding windows).",
+      "extracted_value": 1.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 18832,
+        "input_tokens": 10289,
+        "output_tokens": 8543,
+        "duration_seconds": 130.0901803970337,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112931_What_is_the_minimum_number_of_unique_Blu.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "14260 (total number of rows/records in the location dataset based on data exploration).",
+      "extracted_value": 14260.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10432,
+        "input_tokens": 8183,
+        "output_tokens": 2249,
+        "duration_seconds": 33.76966333389282,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112938_How_many_records_are_in_the_location_dat.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "14260",
+      "extracted_value": 14260.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15020,
+        "input_tokens": 9181,
+        "output_tokens": 5839,
+        "duration_seconds": 87.44975352287292,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_112952_How_many_records_are_in_the_location_dat.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "1.0",
+      "extracted_value": 1.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17334,
+        "input_tokens": 10239,
+        "output_tokens": 7095,
+        "duration_seconds": 141.07914400100708,
+        "code_executions": 3,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113001_What_is_the_minimum_number_of_unique_Blu.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "14260 (Total number of rows in the location dataset).",
+      "extracted_value": 14260.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10862,
+        "input_tokens": 8130,
+        "output_tokens": 2732,
+        "duration_seconds": 39.093281269073486,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113003_How_many_records_are_in_the_location_dat.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "201 (total unique pid values found in the dataset).",
+      "extracted_value": 201.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10481,
+        "input_tokens": 8169,
+        "output_tokens": 2312,
+        "duration_seconds": 38.291221380233765,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113016_How_many_participants_are_there.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "201 unique participants were identified across the datasets.",
+      "extracted_value": 201.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12646,
+        "input_tokens": 9342,
+        "output_tokens": 3304,
+        "duration_seconds": 49.30606031417847,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113020_How_many_participants_are_there.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "The study has 201, 142, and 155 unique participants across the platform, dep_endterm, and sleep datasets respectively. The discrepancy indicates not all participants contributed to all datasets.",
+      "extracted_value": 201.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12315,
+        "input_tokens": 9686,
+        "output_tokens": 2629,
+        "duration_seconds": 58.16404962539673,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113024_How_many_participants_are_there.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 7514,
+        "input_tokens": 6767,
+        "output_tokens": 747,
+        "duration_seconds": 8.179036140441895,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113032_What_percentage_of_participants_use_iOS.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "201 unique participants were identified in the study.",
+      "extracted_value": 201.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 11479,
+        "input_tokens": 9171,
+        "output_tokens": 2308,
+        "duration_seconds": 43.605891942977905,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113036_How_many_participants_are_there.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "92.55 (average sleep efficiency for participant INS-W_009 excluding null values)",
+      "extracted_value": 92.55,
+      "is_correct": true,
+      "relative_error": 8.643901511366035e-06,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 16620,
+        "input_tokens": 11462,
+        "output_tokens": 5158,
+        "duration_seconds": 104.26230835914612,
+        "code_executions": 4,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113146_What_is_the_average_sleep_efficiency_ma.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "79.60% (160 out of 201 participants use iOS devices).",
+      "extracted_value": 79.6,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15916,
+        "input_tokens": 10939,
+        "output_tokens": 4977,
+        "duration_seconds": 85.80337262153625,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113158_What_percentage_of_participants_use_iOS.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "92.72679692624337 (mean of 14-day rolling sleep efficiency averages for participant INS-W_009)",
+      "extracted_value": 92.72679692624337,
+      "is_correct": true,
+      "relative_error": 0.0019016251209429999,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 19418,
+        "input_tokens": 12456,
+        "output_tokens": 6962,
+        "duration_seconds": 123.70758175849915,
+        "code_executions": 5,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113207_What_is_the_average_sleep_efficiency_ma.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "92.55083021916354",
+      "extracted_value": 92.55083021916354,
+      "is_correct": true,
+      "relative_error": 3.265143418359976e-07,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 19051,
+        "input_tokens": 12947,
+        "output_tokens": 6104,
+        "duration_seconds": 129.22856783866882,
+        "code_executions": 5,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113226_What_is_the_average_sleep_efficiency_ma.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "92.55083021916354 (Mean of average efficiency main sleep metric 14-day histogram for participant INS-W_009 excluding null values).",
+      "extracted_value": 92.55083021916354,
+      "is_correct": true,
+      "relative_error": 3.265143418359976e-07,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17830,
+        "input_tokens": 10618,
+        "output_tokens": 7212,
+        "duration_seconds": 136.6005003452301,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113237_What_is_the_average_sleep_efficiency_ma.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "51 participants with depression flag (dep=True) in the end-of-term depression assessment dataset.",
+      "extracted_value": 51.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 13283,
+        "input_tokens": 10579,
+        "output_tokens": 2704,
+        "duration_seconds": 59.79798936843872,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113258_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "79.6",
+      "extracted_value": 79.6,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 21392,
+        "input_tokens": 11832,
+        "output_tokens": 9560,
+        "duration_seconds": 142.73821544647217,
+        "code_executions": 5,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113259_What_percentage_of_participants_use_iOS.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "51 unique participants (by pid) where the 'dep' flag is True in the dep_endterm dataset.",
+      "extracted_value": 51.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12473,
+        "input_tokens": 8272,
+        "output_tokens": 4201,
+        "duration_seconds": 60.19654178619385,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113307_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "79.6% of participants use iOS devices (160 out of 201 total participants).",
+      "extracted_value": 79.6,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 14175,
+        "input_tokens": 11104,
+        "output_tokens": 3071,
+        "duration_seconds": 90.90475749969482,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113317_What_percentage_of_participants_use_iOS.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "51 participants were identified as depressed at the end of the study term.",
+      "extracted_value": 51.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 12802,
+        "input_tokens": 10611,
+        "output_tokens": 2191,
+        "duration_seconds": 66.33272433280945,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113332_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "51 participants",
+      "extracted_value": 51.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 13106,
+        "input_tokens": 9284,
+        "output_tokens": 3822,
+        "duration_seconds": 58.155473709106445,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113335_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "12.8273 (mean BDI-II depression score at end of term, rounded to 4 decimal places).",
+      "extracted_value": 12.8273,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 14107,
+        "input_tokens": 9085,
+        "output_tokens": 5022,
+        "duration_seconds": 72.49410152435303,
+        "code_executions": 2,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113429_What_is_the_average_BDI-II_depression_sc.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "12.8273 (Mean BDI2 score from dep_endterm dataset, excluding null/missing values, rounded to 4 decimal places).",
+      "extracted_value": 12.8273,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15021,
+        "input_tokens": 11190,
+        "output_tokens": 3831,
+        "duration_seconds": 86.8317174911499,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113434_What_is_the_average_BDI-II_depression_sc.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "12.8273",
+      "extracted_value": 12.8273,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 16724,
+        "input_tokens": 11030,
+        "output_tokens": 5694,
+        "duration_seconds": 98.8966453075409,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113438_What_is_the_average_BDI-II_depression_sc.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "28.0",
+      "extracted_value": 28.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 16796,
+        "input_tokens": 10049,
+        "output_tokens": 6747,
+        "duration_seconds": 103.01049065589905,
+        "code_executions": 3,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113515_What_is_the_pre-study_perceived_stress_s.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "28.0",
+      "extracted_value": 28.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 10803,
+        "input_tokens": 8224,
+        "output_tokens": 2579,
+        "duration_seconds": 42.18612790107727,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113516_What_is_the_pre-study_perceived_stress_s.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "28.0, the perceived stress score (PSS-10) from the pre-study assessment for participant INS-W_009.",
+      "extracted_value": 28.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17615,
+        "input_tokens": 10477,
+        "output_tokens": 7138,
+        "duration_seconds": 118.16677737236023,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113533_What_is_the_pre-study_perceived_stress_s.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "12.8273",
+      "extracted_value": 12.8273,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 22900,
+        "input_tokens": 15295,
+        "output_tokens": 7605,
+        "duration_seconds": 175.92007088661194,
+        "code_executions": 6,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113554_What_is_the_average_BDI-II_depression_sc.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "28.0 (pre-study PSS-10 score for participant INS-W_009 from pre-intervention assessments)",
+      "extracted_value": 28.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20282,
+        "input_tokens": 10189,
+        "output_tokens": 10093,
+        "duration_seconds": 158.53597116470337,
+        "code_executions": 3,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113708_What_is_the_pre-study_perceived_stress_s.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "442.870 (difference in mean 14-day screen unlock duration between depressed and non-depressed participants from end-of-term assessment)",
+      "extracted_value": 442.87,
+      "is_correct": false,
+      "relative_error": 1.751659713010224,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20779,
+        "input_tokens": 14727,
+        "output_tokens": 6052,
+        "duration_seconds": 212.50882506370544,
+        "code_executions": 6,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113848_Among_participants_who_completed_the_end.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "160.9465 episodes (difference in 14-day rolling screen unlock episode count means between depressed: 1264.2474 and non-depressed: 1103.3009).",
+      "extracted_value": 160.9465,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 49052,
+        "input_tokens": 34496,
+        "output_tokens": 14556,
+        "duration_seconds": 309.06399178504944,
+        "code_executions": 4,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_113947_Among_participants_who_completed_the_end.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_012",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "10.0 (BDI2 depression score for participant INS-W_126, who had the highest average intraday step count from 14-day rolling history)",
+      "extracted_value": 10.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 24981,
+        "input_tokens": 15705,
+        "output_tokens": 9276,
+        "duration_seconds": 312.3233468532562,
+        "code_executions": 5,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114106_Which_participant_has_the_highest_averag.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_012",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "N/A",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 22151,
+        "input_tokens": 16432,
+        "output_tokens": 5719,
+        "duration_seconds": 341.34751534461975,
+        "code_executions": 6,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114249_Which_participant_has_the_highest_averag.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_012",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "N/A",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 15705,
+        "input_tokens": 9977,
+        "output_tokens": 5728,
+        "duration_seconds": 265.4286277294159,
+        "code_executions": 3,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114313_Which_participant_has_the_highest_averag.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_013",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 9818,
+        "input_tokens": 6810,
+        "output_tokens": 3008,
+        "duration_seconds": 52.21850919723511,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114341_For_participant_INS-W_009_what_is_the_P.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "1264.25 average screen unlock count for depressed participants vs 1103.30 for not-depressed participants, with depressed participants showing 160.95 higher average (f_screen:phone_screen_rapids_countepisodeunlock:14dhist from dep_endterm dataset).",
+      "extracted_value": 160.95,
+      "is_correct": true,
+      "relative_error": 2.1746356708611255e-05,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 30612,
+        "input_tokens": 17370,
+        "output_tokens": 13242,
+        "duration_seconds": 488.21582865715027,
+        "code_executions": 7,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114341_Among_participants_who_completed_the_end.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_012",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "10.0 (The participant with the highest average 14-day rolling intraday step count is INS-W_126, and their end-of-term BDI2 score is 10.0.)",
+      "extracted_value": 10.0,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 20469,
+        "input_tokens": 15210,
+        "output_tokens": 5259,
+        "duration_seconds": 269.05310225486755,
+        "code_executions": 7,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114416_Which_participant_has_the_highest_averag.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_011",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "160.9465 (difference between depressed mean screen unlock count and not-depressed mean).",
+      "extracted_value": 160.9465,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 38466,
+        "input_tokens": 23091,
+        "output_tokens": 15375,
+        "duration_seconds": 631.5968611240387,
+        "code_executions": 10,
+        "code_successes": 9
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114548_Among_participants_who_completed_the_end.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_014",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "2006 (Count of depressed participants with unlock counts above the median of 1082.0).",
+      "extracted_value": 2006.0,
+      "is_correct": false,
+      "relative_error": 73.29629629629629,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17249,
+        "input_tokens": 12255,
+        "output_tokens": 4994,
+        "duration_seconds": 132.9343204498291,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114629_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_014",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "26",
+      "extracted_value": 26.0,
+      "is_correct": false,
+      "relative_error": 0.037037037037037035,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 25380,
+        "input_tokens": 18156,
+        "output_tokens": 7224,
+        "duration_seconds": 228.34077310562134,
+        "code_executions": 7,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114730_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_013",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "-0.5337 (Pearson correlation from 9 matched weekly observations).",
+      "extracted_value": -0.5337,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 46441,
+        "input_tokens": 33186,
+        "output_tokens": 13255,
+        "duration_seconds": 402.21851897239685,
+        "code_executions": 10,
+        "code_successes": 8
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_114748_For_participant_INS-W_009_what_is_the_P.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_013",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "-0.6298",
+      "extracted_value": -0.6298,
+      "is_correct": false,
+      "relative_error": 0.18006370620198628,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 48433,
+        "input_tokens": 29966,
+        "output_tokens": 18467,
+        "duration_seconds": 397.2437250614166,
+        "code_executions": 12,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115019_For_participant_INS-W_009_what_is_the_P.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_015",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "-0.1096 (Pearson correlation between PSS_10items_PRE and average 14-day sleep duration from Fitbit, n=137 participants)",
+      "extracted_value": -0.1096,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 47939,
+        "input_tokens": 34541,
+        "output_tokens": 13398,
+        "duration_seconds": 248.24570631980896,
+        "code_executions": 9,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115138_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_015",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "-0.1467 (Pearson correlation coefficient between PSS_10items_PRE and average sleep duration, rounded to 4 decimal places)",
+      "extracted_value": -0.1467,
+      "is_correct": false,
+      "relative_error": 0.33850364963503643,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 17972,
+        "input_tokens": 9617,
+        "output_tokens": 8355,
+        "duration_seconds": 114.05752801895142,
+        "code_executions": 1,
+        "code_successes": 1
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115213_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_014",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "0 participants",
+      "extracted_value": 0.0,
+      "is_correct": false,
+      "relative_error": 1.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 39455,
+        "input_tokens": 18302,
+        "output_tokens": 21153,
+        "duration_seconds": 367.2362732887268,
+        "code_executions": 8,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115236_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses call data",
+            "score": 0.0,
+            "reasoning": "The system failed to execute any analysis and provided no actual call data values. Instead of retrieving and analyzing participant INS-W_009's phone call activity (incoming, outgoing, missed counts), it dismissed the query as needing no analysis, completely failing to meet the criterion of referencing actual call count values."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any data analysis despite the query requesting a specific summary of participant INS-W_009's phone call activity. Rather than gathering and analyzing call data (incoming, outgoing, missed calls), the system incorrectly claimed 'no data analysis needed,' providing no information whatsoever about the participant's call patterns."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The final answer provides no quantitative data whatsoever. The system declined to perform analysis and provided no numeric values, statistics, or specific metrics about participant INS-W_009's phone call activity (such as call counts, duration, frequency, or timing). A proper response would have included specific numeric evidence from the data."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.1,
+            "reasoning": "The system failed to execute any meaningful analysis and provided a dismissive response ('No data analysis needed') without attempting to retrieve or summarize the requested participant's phone call activity. This demonstrates a fundamental failure to understand the query and perform the required work, rather than a clarity issue with presentation."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 10421,
+        "input_tokens": 6767,
+        "output_tokens": 3654,
+        "duration_seconds": 31.949448823928833,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115245_Summarize_participant_INS-W_009s_phone.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_013",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "-0.5337 (Pearson correlation between weekly depression scores and screen unlock counts for participant INS-W_009).",
+      "extracted_value": -0.5337,
+      "is_correct": true,
+      "relative_error": 0.0,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 56373,
+        "input_tokens": 28790,
+        "output_tokens": 27583,
+        "duration_seconds": 575.5808486938477,
+        "code_executions": 14,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115249_For_participant_INS-W_009_what_is_the_P.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses call data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, providing no actual call data values (incoming, outgoing, missed counts) for participant INS-W_009. The query explicitly requested a summary of phone call activity, which requires retrieving and referencing specific call metrics from the data."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.0,
+            "reasoning": "The system failed to execute any analysis despite having a specific, answerable query about a participant's phone call activity. The response 'No data analysis needed' is incorrect\u2014the query explicitly requests a summary of call activity data, which requires data retrieval and analysis. No attempt was made to gather or present information about incoming, outgoing, or missed calls."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The final answer provides no data analysis whatsoever and contains no numeric values, specific statistics, or quantitative evidence about participant INS-W_009's phone call activity. The system declined to perform analysis entirely, failing to fulfill the query's fundamental requirement."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.1,
+            "reasoning": "The system completely failed to execute the query, providing no analysis whatsoever and dismissing it as requiring no data work. This demonstrates a fundamental misunderstanding of the task and provides zero clarity on the requested participant's phone call activity."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 11300,
+        "input_tokens": 6767,
+        "output_tokens": 4533,
+        "duration_seconds": 47.70457100868225,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115324_Summarize_participant_INS-W_009s_phone.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_014",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Participants meeting both criteria require deduplication of the 24440+ entries from step_8 using .unique().tolist(). The median unlock count threshold was 1152.0, and the final unique participant list should be extracted from step_8_result by calling .unique().tolist() to remove duplicate daily readings per participant.",
+      "extracted_value": null,
+      "is_correct": false,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 51361,
+        "input_tokens": 27851,
+        "output_tokens": 23510,
+        "duration_seconds": 456.467698097229,
+        "code_executions": 10,
+        "code_successes": 8
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115324_How_many_participants_were_flagged_as_de.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses call data",
+            "score": 0.0,
+            "reasoning": "The system provided no analysis whatsoever, claiming 'No data analysis needed' rather than retrieving and summarizing actual call activity metrics for participant INS-W_009. This completely fails to reference any call count values (incoming, outgoing, missed) from the available call data."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any analysis and provided no data about participant INS-W_009's phone call activity. The answer 'No data analysis needed' is inappropriate for a query explicitly requesting a summary of call activity, leaving all required information (incoming, outgoing, missed calls and their counts) completely absent."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The final answer provides no quantitative data, specific values, or numeric evidence about participant INS-W_009's phone call activity. The system declined to perform analysis entirely rather than gathering and presenting concrete numerical findings such as call counts, durations, frequencies, or patterns."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.1,
+            "reasoning": "The system failed to engage with the query substantively, providing only a dismissive statement ('No data analysis needed') without attempting to retrieve, analyze, or summarize the requested participant's phone call activity. This represents a complete abdication of analytical responsibility rather than clear presentation of findings."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 11598,
+        "input_tokens": 6767,
+        "output_tokens": 4831,
+        "duration_seconds": 57.84346961975098,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115342_Summarize_participant_INS-W_009s_phone.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.03,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses sleep data",
+            "score": 0.0,
+            "reasoning": "The system did not perform any data analysis and provided no sleep data, duration, efficiency, or time-in-bed values for participant INS-W_009. The response 'No data analysis needed' is inadequate for a query explicitly requesting sleep pattern description."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.0,
+            "reasoning": "The system failed to execute any data analysis and provided no sleep metrics whatsoever. The response 'No data analysis needed for this query' is incorrect\u2014the query explicitly requests sleep pattern data for a specific participant, which requires data retrieval and analysis. No key metrics (duration, efficiency, awake time) were reported."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system provided no analysis whatsoever, claiming 'no data analysis needed' and failing to retrieve, examine, or cite any sleep pattern data for participant INS-W_009. A legitimate answer would require accessing participant data and presenting specific numeric sleep metrics."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.15,
+            "reasoning": "The system failed to execute any meaningful analysis and provided a dismissive response ('No data analysis needed') without investigating available data or explaining why the query couldn't be answered. The final answer lacks clarity about whether data exists, is inaccessible, or simply wasn't retrieved."
+          }
+        ],
+        "summary": "Rubric: 0.03 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 9277,
+        "input_tokens": 6765,
+        "output_tokens": 2512,
+        "duration_seconds": 29.28117561340332,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115353_Describe_the_sleep_patterns_for_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_015",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "-0.1004 (Pearson correlation between pre-study PSS-10 scores and 14-day average main sleep duration from 5143 paired observations with non-null values)",
+      "extracted_value": -0.1004,
+      "is_correct": false,
+      "relative_error": 0.08394160583941605,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 41308,
+        "input_tokens": 20683,
+        "output_tokens": 20625,
+        "duration_seconds": 389.7598841190338,
+        "code_executions": 7,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115418_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Valid sleep data for participant INS-W_009 exists with metrics including sumdurationasleepmain:14dhist and avgefficiencymain:14dhist.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.46,
+        "faithfulness_score": 0.3,
+        "criteria_scores": [
+          {
+            "criterion": "Uses sleep data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully retrieved sleep data for participant INS-W_009 and extracted relevant sleep metrics (sumdurationasleepmain:14dhist and avgefficiencymain:14dhist). However, the final answer is extremely terse and fails to actually describe the sleep patterns with specific values, trends, or meaningful interpretation of the data that was retrieved."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.35,
+            "reasoning": "The analysis successfully retrieved data for the correct participant and identified two key sleep metrics (sum duration and average efficiency), but the final answer is incomplete\u2014it merely states metrics exist without describing their actual values, patterns, or interpreting what these numbers mean for the participant's sleep quality. Critical sleep pattern details (temporal trends, variability, abnormalities) are entirely absent."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.15,
+            "reasoning": "The final answer mentions only two metric names (sumdurationasleepmain:14dhist and avgefficiencymain:14dhist) without providing any actual numeric values, ranges, or statistics. While the execution successfully retrieved data for 92 rows of participant INS-W_009, the answer fails to extract or report the actual numeric sleep measurements that were obtained."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.35,
+            "reasoning": "The final answer is extremely terse and cryptic, presenting only raw metric names without interpretation or meaningful description of sleep patterns. While the execution successfully retrieved data for participant INS-W_009, the final answer fails to translate these findings into a clear, understandable narrative about the participant's actual sleep patterns, making it unclear and unhelpful to the user despite solid analytical work."
+          }
+        ],
+        "summary": "Rubric: 0.46 | Faithfulness: 0.30",
+        "faithfulness_reasoning": "The execution evidence confirms that valid sleep data exists for participant INS-W_009 and shows rows were successfully retrieved. However, the evidence truncates before displaying the actual values of the two metrics mentioned (sumdurationasleepmain:14dhist and avgefficiencymain:14dhist), so their specific values cannot be verified from the provided output. The claim about which metrics exist is partially supported, but the actual sleep pattern description lacks concrete numeric data.",
+        "unsupported_claims": [
+          "The specific values for sumdurationasleepmain:14dhist metric are not visible in the truncated output",
+          "The specific values for avgefficiencymain:14dhist metric are not visible in the truncated output",
+          "No actual sleep pattern details are provided beyond metric names"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 14425,
+        "input_tokens": 10878,
+        "output_tokens": 3547,
+        "duration_seconds": 90.10370755195618,
+        "code_executions": 3,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115454_Describe_the_sleep_patterns_for_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "obj_015",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "-0.1004 (Pearson correlation coefficient between PSS_10items_PRE from pre dataset and fitbit_sleep_summary_rapids_sumdurationasleepmain:14dhist from sleep dataset, computed after merging on participant ID).",
+      "extracted_value": -0.1004,
+      "is_correct": false,
+      "relative_error": 0.08394160583941605,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 28530,
+        "input_tokens": 17210,
+        "output_tokens": 11320,
+        "duration_seconds": 198.0579915046692,
+        "code_executions": 5,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115456_What_is_the_Pearson_correlation_between.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.0,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses platform data",
+            "score": 0.0,
+            "reasoning": "The system refused to perform any analysis and dismissed the query without attempting to access or reference platform.csv data. The final answer 'No data analysis needed' is inappropriate for a query explicitly requesting analysis of platform data regarding device distribution."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, providing no exact counts, percentages, or quantitative breakdown of device distribution despite the query explicitly requesting platform data analysis. A proper response should have queried device distribution data and reported specific iOS vs Android metrics."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.0,
+            "reasoning": "The system failed to analyze the query entirely, returning 'No data analysis needed' instead of examining platform data for device distribution across participants. This represents a complete refusal to engage with the analytical task rather than incomplete analysis."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.0,
+            "reasoning": "The analysis completely failed to address the query. Instead of analyzing platform data to describe device distribution across participants, the system incorrectly determined that no data analysis was needed and provided no actual findings, visualizations, or insights whatsoever."
+          }
+        ],
+        "summary": "Rubric: 0.00 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 9485,
+        "input_tokens": 6766,
+        "output_tokens": 2719,
+        "duration_seconds": 24.34822130203247,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115520_What_does_the_platform_data_tell_us_abou.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_001",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Phone call metrics for participant INS-W_009 have been successfully analyzed, showing 65 call metrics with a mean of 19.815 missed calls (std=9.0, range 0-37) across 14-day histogram data for incoming calls, distinct contacts, and other call-related measures.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.75,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses call data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and analyzed 65 numeric call metrics for participant INS-W_009, including specific incoming calls, missed calls, and contact measures with proper statistical summaries. However, the final answer somewhat obscures the rich detail obtained (missed calls mean=19.82, incoming calls mean=46.52, etc.) by focusing narrowly on just the missed calls statistic rather than comprehensively summarizing all analyzed call types."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.65,
+            "reasoning": "The analysis successfully retrieved and summarized multiple call metrics for participant INS-W_009, including missed calls, incoming calls, and timing data across 65 daily observations. However, the final answer omits mention of outgoing calls and other call types (e.g., rejected calls) that may exist in the dataset, and the execution log shows the analysis was truncated, suggesting not all available call metrics were fully reported or analyzed."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The final answer cites specific numeric values (65 call metrics, mean of 19.815 missed calls, std=9.0, range 0-37) that are directly supported by the execution results. However, the answer selectively presents only one metric's statistics when the execution revealed multiple call metrics (missed calls, incoming calls, time-based metrics, etc.), making the quantitative evidence somewhat incomplete relative to the full analysis performed."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.65,
+            "reasoning": "The final answer successfully synthesizes the analysis results into a concise summary with key metrics (65 call metrics, mean 19.815 missed calls, std=9.0, range 0-37), but lacks structure and context that would make it maximally clear\u2014it doesn't explain what these metrics represent, their significance, or organize findings by call type (missed, incoming, etc.). The execution process itself was thorough and well-documented, showing good analytical work despite the terse final presentation."
+          }
+        ],
+        "summary": "Rubric: 0.75 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The answer's main quantitative claims are supported by the execution evidence. The Step 4 result shows 65 call metrics with mean=19.8153846154 (which rounds to 19.815), std=8.9998130322 (which rounds to 9.0), and range 0-37 for the missed call count metric. However, the claim about '14-day histogram data for incoming calls, distinct contacts, and other call-related measures' is partially unsupported\u2014while the data shows these metrics exist, the answer doesn't clearly specify which specific metrics were analyzed or provide details about what the other measures were.",
+        "unsupported_claims": [
+          "The answer claims analysis of '14-day histogram data for incoming calls, distinct contacts, and other call-related measures' but doesn't specify which other measures were analyzed beyond the missed call count metric"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 26353,
+        "input_tokens": 18880,
+        "output_tokens": 7473,
+        "duration_seconds": 154.78078508377075,
+        "code_executions": 6,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115523_Summarize_participant_INS-W_009s_phone.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "Device distribution: 201 total participants with 41 android users (20.4%) and 160 iOS users (79.6%).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 14185,
+        "input_tokens": 10892,
+        "output_tokens": 3293,
+        "duration_seconds": 65.73685002326965,
+        "code_executions": 3,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115524_What_does_the_platform_data_tell_us_abou.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Among the 160+41=201 participants, iOS has 160 devices (79.60%) and Android has 41 devices (20.40%).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.93,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses platform data",
+            "score": 0.95,
+            "reasoning": "The analysis directly loads and analyzes the platform dataset, correctly identifying 41 Android and 160 iOS devices with accurate percentages. The execution properly groups by platform and counts participants, though the final answer could have been slightly more explicit about data source attribution."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis provides precise quantitative data (iOS: 160 devices, 79.60%; Android: 41 devices, 20.40%) derived from a complete and properly executed grouping/counting operation. The percentages are accurate and well-supported by the underlying dataset totaling 201 participants."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.95,
+            "reasoning": "The analysis thoroughly addresses the query by identifying all platform types (Android and iOS), providing accurate counts (41 and 160 respectively), calculating percentages, and stating the total participant count (201). The execution plan was well-structured and all steps were executed correctly. Minor deduction only because the final answer could have been slightly more explicit about the data comprehensiveness (e.g., confirming all 201 participants were accounted for)."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.85,
+            "reasoning": "The final answer clearly states the device distribution with both absolute counts and percentages, making it easy to understand the iOS/Android split. However, the presentation could be slightly improved by explicitly identifying which platform dominates or adding context about what this distribution means for the platform ecosystem."
+          }
+        ],
+        "summary": "Rubric: 0.93 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The totals (160 iOS devices, 41 Android devices, 201 total participants), the percentages (79.60% iOS, 20.40% Android), and the arithmetic (160+41=201) are all confirmed by Step 3 and Step 4 results.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 14458,
+        "input_tokens": 11146,
+        "output_tokens": 3312,
+        "duration_seconds": 84.5774519443512,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115619_What_does_the_platform_data_tell_us_abou.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "91 days of sleep data extracted for participant INS-W_009. Key metrics include: Mean sum duration after waking: 5.38 hours, Mean sum duration asleep: 138.7 hours, Mean sum duration awake: 28.2 hours, Mean avg duration asleep: 91.8 hours, Mean avg duration after waking: 6.9 hours.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.83,
+        "faithfulness_score": 0.2,
+        "criteria_scores": [
+          {
+            "criterion": "Uses sleep data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and reported multiple sleep metrics from the sleep dataset for participant INS-W_009, including sum duration after waking, sum duration asleep, sum duration awake, and average durations. However, the final answer presented values in inconsistent units (some appear to be in hours while raw data suggests minutes), and didn't clarify the time period or units, which slightly reduces clarity of the sleep data interpretation."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and calculated 91 days of sleep data with five key metrics (sum duration after waking, sum duration asleep, sum duration awake, average duration asleep, average duration after waking). However, the final answer omits critical context: the raw metrics are in mixed units (hours vs. minutes\u2014the actual data appears to be in minutes based on the magnitudes), and important statistical measures like standard deviation, min/max, and quartiles from the describe() output were not presented, limiting the completeness of the sleep pattern description."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The final answer provides specific numeric values (91 days, 5.38 hours, 138.7 hours, 28.2 hours, 91.8 hours, 6.9 hours) that are directly derived from the execution results, though the values appear to use different units (hours vs. minutes) than the raw data statistics shown, suggesting some conversion or interpretation may not be fully transparent."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.75,
+            "reasoning": "The final answer presents key metrics in a clear, bulleted format with numerical values, but the presentation lacks context about what these metrics mean (e.g., the units appear to be in minutes based on the raw data, but this isn't clarified). The execution work was systematic and well-reasoned, but the final answer could better explain the practical implications of these sleep pattern statistics."
+          }
+        ],
+        "summary": "Rubric: 0.83 | Faithfulness: 0.20",
+        "faithfulness_reasoning": "The answer contains multiple numerical claims that are contradicted by the execution evidence. The metrics reported appear to use incorrect units or calculations that don't match the actual data values shown in Step 4.",
+        "unsupported_claims": [
+          "Mean sum duration asleep: 138.7 hours - The actual mean from Step 4 is 4064.0 (in minutes), which equals ~67.7 hours, not 138.7 hours",
+          "Mean sum duration awake: 28.2 hours - The actual mean from Step 4 is 331.69 (in minutes), which equals ~5.5 hours, not 28.2 hours",
+          "Mean avg duration asleep: 91.8 hours - The actual mean from Step 4 is 338.5 (in minutes), which equals ~5.6 hours, not 91.8 hours",
+          "Mean avg duration after waking: 6.9 hours - The actual mean from Step 4 is 0.515 (in unknown units), not 6.9 hours"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 32317,
+        "input_tokens": 22988,
+        "output_tokens": 9329,
+        "duration_seconds": 151.98246312141418,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115625_Describe_the_sleep_patterns_for_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses depression data",
+            "score": 0.0,
+            "reasoning": "The system failed to analyze any depression survey data. Despite the query explicitly requesting analysis of participant INS-W_009's mental health changes using weekly depression survey data, the final answer claims 'No data analysis needed' and provides no references to relevant depression metrics (feel_anxious, feel_depressed, or dep flags). The system did not execute any meaningful analysis or retrieve the required data."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.0,
+            "reasoning": "The system failed to analyze temporal patterns entirely, providing only a dismissive response ('No data analysis needed') without examining any weekly survey data or tracking mental health changes over time for participant INS-W_009. A proper analysis would require retrieving and comparing survey entries across multiple weeks to identify trends."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The final answer provides no quantitative evidence whatsoever, merely stating 'No data analysis needed' without citing any specific survey values, depression scores, or mental health metrics for participant INS-W_009 across the study period."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.1,
+            "reasoning": "The system failed to engage with the query substantively. Rather than analyzing participant INS-W_009's depression survey data over the study period, it dismissed the request as requiring 'no data analysis,' which is clearly incorrect for a specific participant mental health trajectory question. This represents a fundamental failure in reasoning about what analysis was requested."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 11246,
+        "input_tokens": 6778,
+        "output_tokens": 4468,
+        "duration_seconds": 34.606664419174194,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115654_Based_on_the_weekly_depression_survey_da.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_003",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Android: 41 participants (20.4%), iOS: 160 participants (79.6%).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.955,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses platform data",
+            "score": 1.0,
+            "reasoning": "The analysis directly loaded the platform dataset, extracted device platform information, and used the actual data values (41 Android, 160 iOS participants) to compute the distribution, demonstrating proper use of the platform data source throughout the execution."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and reported exact counts (Android: 41, iOS: 160) and precise percentages (20.4%, 79.6%) from the platform dataset. The execution properly grouped data, calculated distributions, and verified the total (201 participants), with only minor rounding presentation differences between raw calculations (20.398%) and final answer (20.4%)."
+          },
+          {
+            "criterion": "Completeness",
+            "score": 0.95,
+            "reasoning": "The analysis successfully identified and reported both platform types (Android and iOS) with accurate counts (41 and 160) and percentages (20.4% and 79.6%), totaling 201 participants. The execution was methodical and well-documented, though the final answer could have explicitly stated the total participant count for fuller context."
+          },
+          {
+            "criterion": "Clarity",
+            "score": 0.9,
+            "reasoning": "The final answer presents the device distribution with both absolute counts and percentages in a clear, concise format. The execution shows proper data loading, grouping, and percentage calculations with exact numerical results (Android: 41/20.4%, iOS: 160/79.6%), making the distribution immediately understandable."
+          }
+        ],
+        "summary": "Rubric: 0.95 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. Step 2 shows Android: 41 participants and iOS: 160 participants. Step 3 calculates the percentages as 20.3980099502% for Android (rounded to 20.4%) and 79.6019900498% for iOS (rounded to 79.6%), which match the answer provided.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 26219,
+        "input_tokens": 21225,
+        "output_tokens": 4994,
+        "duration_seconds": 103.19134068489075,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115704_What_does_the_platform_data_tell_us_abou.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "BDI2: Missing data (NaN values). feel_depressed: 0.0 across all recorded weeks. trend: Cannot determine BDI2 trend due to missing values; feel_depressed shows stable (0.0) pattern.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.66,
+        "faithfulness_score": 0.3,
+        "criteria_scores": [
+          {
+            "criterion": "Uses depression data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and utilized feel_depressed, feel_anxious, and dep columns from dep_weekly for participant INS-W_009, demonstrating proper data retrieval and column identification. However, the BDI2 column analysis was incomplete due to all NaN values except one data point, limiting the comprehensiveness of depression metric evaluation."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.65,
+            "reasoning": "The analysis successfully extracted 14 weeks of chronologically ordered data (April-June 2018) and identified specific temporal patterns: feel_depressed showed fluctuation (0\u21921\u21920 patterns) and the dep binary flag tracked mood episodes. However, the core limitation is that BDI2\u2014the primary depression severity metric\u2014contains only one data point (week 14), severely constraining trend identification. The system correctly noted this limitation but couldn't fully characterize mental health trajectory without longitudinal BDI2 data."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.7,
+            "reasoning": "The analysis provides specific numerical values (BDI2 values, feel_depressed scores of 0.0 and 1.0, 14 weekly observations from 2018-04-04 to 2018-06-15) and identifies temporal patterns, but the final answer underutilizes the rich quantitative data collected during execution, particularly the feel_depressed trend details (increasing at week 4, stable during weeks 5-6, decreasing at week 7, etc.) that were computed but not fully reported."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.35,
+            "reasoning": "The analysis correctly identified and extracted the available data for participant INS-W_009, properly sorted by date, and accurately noted that BDI2 contains only NaN values except for one measurement (15.0) at the end. However, the reasoning is incomplete: the final answer dismisses feel_depressed as 'stable (0.0)' when the execution data clearly shows it varies (0.0\u21921.0\u21920.0 pattern from weeks 1-7), indicating fluctuating rather than stable mental health. The conclusion fails to meaningfully interpret the available trend data."
+          }
+        ],
+        "summary": "Rubric: 0.66 | Faithfulness: 0.30",
+        "faithfulness_reasoning": "The answer correctly identifies that BDI2 has missing data (NaN values across all weeks except the last with value 15.0) and that a trend cannot be determined for BDI2. However, the claim about feel_depressed being 0.0 across all recorded weeks is directly contradicted by the Step 2 execution result, which shows alternating values of 0.0 and 1.0. The characterization of a 'stable (0.0) pattern' is also unsupported, as the execution evidence in Step 4 explicitly shows 'increasing' and 'decreasing' trends for feel_depressed over different time periods.",
+        "unsupported_claims": [
+          "feel_depressed: 0.0 across all recorded weeks - The execution evidence shows feel_depressed values of 0.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, and null, not 0.0 across all weeks",
+          "feel_depressed shows stable (0.0) pattern - The execution evidence shows feel_depressed varies between 0.0 and 1.0, with clear increases and decreases over the study period, not a stable pattern"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 17941,
+        "input_tokens": 13452,
+        "output_tokens": 4489,
+        "duration_seconds": 109.25691652297974,
+        "code_executions": 5,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115713_Based_on_the_weekly_depression_survey_da.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.0,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses depression data",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any data analysis despite the query explicitly requesting analysis of weekly depression survey data for a specific participant. The dismissal of the query as 'No data analysis needed' directly contradicts the query's requirement to examine depression metrics (feel_anxious, feel_depressed, or dep flags) from dep_weekly data."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.0,
+            "reasoning": "The system failed to analyze temporal patterns entirely. Rather than examining weekly survey data to track mental health changes over time for participant INS-W_009, it dismissed the query as requiring 'no data analysis,' providing no evidence of examining survey entries, identifying trends, or documenting mental health progression across the study period."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The final answer provides no quantitative evidence, specific values, counts, or data citations from the depression survey. The response dismisses the query entirely rather than analyzing participant INS-W_009's depression scores, trends, or changes over the study period."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.0,
+            "reasoning": "The system failed to conduct any analysis despite a direct query requesting examination of mental health trajectory data for a specific participant. Rather than attempting to retrieve weekly depression survey data or analyzing participant INS-W_009's mental health changes over time, the system simply declined with 'No data analysis needed,' which demonstrates faulty reasoning\u2014the query explicitly requires data analysis. This represents a complete failure to reason through the analytical task and provide the requested trajectory assessment."
+          }
+        ],
+        "summary": "Rubric: 0.00 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 12626,
+        "input_tokens": 6778,
+        "output_tokens": 5848,
+        "duration_seconds": 53.62837195396423,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115719_Based_on_the_weekly_depression_survey_da.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.0,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.0,
+            "reasoning": "The system failed to execute any analysis and provided no step count data or references. The dismissive response 'No data analysis needed' indicates the system did not attempt to retrieve or examine the participant's step count data despite the query explicitly requesting assessment based on step count data."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no quantitative evidence, specific step count values, daily averages, maximum values, or sedentary bout data despite the query explicitly requesting activity level assessment based on step count data."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.0,
+            "reasoning": "The system failed to perform the requested analysis entirely. Rather than analyzing step count data for participant INS-W_009 to determine activity level, it provided a dismissive response claiming 'no data analysis needed.' This demonstrates a fundamental failure in reasoning\u2014the query explicitly asks for a data-driven assessment of physical activity based on step count, yet no logical chain of analysis, data retrieval, or inference was executed. The reasoning is absent rather than sound."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.0,
+            "reasoning": "The system failed to analyze the query entirely, providing no data analysis, no step count data retrieval, and no contextualization against activity benchmarks (e.g., 10k steps/day recommendation). A complete absence of work means no contextual comparison was possible."
+          }
+        ],
+        "summary": "Rubric: 0.00 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 12221,
+        "input_tokens": 6773,
+        "output_tokens": 5448,
+        "duration_seconds": 44.02794122695923,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115738_Is_participant_INS-W_009_physically_acti.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Participant INS-W_009 is classified as PHYSICALLY ACTIVE based on step count analysis.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.745,
+        "faithfulness_score": 0.2,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.9,
+            "reasoning": "The analysis successfully retrieved step count data for participant INS-W_009 and extracted relevant step metrics (average, max, min daily steps) from the fitbit_steps_summary_rapids features. The execution encountered initial column name errors but recovered to obtain meaningful step statistics that directly support the classification."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The analysis retrieved comprehensive step count statistics for participant INS-W_009, including mean (15,402 steps/day), max (24,011 steps/day), and min (7,769 steps/day) values across 91 observations. However, the final answer lacks specific numerical citations\u2014it should have explicitly stated these values to fully support the 'physically active' classification against standard thresholds."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.35,
+            "reasoning": "The system successfully retrieved participant data and calculated appropriate summary statistics (mean ~15,403 steps/day), which clearly supports the 'physically active' classification against standard thresholds. However, the execution process was inefficient with multiple failed attempts using incorrect column names, and the final answer lacks explicit threshold justification or confidence metrics despite having adequate data to provide a rigorous analysis."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.75,
+            "reasoning": "The analysis successfully retrieved participant INS-W_009's step data and calculated meaningful summary statistics (average of ~15,400 steps/day, max ~24,000, min ~7,700), which clearly support the physically active classification. However, the final answer lacks explicit reference to standard benchmarks (e.g., WHO's 10,000 steps/day recommendation or CDC guidelines) to strengthen the contextual justification, though the stated thresholds in the plan suggest awareness of such standards."
+          }
+        ],
+        "summary": "Rubric: 0.74 | Faithfulness: 0.20",
+        "faithfulness_reasoning": "The answer claims participant INS-W_009 is 'PHYSICALLY ACTIVE' based on step count analysis, but the execution evidence provides only descriptive statistics (mean, std, min, max) without any explicit classification threshold, activity level benchmark, or comparison to sedentary standards. The evidence shows step data exists for the participant but does not support the specific 'PHYSICALLY ACTIVE' classification claim.",
+        "unsupported_claims": [
+          "Participant INS-W_009 is classified as PHYSICALLY ACTIVE - no classification logic, threshold, or comparison to activity standards is shown in the execution evidence",
+          "The classification is based on step count analysis - while step statistics are provided, no analysis comparing these values to activity level thresholds is evident"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 17283,
+        "input_tokens": 12017,
+        "output_tokens": 5266,
+        "duration_seconds": 103.21751952171326,
+        "code_executions": 4,
+        "code_successes": 2
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115902_Is_participant_INS-W_009_physically_acti.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "15402.75 steps/day (Participant INS-W_009 is classified as physically active).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.925,
+        "faithfulness_score": 0.7,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 1.0,
+            "reasoning": "The analysis successfully loaded the steps dataset, filtered for participant INS-W_009, and extracted step count values from the appropriate columns (f_steps:fitbit_steps_summary_rapids_avgsumsteps:14dhist). The final answer correctly reports 15402.75 steps/day derived from this data."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis provides strong quantitative evidence with specific step count values: average of 15,402.75 steps/day, minimum of 11,722 steps, and maximum of 11,722 steps. The only minor limitation is that sedentary bout metrics were mentioned in the plan but not explicitly calculated in the final answer."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.85,
+            "reasoning": "The analysis follows a clear logical progression: loading data \u2192 filtering by participant \u2192 calculating average steps \u2192 comparing against the 5000 steps/day threshold to classify activity level. The classification conclusion (physically active at 15,402.75 steps/day) is well-supported by the data and threshold rationale, though the min/max values (both 11,722) suggest potential data aggregation issues that weren't addressed or explained."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.85,
+            "reasoning": "The analysis appropriately compares the participant's average step count (15,402.75 steps/day) against a reasonable physical activity benchmark (>5,000 steps/day for active classification), and correctly classifies the participant as physically active. However, the context could be enhanced by referencing more established guidelines (e.g., WHO recommendations of 10,000 steps/day or 150 min/week) to provide a fuller picture of the participant's activity level relative to broader health standards."
+          }
+        ],
+        "summary": "Rubric: 0.93 | Faithfulness: 0.70",
+        "faithfulness_reasoning": "The execution evidence supports the average step count of 15402.75 steps/day (shown in Step 3 result as 15402.7481912166), which is factually accurate. However, the classification of participant INS-W_009 as 'physically active' is not supported by the execution evidence. The code only computes the mean step count but provides no threshold, comparison, or classification logic to determine whether this constitutes 'physically active' versus 'sedentary' status.",
+        "unsupported_claims": [
+          "The classification of participant INS-W_009 as 'physically active' is not derived from the execution evidence; no classification thresholds or criteria are shown in the code execution"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 25420,
+        "input_tokens": 14662,
+        "output_tokens": 10758,
+        "duration_seconds": 141.30869388580322,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115925_Is_participant_INS-W_009_physically_acti.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_002",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Average daily sleep duration of approximately 5.38 minutes for wake period, with 91 days of data. Median above mean indicates some variability in sleep quality. Time awake after awakening averages 5.38 minutes (range 0-11 minutes), suggesting effective sleep maintenance. Sleep efficiency averages around 85% with variability across days. No clear declining/ascending trends identified in short study period.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 45382,
+        "input_tokens": 30904,
+        "output_tokens": 14478,
+        "duration_seconds": 348.3625683784485,
+        "code_executions": 6,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_115931_Describe_the_sleep_patterns_for_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_005",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Participant INS-W_009 exhibits physically active behavior patterns. Their average daily step count of 17,287 steps classifies them as 'active' according to standard activity thresholds (>9,000 steps/day).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.83,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses step data",
+            "score": 0.85,
+            "reasoning": "The system successfully extracted and analyzed step count data for participant INS-W_009, retrieving avgsumsteps values (17,287 steps) from the fitbit_steps_summary_rapids dataset. However, the execution involved multiple failed attempts due to incorrect column name formatting before ultimately succeeding, indicating inefficiency in the data exploration phase despite reaching the correct final data."
+          },
+          {
+            "criterion": "Provides quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and cited specific quantitative data (average daily step count of 17,287 steps) with proper classification thresholds (>9,000 steps/day for active). However, the execution encountered multiple column-naming errors and failed to extract min/max step counts or sedentary bout data that were mentioned in the plan, limiting the completeness of quantitative evidence presented."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.75,
+            "reasoning": "The system correctly identified participant INS-W_009's average daily steps (17,287) and applied appropriate classification thresholds (>9,000 = active) to reach the correct conclusion. However, the execution path was inefficient with multiple failed attempts due to incorrect column name assumptions, and the final code contained redundant logic and potential fragility in accessing only the first row without verification that it corresponds to INS-W_009."
+          },
+          {
+            "criterion": "Contextualizes findings",
+            "score": 0.85,
+            "reasoning": "The analysis correctly contextualizes the 17,287 average daily steps against standard activity classification thresholds (>9,000 steps = active), providing clear benchmark comparison. However, the reasoning could be strengthened by acknowledging that 17,287 steps exceeds commonly cited targets like 10,000 steps/day or explaining what this level of activity implies for health outcomes."
+          }
+        ],
+        "summary": "Rubric: 0.83 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The execution shows that participant INS-W_009's average daily step count is 17,287 steps (confirmed in Step 3 result), and this value exceeds the 9,000 steps/day threshold mentioned, correctly classifying them as 'active' according to the standard thresholds applied in the code.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 24311,
+        "input_tokens": 14091,
+        "output_tokens": 10220,
+        "duration_seconds": 182.17112469673157,
+        "code_executions": 4,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120015_Is_participant_INS-W_009_physically_acti.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.0,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses screen data",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis, stating 'No data analysis needed for this query,' rather than gathering and analyzing screen usage data (unlock counts, duration metrics) for the specified participant. This represents a complete failure to address the query's request for insights into phone habits."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.0,
+            "reasoning": "The system completely failed to execute any analysis. It provided no data gathering, no reasoning about screen usage patterns, and no examination of participant INS-W_009's phone habits. The dismissal of the query as 'no data analysis needed' is inappropriate when the query explicitly asks for pattern identification in screen usage data."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.0,
+            "reasoning": "The system failed to conduct any analysis and provided no quantitative data, numeric values, or specific metrics from screen usage records for participant INS-W_009. The dismissal of the query without investigation resulted in a complete absence of evidence-based findings."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any analysis despite a clear, specific query asking for insights about a particular participant's phone habits based on screen usage data. Declining to analyze without attempting to access or examine the available data represents a fundamental analytical failure rather than sound reasoning."
+          }
+        ],
+        "summary": "Rubric: 0.00 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 14262,
+        "input_tokens": 6771,
+        "output_tokens": 7491,
+        "duration_seconds": 68.59919285774231,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120033_What_does_the_screen_usage_data_reveal_a.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_004",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Participant INS-W_009 shows a stable BDI2 score of 15.0 throughout the study period (Apr-Jun 2018), with baseline UCLA_10items_PRE=25.0 and CESD_10items_PRE=15.0.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.55,
+        "faithfulness_score": 0.95,
+        "criteria_scores": [
+          {
+            "criterion": "Uses depression data",
+            "score": 0.75,
+            "reasoning": "The analysis successfully extracted and analyzed depression indicators (feel_anxious, feel_depressed, BDI2, dep) from the dep_weekly dataset for participant INS-W_009 across 14 weekly measurements from April-June 2018. However, the final answer only reports BDI2 scores and baseline measures, omitting the rich weekly variation in feel_anxious, feel_depressed, and dep flags that were calculated during execution, resulting in an incomplete synthesis of the available depression data."
+          },
+          {
+            "criterion": "Identifies temporal patterns",
+            "score": 0.35,
+            "reasoning": "The analysis successfully extracted 14 weekly records spanning Apr-Jun 2018 and tracked feel_anxious and feel_depressed fluctuations over time, but failed to meaningfully analyze BDI2 temporal trends (only 1 non-null value at the final date). The final answer claims 'stable BDI2 score of 15.0 throughout' which is misleading since BDI2 was absent for 13/14 weekly measurements, undermining the temporal pattern analysis despite reasonable data collection efforts."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.75,
+            "reasoning": "The final answer cites specific quantitative values (BDI2=15.0, UCLA_10items_PRE=25.0, CESD_10items_PRE=15.0, date range Apr-Jun 2018) directly from the execution results, though it omits important details about weekly fluctuations in feel_anxious and feel_depressed indicators that were successfully extracted during analysis."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.35,
+            "reasoning": "The analysis successfully extracted relevant data (baseline UCLA=25.0, CESD=15.0, stable BDI2=15.0) but the reasoning is flawed: concluding 'stable' BDI2 based on a single end-term measurement (only one non-null BDI2 value on 06-15) misrepresents the data. The execution encountered multiple critical errors that were worked around rather than resolved, and the final answer oversimplifies the findings without acknowledging data sparsity or the actual weekly depression/anxiety fluctuations visible in the raw data."
+          }
+        ],
+        "summary": "Rubric: 0.55 | Faithfulness: 0.95",
+        "faithfulness_reasoning": "The answer's core claims about BDI2 stability (15.0) and baseline values (UCLA_10items_PRE=25.0, CESD_10items_PRE=15.0) are all directly supported by Step 5 execution results. The date range (Apr-Jun 2018) is confirmed by Step 1 data showing dates from 2018-04-04 to 2018-06-15. The only minor issue is that the answer could have been more comprehensive by noting that BDI2 was only recorded once (on the last date, 2018-06-15) rather than implying continuous stability throughout the entire period.",
+        "unsupported_claims": [
+          "The phrasing 'stable BDI2 score of 15.0 throughout the study period' slightly overstates the evidence - BDI2 was only measured once (15.0 on 2018-06-15), not continuously throughout Apr-Jun 2018"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 38189,
+        "input_tokens": 23420,
+        "output_tokens": 14769,
+        "duration_seconds": 313.33898162841797,
+        "code_executions": 9,
+        "code_successes": 5
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120037_Based_on_the_weekly_depression_survey_da.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "76 unlock episodes (f_screen:phone_screen_rapids_countepisodeunlock:14dhist) with total duration of 193,793.63 time units (average 2,549.91 per episode)",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.748,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses screen data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and utilized appropriate screen metrics (unlock episode counts and total duration) from the correct dataset and participant. The execution properly filtered for INS-W_009 and calculated the requested metrics with clear methodology, though the final answer could have provided slightly more context about what these absolute numbers represent in terms of actual phone behavior patterns."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.35,
+            "reasoning": "The analysis extracts raw metrics (76 unlock episodes, 193,793.63 total duration units) but fails to identify meaningful patterns\u2014no temporal trends, comparative insights, behavioral categories, or contextual interpretation of what these numbers reveal about phone habits are provided. The work is descriptive rather than analytical."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.9,
+            "reasoning": "The analysis provides specific numeric values (76 unlock episodes, 193,793.63 total duration, 2,549.91 average per episode) directly extracted from the dataset through proper filtering and aggregation operations. The execution shows clear data extraction steps with concrete results, though the final answer could have included additional context about what these metrics mean for understanding phone habits."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.75,
+            "reasoning": "The analysis correctly identifies and extracts the requested metrics (76 unlock episodes and 193,793.63 total duration units), with appropriate data filtering and calculations. However, the interpretation remains surface-level\u2014the final answer reports raw numbers without contextualizing what these patterns reveal about the participant's actual phone habits (e.g., frequency per day, whether usage is concentrated or dispersed, or behavioral significance)."
+          }
+        ],
+        "summary": "Rubric: 0.75 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The answer states there are 76 unlock episodes, which matches Step 3 result exactly. The total duration of 193,793.63 time units matches Step 1 result (193793.63026666662, rounded appropriately). The average of 2,549.91 per episode is mathematically correct (193,793.63 \u00f7 76 \u2248 2,549.91).",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 19747,
+        "input_tokens": 12092,
+        "output_tokens": 7655,
+        "duration_seconds": 196.8144187927246,
+        "code_executions": 4,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120054_What_does_the_screen_usage_data_reveal_a.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "58,462 unlock episodes with a total duration of 193,793.63 seconds.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.741,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses screen data",
+            "score": 0.95,
+            "reasoning": "The analysis correctly filtered the screen dataset for participant INS-W_009 and extracted the three relevant unlock-related metrics (countepisodeunlock: 58,462; sumdurationunlock: 193,793.63 seconds; maxdurationunlock: 99.998 seconds) with proper aggregation. Minor deduction only because the final answer omits the maximum duration metric despite calculating it."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.3,
+            "reasoning": "The analysis successfully extracted raw unlock metrics (58,462 episodes, 193,793.63 seconds total duration) but failed to identify meaningful patterns in phone habits. The data shows time-series values across dates but no temporal trends, behavioral patterns, or contextual insights were discussed\u2014only aggregate statistics were reported. A stronger response would have analyzed variation across time, usage intensity, or daily/weekly patterns."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The final answer provides specific numeric values (58,462 unlock episodes, 193,793.63 seconds total duration) directly derived from the executed analysis with proper data extraction and aggregation logic. Minor deduction only because the maximum duration metric (99.99 seconds) was not included in the final answer despite being calculated."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.72,
+            "reasoning": "The analysis correctly identified and extracted relevant unlock metrics (count, duration, max) from the participant's screen data through a logical 3-step process. However, the interpretation is incomplete: while the raw numbers are accurate (58,462 unlocks, 193,793.63 seconds total), the final answer lacks insight into what these metrics reveal about phone habits (e.g., average unlocks per day, comparison to norms, engagement patterns), making the reasoning partially superficial despite methodologically sound execution."
+          }
+        ],
+        "summary": "Rubric: 0.74 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. Step 3 shows the computed aggregates: countepisodeunlock = 58,462.0 and sumdurationunlock = 193,793.63026666662 seconds, which match exactly the values stated in the answer (58,462 unlock episodes and 193,793.63 seconds total duration).",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 26780,
+        "input_tokens": 12249,
+        "output_tokens": 14531,
+        "duration_seconds": 196.81296157836914,
+        "code_executions": 4,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120248_What_does_the_screen_usage_data_reveal_a.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "31,350.09 (average flight duration in 14-day history for participant INS-W_009, with high evidence of outliers detected in mobility metrics). The analysis also identified average flight length of 189.37, distance travelled of 322,878.24, circadian pattern of 0.609318, home time of 10,435.64, diameter of 41,035.99, max home distance of 420,693.04, and pause probability of 0.84.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.86,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses location data",
+            "score": 0.95,
+            "reasoning": "The analysis comprehensively extracted and analyzed multiple location-based mobility metrics from the location dataset including flight duration, flight length, distance travelled, circadian patterns, home time, movement diameter, max home distance, and pause probability. All metrics are directly derived from Barnett phone location features over a 14-day history window."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.75,
+            "reasoning": "The analysis successfully extracted and computed all major mobility metrics (flight duration, distance travelled, circadian patterns, home time, etc.) with numerical values, demonstrating solid pattern identification. However, the final answer lacks interpretive synthesis\u2014it merely lists metrics and flags outliers (ratio 89:1) without explaining what these patterns actually mean for the participant's mobility behavior (e.g., 'high pause probability of 0.84 suggests sedentary behavior' or 'low circadian regularity indicates irregular schedule'). The execution is technically sound but the narrative interpretation of patterns is minimal."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis provides extensive specific numerical values from location data (average flight duration: 31,350.09, flight length: 189.37, distance travelled: 322,878.24, circadian pattern: 0.609318, home time: 10,435.64, diameter: 41,035.99, max home distance: 420,693.04, pause probability: 0.84) extracted through systematic calculations across 89 data points. Minor deduction only because the final answer mentions 'max home distance of 420,693.04' but execution shows 38,651.51, indicating a potential transcription discrepancy in the summary."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.75,
+            "reasoning": "The analysis systematically extracted and computed mobility metrics for participant INS-W_009, properly identifying a consistent 89:1 sum-to-mean ratio across all metrics indicating a 14-day dataset. However, the interpretation of this ratio as 'high evidence of outliers' is logically flawed\u2014a constant ratio across all independent metrics suggests consistent data structure rather than outliers, which would produce variable ratios. The system correctly gathered relevant mobility indicators (flight duration, distance travelled, circadian patterns, etc.) but misinterpreted the statistical findings."
+          }
+        ],
+        "summary": "Rubric: 0.86 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The numerical values cited in the answer are supported by execution evidence from Step 4. However, the claim about 'high evidence of outliers detected in mobility metrics' is not directly supported by the data shown. The answer also omits one key metric value (max home distance should be 38,651.50, not 420,693.04 as stated).",
+        "unsupported_claims": [
+          "max home distance of 420,693.04 - Step 4 shows 38,651.50522030528",
+          "high evidence of outliers detected in mobility metrics - Step 5 flags ratio > 1.5 but this reflects data structure (89 days summed vs averaged) not genuine outliers in the mobility patterns"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 36513,
+        "input_tokens": 23333,
+        "output_tokens": 13180,
+        "duration_seconds": 218.93107390403748,
+        "code_executions": 7,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120433_What_can_we_infer_about_participant_INS-.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_006",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Participant INS-W_009 demonstrated frequent phone usage patterns with a mean unlock frequency of 635.5 episodes per observation day (std=412.8, min=0, max=1078) across 92 days. Duration metrics were also computed, showing variable screen engagement patterns throughout the observation period from 2018-04-03 onwards.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.724,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses screen data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and analyzed screen unlock metrics (countepisodeunlock and sumdurationunlock) from the filtered dataset for INS-W_009 across 92 observation days, computing appropriate summary statistics (mean, std, min, max). However, execution encountered multiple technical failures and retries before obtaining results, and the final answer could have been more detailed regarding the specific duration findings (mean=2106.45, std=1376.49) which were computed but underutilized."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.35,
+            "reasoning": "The analysis successfully extracted and computed summary statistics for unlock frequency (mean=635.5, std=412.8, range=0-1078) and duration metrics across 92 observation days, but failed to identify actual temporal patterns. The execution encountered multiple errors and never completed the planned temporal aggregation by date (Step 3) or generated visualizations (Step 5) that would reveal meaningful trends over time or across locations; the final answer merely reports descriptive statistics without discussing patterns."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The final answer provides highly specific quantitative metrics (mean unlock frequency of 635.5 episodes, std=412.8, min=0, max=1078 across 92 days) directly extracted from the execution results, demonstrating rigorous data analysis with concrete numerical support for the claims about participant phone habits."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.72,
+            "reasoning": "The analysis correctly filtered participant data, identified 92 observation days, and computed valid summary statistics (mean=635.5 unlocks, std=412.8, range 0-1078). However, the reasoning has gaps: the system struggled with multiple code execution failures, didn't adequately explain why NaN values appeared in early rows, and the final answer lacks interpretation of what these metrics reveal about actual phone *habits* (e.g., whether 635 unlocks/day is frequent, how duration metrics correlate with usage patterns, or what behavioral insights emerge). The statistics are sound but underutilized analytically."
+          }
+        ],
+        "summary": "Rubric: 0.72 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The answer's core statistics are supported by execution evidence. Step 4 shows: mean=635.46 (claimed 635.5, rounding acceptable), std=412.79 (claimed 412.8, rounding acceptable), min=0 (matches), max=1078 (matches). Step 2 confirms 92 days of observation and Step 3 shows dates starting from 2018-04-03. However, the claim about 'variable screen engagement patterns' and 'duration metrics were computed' lack specific supporting evidence in the results.",
+        "unsupported_claims": [
+          "Duration metrics were computed showing variable screen engagement patterns - no duration analysis results are presented beyond the summary statistics"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 51179,
+        "input_tokens": 29579,
+        "output_tokens": 21600,
+        "duration_seconds": 385.2548749446869,
+        "code_executions": 8,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120527_What_does_the_screen_usage_data_reveal_a.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Participant INS-W_009 shows low mobility pattern with 576.77 meters total distance traveled over 14 days (approximately 41.2 meters/day), 518 minutes of home time, 0.45 circadian rhythm score, classified as low mobility class. 92 location records analyzed.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.79,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses location data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and analyzed multiple location-based mobility metrics (distance travelled: 576.77m, home time: 518 min, circadian rhythm: 0.45, flight duration) from 92 location records for participant INS-W_009. However, the execution involved multiple failed attempts and workarounds before correctly filtering the data, and some derived metrics (like flight_duration as 1440 minutes) appear to be assumed rather than directly extracted from the location dataset."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.72,
+            "reasoning": "The analysis successfully identified key mobility patterns (low mobility class, 576.77m total distance, 518 min home time, 0.45 circadian rhythm) and classified behavior appropriately. However, the execution was inefficient with multiple failed attempts and unclear reasoning about pattern interpretation (e.g., circadian rhythm classification logic was questionable), and the final answer lacked deeper insights about what these patterns reveal about the participant's lifestyle or behavioral trends."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.9,
+            "reasoning": "The final answer provides specific quantitative values (576.77 meters total distance, 41.2 meters/day, 518 minutes home time, 0.45 circadian rhythm score, 92 location records) derived from the execution results. The analysis appropriately uses actual data points from step_2_result and step_3_result, though the execution process had multiple failed attempts and syntax errors before reaching valid conclusions."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.65,
+            "reasoning": "The analysis correctly identified INS-W_009's low mobility classification based on distance traveled (576.77m) being well below the low mobility threshold (55,695m), and properly extracted key metrics like home time (518 min) and circadian rhythm (0.45). However, the reasoning contains logical inconsistencies: the mean distance (322,878m) appears to reflect population statistics rather than individual patterns, and thresholds calculated from aggregated data across all 92 records create circular logic when classifying a single participant. The final answer accurately summarizes findings but oversimplifies the interpretation of circadian rhythm score and doesn't clearly explain what the 14-day histogram metrics represent."
+          }
+        ],
+        "summary": "Rubric: 0.79 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "Most factual claims are supported by execution evidence. The key metrics cited (576.77 meters total distance, 518 minutes home time, 0.45 circadian rhythm score, low mobility class, 92 location records) all appear in the Step 4 result. However, the claim about '14 days' and the calculated daily average of '41.2 meters/day' are not directly verified in the execution evidence.",
+        "unsupported_claims": [
+          "14 days observation period - Step 1 confirms 92 records but does not specify the exact time span",
+          "Approximately 41.2 meters/day - This calculation (576.77 / 14) is not shown in execution evidence and the 14-day assumption is not verified"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 36816,
+        "input_tokens": 21419,
+        "output_tokens": 15397,
+        "duration_seconds": 301.8919451236725,
+        "code_executions": 7,
+        "code_successes": 4
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120539_What_can_we_infer_about_participant_INS-.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "Analysis complete for participant INS-W_009: Travel Distance 576.77, Flight Duration 175295.71, Flight Length 82.40, Home Time 518.0, Home Distance 528.42, Circulation Rate 0.449. Pause probability metric could not be retrieved.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.797,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses location data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted multiple location-based mobility metrics (travel distance, flight duration/length, home time, home distance, circulation rate) directly from the participant's location dataset, demonstrating comprehensive use of location data. However, the pause probability metric retrieval failed, and the final answer lacks contextual interpretation of what these metrics reveal about actual mobility patterns."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.7,
+            "reasoning": "The analysis successfully extracted quantitative mobility metrics (travel distance, flight duration/length, home time, circulation rate) that describe participant INS-W_009's movement behaviors. However, the final answer merely reports raw numerical values without synthesizing these metrics into meaningful pattern inferences\u2014e.g., no interpretation of what the high circulation rate (0.449) or extended flight duration suggests about mobility behavior, or comparative context for these values."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and reported specific quantitative values for 6 of 8 mobility metrics (travel distance 576.77 km, flight duration 175295.71 sec, flight length 82.40, home time 518.0 min, home distance 528.42, circulation rate 0.449), demonstrating strong quantitative support, though the pause probability metric retrieval failed and the final answer lacks deeper contextual interpretation of what these metrics reveal about actual mobility patterns."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.65,
+            "reasoning": "The system successfully extracted and organized 6 relevant mobility metrics through systematic steps with correct data filtering logic. However, the final answer lacks interpretation\u2014it merely reports raw numerical values without explaining what these metrics actually reveal about the participant's mobility patterns (e.g., high travel distance suggesting frequent movement, low circulation rate indicating limited area exploration). The analysis also failed to retrieve one metric (pause probability) without explanation, and provides no synthesis connecting these numbers to meaningful behavioral inferences."
+          }
+        ],
+        "summary": "Rubric: 0.80 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All numerical values presented in the answer are directly supported by the execution evidence. Each metric (Travel Distance: 576.77, Flight Duration: 175295.71, Flight Length: 82.40, Home Time: 518.0, Home Distance: 528.42, Circulation Rate: 0.449) corresponds to values obtained from executed code steps. The statement about the pause probability metric not being retrieved is also accurate, as Step 8 was never executed. The answer faithfully represents the data obtained without making unsupported inferences.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 40492,
+        "input_tokens": 16989,
+        "output_tokens": 23503,
+        "duration_seconds": 355.9781141281128,
+        "code_executions": 8,
+        "code_successes": 7
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120611_What_can_we_infer_about_participant_INS-.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_007",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Average daily distance travelled: 322,878 units (mean, 298,378 units median). Average flight duration: 31,350 units. Average flight length: 189 units. Circadian returns and maximum home distance statistics were computed for participant INS-W_009.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.817,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses location data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and utilized multiple location-based mobility metrics from the Barnett features including distance travelled, flight duration/length, circadian returns, and maximum home distance. The system correctly identified and computed statistics on 92 days of location data for participant INS-W_009, demonstrating thorough engagement with the location dataset despite some execution missteps along the way."
+          },
+          {
+            "criterion": "Identifies patterns",
+            "score": 0.7,
+            "reasoning": "The analysis successfully extracted and computed key mobility metrics (average daily distance: 322,878 units, flight duration: 31,350 units, flight length: 189 units) across 92 days for participant INS-W_009, providing quantitative summary statistics. However, the final answer lacks interpretation of *patterns*\u2014it reports raw statistics without discussing temporal trends, circadian rhythms (despite computing circadian_returns=0.609), home vs. away behavior, or meaningful inferences about the participant's actual mobility behavior."
+          },
+          {
+            "criterion": "Quantitative evidence",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and computed specific quantitative metrics from location data (mean daily distance: 322,878 units, median: 298,378 units, avg flight duration: 31,350 units, avg flight length: 189 units, circadian returns: 0.609). However, the final answer is somewhat terse and omits standard deviations and other computed statistics (e.g., max_home_distance_mean: 38,651.5 units) that were obtained during execution, reducing the completeness of reported evidence."
+          },
+          {
+            "criterion": "Sound reasoning",
+            "score": 0.72,
+            "reasoning": "The analysis demonstrates solid logical flow in extracting and aggregating mobility metrics for participant INS-W_009, successfully computing mean/median distance travelled, flight duration, and flight length statistics. However, the reasoning has notable gaps: the plan references 'circadian returns' and 'maximum home distance statistics' as separate inferences about mobility patterns, yet the final answer treats these as secondary metrics without interpreting what they reveal about actual mobility behavior (e.g., what does a circadian return value of 0.609 mean for movement patterns?). The connection between raw statistics and behavioral inferences about the participant's movement is underdeveloped."
+          }
+        ],
+        "summary": "Rubric: 0.82 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All numeric values in the answer are directly supported by Step 6 execution results. The claimed values match exactly: average daily distance travelled (mean: 322,878 units), median (298,378 units), average flight duration (31,350 units), and average flight length (189 units). The statement about computing circadian returns and maximum home distance statistics is also verified in the results.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 41871,
+        "input_tokens": 21992,
+        "output_tokens": 19879,
+        "duration_seconds": 365.37196230888367,
+        "code_executions": 8,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120639_What_can_we_infer_about_participant_INS-.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Participant INS-W_009 showed overall improvement in psychological state over the study period. UCLA_10items distress score decreased from 25.0 to 24.0, indicating reduced psychological distress (lower scores = better state).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.612,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses pre/post survey data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and compared psychological measures from both pre and post datasets for participant INS-W_009, including UCLA_10items (25.0\u219224.0), PSS_10items (28.0\u219218.0), STAIS (55.0\u219248.0), CESD variants (14.0\u21923.0, 15.0\u21923.0), and other relevant scales. Minor deduction only for initial syntax errors that were quickly resolved."
+          },
+          {
+            "criterion": "Comprehensive comparison",
+            "score": 0.3,
+            "reasoning": "The final answer focuses only on UCLA_10items (25.0\u219224.0) while the execution retrieved comprehensive data across 9+ psychological measures (PSS_10items: 28\u219218, STAIS: 55\u219248, CESD: 14-15\u21923, ERQ_reappraisal: 3.83\u21923.0, social support metrics). The analysis gathered robust multi-scale data but failed to synthesize it into a complete answer, presenting a narrowly incomplete conclusion."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.85,
+            "reasoning": "The analysis provides specific numeric changes for multiple psychological scales (UCLA_10items: 25.0\u219224.0, PSS_10items: 28.0\u219218.0, STAIS: 55.0\u219248.0, CESD scores decreased substantially). However, the final answer only highlights UCLA_10items while omitting equally important improvements in PSS and STAIS, which showed more substantial gains than the single-point UCLA decrease."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis fails to acknowledge that a single pre-post comparison with only two time points provides limited evidence for psychological trend conclusions, and does not discuss that the modest 1-point UCLA decrease may not be clinically significant or representative of true improvement."
+          }
+        ],
+        "summary": "Rubric: 0.61 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The answer's core claim about UCLA_10items improvement is directly supported by execution evidence (25.0 \u2192 24.0, difference of 1.0). However, the answer characterizes this as 'overall improvement in psychological state' based on a single metric, when the execution evidence shows mixed results across multiple psychological measures: while UCLA_10items and SocialFit decreased slightly (suggesting improvement), other key distress measures like PSS_10items (28.0 \u2192 18.0), CESD_9items (14.0 \u2192 3.0), CESD_10items (15.0 \u2192 3.0), and STAIS (55.0 \u2192 48.0) showed much larger improvements that aren't mentioned, and social support metrics actually increased post-intervention. The answer presents a narrower picture than the full evidence warrants.",
+        "unsupported_claims": [
+          "Answer focuses only on UCLA_10items (1-point decrease) without acknowledging larger improvements in other distress measures (PSS, CESD, STAIS) that were calculated in Step 3 but not discussed"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 25434,
+        "input_tokens": 18698,
+        "output_tokens": 6736,
+        "duration_seconds": 139.25044131278992,
+        "code_executions": 4,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120758_Does_participant_INS-W_009s_psychologic.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Participant INS-W_009 showed clear psychological improvement from baseline to post-study, with depression scores dropping significantly (CESD-9: 14\u21923, CESD-10: 15\u21923), stress reduction (PSS-10: 28\u219218), and minimal UCLA-10 improvement (25\u219224), indicating overall psychological state improvement throughout the intervention period.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.767,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses pre/post survey data",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and compared specific psychological scales from both pre and post datasets (CESD-9, CESD-10, PSS-10, UCLA-10, STAIS, BRS, MAAS, ERQ, BDI2), demonstrating comprehensive use of the survey data with precise baseline and endpoint measurements. Minor deduction only for initial column name errors that were quickly corrected."
+          },
+          {
+            "criterion": "Comprehensive comparison",
+            "score": 0.85,
+            "reasoning": "The analysis systematically compared multiple psychological scales (CESD-9, CESD-10, PSS-10, UCLA-10, STAIS, ERQ, BRS, MAAS, CHIPS) across pre and post measurements with calculated change scores, demonstrating thorough multi-dimensional assessment. Minor limitation: BDI2 was mentioned in the plan but only post-measure was available, and demographic contextual analysis (Step 8) was not fully executed in the results."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.92,
+            "reasoning": "The analysis systematically extracted and compared baseline vs. post-study psychological measures for participant INS-W_009, with exact numeric changes documented for all key scales (CESD-9: 14\u21923, CESD-10: 15\u21923, PSS-10: 28\u219218, UCLA-10: 25\u219224, STAIS: 55\u219248). The execution successfully gathered comprehensive psychological data across 13+ measures with calculated change scores, though the final answer could have included more supporting metrics (e.g., anxiety improvements, resilience gains from BRS and CHIPS)."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis completely fails to acknowledge any limitations despite having only two time points and relying on self-reported psychological scales. The final answer presents the findings as definitive improvement without noting that two measurements limit causal inference, potential practice effects, or that some measures (like BDI2 with post-only data) are incomplete."
+          }
+        ],
+        "summary": "Rubric: 0.77 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The execution data shows: CESD-9 dropped from 14 to 3 (14\u21923), CESD-10 dropped from 15 to 3 (15\u21923), PSS-10 dropped from 28 to 18 (28\u219218), and UCLA-10 changed from 25 to 24 (25\u219224). These exact values and the characterization of changes as 'significant' for depression and stress measures, with 'minimal' improvement for UCLA-10, are all accurately reflected in the provided data.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 31311,
+        "input_tokens": 14501,
+        "output_tokens": 16810,
+        "duration_seconds": 212.38313460350037,
+        "code_executions": 5,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120806_Does_participant_INS-W_009s_psychologic.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "INS-W-009 showed significant improvement in CESD scores (change=-11.0: 14.0\u21923.0 for 9-item; 15.0\u21924.0 for 10-item), stable BDI2 depression (0.0 change: 15.0\u219215.0), minimal UCLA loneliness improvement (-1.0: 25.0\u219224.0), and slight SocialFit decline (-1.0: 73.0\u219272.0), indicating overall positive psychological trajectory driven by CESD improvement.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.787,
+        "faithfulness_score": 0.95,
+        "criteria_scores": [
+          {
+            "criterion": "Uses pre/post survey data",
+            "score": 0.95,
+            "reasoning": "The analysis systematically extracted and compared multiple validated psychological scales from both pre and post datasets (CESD 9/10-item, BDI2, UCLA loneliness, SocialFit, PSS, STAIS), calculating directional changes for each measure. Only minor issue: PSS comparison encountered a data access error but was partially mitigated through merged data extraction attempts."
+          },
+          {
+            "criterion": "Comprehensive comparison",
+            "score": 0.9,
+            "reasoning": "The analysis systematically compared 6 major psychological measures (CESD, BDI2, PSS, UCLA loneliness, SocialFit, and EMA data), successfully extracted pre/post values for most scales, and calculated directional changes. Minor gap: PSS comparison was attempted but failed due to data access issues, and the final answer didn't explicitly report PSS change despite the planned Step 7."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.95,
+            "reasoning": "The analysis systematically extracted and compared multiple psychological measures (CESD, BDI2, UCLA, SocialFit, PSS) with precise pre/post numeric values and calculated changes for participant INS-W_009. The final answer cites exact numbers (e.g., CESD 14.0\u21923.0, BDI2 15.0\u219215.0, UCLA 25.0\u219224.0) supporting the conclusion of overall improvement. Minor deduction only because PSS data extraction encountered an initial error that wasn't fully resolved in the shown execution log."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis does not acknowledge any limitations such as the two-timepoint design restricting causal inference, lack of statistical significance testing, or that some measures show minimal change. The final answer presents findings as definitive without caveat or discussion of study design constraints."
+          }
+        ],
+        "summary": "Rubric: 0.79 | Faithfulness: 0.95",
+        "faithfulness_reasoning": "The answer is largely faithful to the execution evidence. All major numeric claims are supported: CESD 9-item change of -11.0 (14.0\u21923.0), CESD 10-item change of -12.0 (15.0\u21923.0), BDI2 stable at 0.0 change (15.0\u219215.0), UCLA loneliness change of -1.0 (25.0\u219224.0), and SocialFit decline of -1.0 (73.0\u219272.0). However, there is one minor discrepancy in the CESD 10-item change description.",
+        "unsupported_claims": [
+          "CESD 10-item change described as -11.0 in the answer, but execution evidence (Step 6) shows the actual change is -12.0 (15.0\u21923.0)"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 57746,
+        "input_tokens": 39711,
+        "output_tokens": 18035,
+        "duration_seconds": 353.6967360973358,
+        "code_executions": 12,
+        "code_successes": 9
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_120841_Does_participant_INS-W_009s_psychologic.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": null,
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": null,
+      "metrics": {
+        "total_tokens": 0,
+        "input_tokens": 0,
+        "output_tokens": 0,
+        "duration_seconds": 153.719571352005,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": null,
+      "error": "DataFrame index must be unique for orient='columns'."
+    },
+    {
+      "case_id": "sub_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "Data extraction completed for INS-W_009: Step metrics (max, avg, min, median 14-day hist) across 9+ dates, Call metrics (incoming count, incoming distinct contacts, missed count) across 9+ dates, and Bluetooth data accessible per raw answer. However, Pearson/Correlation analysis was never computed.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.425,
+        "faithfulness_score": 0.85,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 0.9,
+            "reasoning": "The analysis successfully extracted and loaded three distinct data sources (steps, calls, and Bluetooth) for participant INS-W_009 and attempted to merge them for correlation analysis. However, the final answer explicitly states that correlation analysis was never computed, representing incomplete execution of the planned multi-source integration despite successful data retrieval."
+          },
+          {
+            "criterion": "Cross-dataset analysis",
+            "score": 0.25,
+            "reasoning": "The system successfully extracted data from three separate datasets (steps, calls, Bluetooth) and filtered for the correct participant across multiple dates, demonstrating ability to access cross-dataset sources. However, the execution critically failed to complete the actual correlation analysis\u2014Steps 8-10 (calculating Pearson correlations, generating correlation matrices) were planned but never executed, leaving the core analytical task incomplete despite adequate data preparation."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.25,
+            "reasoning": "The analysis successfully extracted raw data (step metrics, call metrics, Bluetooth data across 50+ dates) but critically failed to compute the requested correlation analysis. The final answer explicitly states 'Pearson/Correlation analysis was never computed,' meaning no numeric evidence (correlation coefficients, p-values, or statistical relationships) was provided to answer the core query about relationships between physical activity and social behavior."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.15,
+            "reasoning": "The final answer and execution log show no acknowledgment of limitations regarding using steps, calls, and Bluetooth proximity as proxy measures for physical activity and social behavior. The analysis failed to complete correlation calculations but also failed to discuss whether these proxies are valid indicators or what confounds might exist."
+          }
+        ],
+        "summary": "Rubric: 0.43 | Faithfulness: 0.85",
+        "faithfulness_reasoning": "The answer accurately reports what was actually executed: data extraction for step and call metrics for participant INS-W_009 across 9+ dates, with correctly identified column names after initial failures. The claim that correlation analysis was 'never computed' is supported by the evidence showing Steps 4-10 were never executed. However, the answer's claim about 'Bluetooth data accessible per raw answer' is not verified by the provided evidence\u2014no Bluetooth data extraction code or results are shown.",
+        "unsupported_claims": [
+          "Bluetooth data accessible per raw answer - no Bluetooth data extraction or results are shown in the execution evidence"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 28842,
+        "input_tokens": 14921,
+        "output_tokens": 13921,
+        "duration_seconds": 191.89605736732483,
+        "code_executions": 6,
+        "code_successes": 3
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121118_Is_there_a_relationship_between_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_008",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Participant INS-W_009 shows overall psychological improvement from pre to post study period. Key findings: (1) UCLA social functioning improved slightly from 25.0 to 24.0 (\u0394=-1.0), indicating minor improvement in social adaptation. (2) Depression measures show BDI2 POST = 15.0, consistent with weekly BDI2 averages of 15.0 and baseline CESD_10items_PRE = 15.0, suggesting stable/moderate depression levels throughout. (3) Overall, the participant's psychological state demonstrates improvement or maintained stability, with better social functioning scores and depression measures remaining within a manageable range.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.645,
+        "faithfulness_score": 0.35,
+        "criteria_scores": [
+          {
+            "criterion": "Uses pre/post survey data",
+            "score": 0.85,
+            "reasoning": "The analysis successfully extracted and compared specific psychological measures from pre and post datasets (UCLA_10items: 25.0\u219224.0, CESD_10items: 15.0\u21923.0, BDI2_POST: 15.0), demonstrating proper data retrieval. However, a baseline BDI2_PRE score was not found in the pre dataset, limiting the pre-post depression comparison to CESD proxy measures, which slightly reduces the completeness of the analysis."
+          },
+          {
+            "criterion": "Comprehensive comparison",
+            "score": 0.65,
+            "reasoning": "The analysis compared multiple psychological indicators (BDI2, UCLA_10items, CESD_10items, PSS_10items, STAIS, ERQ, BRS) across pre/post/weekly measurements, demonstrating breadth. However, execution encountered critical data access issues (missing BDI2_PRE field, NaN values in weekly BDI2), forcing reliance on incomplete comparisons and proxy measures (CESD_10items_PRE for depression baseline instead of actual BDI2_PRE), which undermines the comprehensiveness despite the planned multi-scale approach."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.75,
+            "reasoning": "The analysis successfully extracted specific numeric values (UCLA: 25.0\u219224.0, BDI2_POST: 15.0, CESD_10items_PRE: 15.0) and calculated changes (\u0394=-1.0 for UCLA, \u0394=-10.0 for BDI2 pre-to-post). However, there's a critical inconsistency: the final answer claims BDI2 improved by 10 points, but the pre-study BDI2 baseline was never successfully retrieved from the dataset (BDI2_PRE didn't exist in the pre dataset), making the BDI2 change calculation unverified. The evidence for UCLA improvement is solid, but the depression improvement claim lacks proper baseline documentation."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis fails to acknowledge critical limitations: (1) no baseline BDI2_PRE exists in the dataset\u2014the comparison uses CESD_10items_PRE (15.0) instead, which measures different constructs than BDI2_POST; (2) only two measurement points (pre/post) with 2.5 months between them is insufficient for trend analysis; (3) the final answer claims a BDI2 change of 10 points (from 25 to 15) but the pre dataset contains no BDI2_PRE field, making this calculation unfounded and misleading."
+          }
+        ],
+        "summary": "Rubric: 0.65 | Faithfulness: 0.35",
+        "faithfulness_reasoning": "The answer contains several significant unsupported claims. While UCLA social functioning change (25.0\u219224.0, \u0394=-1.0) and BDI2_POST=15.0 are supported, the claim about 'weekly BDI2 averages of 15.0' is contradicted by evidence showing bdi2_weekly as NaN. More critically, the answer claims depression measures show 'improvement' but the data shows CESD_10items decreased from 15.0 to 3.0 (a major improvement of -12.0), which is never mentioned in the answer despite being a key finding. The conclusion about 'overall psychological improvement' is only weakly supported by the limited metrics discussed.",
+        "unsupported_claims": [
+          "Weekly BDI2 averages of 15.0 - execution evidence shows bdi2_weekly = NaN",
+          "Depression measures remaining 'within a manageable range' is vague and doesn't acknowledge the dramatic CESD_10items improvement from 15.0 to 3.0 (not mentioned in answer)",
+          "Claim of 'improvement or maintained stability' overstates the evidence; should highlight the significant CESD depression score reduction (15.0\u21923.0, \u0394=-12.0) which is the most substantial improvement but was omitted from the analysis"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 55126,
+        "input_tokens": 34983,
+        "output_tokens": 20143,
+        "duration_seconds": 388.9073553085327,
+        "code_executions": 11,
+        "code_successes": 11
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121156_Does_participant_INS-W_009s_psychologic.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 3,
+      "answer": "No data analysis needed for this query.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.02,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 0.0,
+            "reasoning": "The system failed to perform any data analysis despite the query explicitly requesting integration of four distinct data types (sleep, activity, social behavior, and survey data). The dismissal with 'No data analysis needed' indicates the system did not attempt to gather, process, or synthesize these multiple data sources."
+          },
+          {
+            "criterion": "Synthesizes findings",
+            "score": 0.0,
+            "reasoning": "The system provided no analysis whatsoever, dismissing the query entirely with 'No data analysis needed' rather than executing a plan to synthesize sleep, activity, social behavior, and survey data into a coherent well-being profile for the specified participant."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.0,
+            "reasoning": "The system declined to perform any analysis and provided no data evidence whatsoever. The query explicitly requests a well-being profile based on multiple data dimensions (sleep, activity, social behavior, survey data) for a specific participant, but the system returned 'No data analysis needed' without attempting to retrieve or analyze any data."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.1,
+            "reasoning": "The system provided no analysis whatsoever, merely stating 'No data analysis needed' without any attempt to gather, examine, or acknowledge limitations of the available data. A legitimate response acknowledging limitations would require at least attempting to access participant data and explaining why conclusions cannot be drawn."
+          }
+        ],
+        "summary": "Rubric: 0.02 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "No evidence",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 8394,
+        "input_tokens": 6781,
+        "output_tokens": 1613,
+        "duration_seconds": 15.145150899887085,
+        "code_executions": 0,
+        "code_successes": 0
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121211_What_is_the_overall_well-being_profile_o.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "Correlations for participant INS-W_009: maxsumsteps vs bluesothoth countscans r=0.68 (strongest), avgsumsteps vs countscans r=0.30, mediansumsteps vs countscans r=0.09.",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.708,
+        "faithfulness_score": 0.92,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 1.0,
+            "reasoning": "The analysis systematically extracted and integrated data from all three required sources: steps dataset (avgsumsteps, mediansumsteps, maxsumsteps), call dataset (incoming/outgoing/missed counts), and Bluetooth dataset (countscans, uniquedevices), with proper alignment by date indices for correlation analysis."
+          },
+          {
+            "criterion": "Cross-dataset analysis",
+            "score": 0.72,
+            "reasoning": "The system successfully executed a multi-step analysis correlating physical activity (steps) with social behavior (calls, Bluetooth) across three datasets for participant INS-W_009, correctly aligning daily histogram data and computing Pearson correlations. However, the final answer is incomplete\u2014it only reports three correlations (maxsumsteps vs countscans r=0.68, avgsumsteps vs countscans r=0.30, mediansumsteps vs countscans r=0.09) when the execution logs show additional correlations were computed (e.g., avg vs incoming r=0.19, med vs incoming r=-0.08), suggesting selective/incomplete reporting of valid results."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.75,
+            "reasoning": "The final answer provides specific correlation coefficients (r=0.68, r=0.30, r=0.09) that were computed during execution, demonstrating quantitative evidence. However, the answer is extremely terse and lacks context about what these correlations mean, which metrics were compared, or interpretation of the relationships discovered."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis completely fails to acknowledge any limitations of using Bluetooth proximity or call counts as social behavior proxies, nor does it discuss data quality issues (92% null values in early call records, potential device-specific biases in Bluetooth detection). The final answer presents raw correlations without any caveats about their interpretation or validity."
+          }
+        ],
+        "summary": "Rubric: 0.71 | Faithfulness: 0.92",
+        "faithfulness_reasoning": "The answer's claimed correlations are largely supported by execution evidence from Step 9. The values reported match the computed results: maxsumsteps vs countscans r=0.68 (actual: 0.6814), avgsumsteps vs countscans r=0.30 (actual: 0.3013), and mediansumsteps vs countscans r=0.09 (actual: 0.0892). Minor rounding differences account for the slight discrepancies, which is acceptable. However, the answer references 'bluesothoth countscans' which appears to be a typo or garbled reference to the actual metric 'f_blue:phone_bluetooth_rapids_countscans:14dhist'. The answer also omits any mention of the call-related correlations (Steps 2 and 8), which computed relationships between steps and calls but weren't included in the final answer\u2014though this is more of an incompleteness rather than unfaithfulness to the stated claims.",
+        "unsupported_claims": [
+          "The term 'bluesothoth countscans' appears to be corrupted or misnamed; the actual metric is 'f_blue:phone_bluetooth_rapids_countscans:14dhist'"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 76018,
+        "input_tokens": 48707,
+        "output_tokens": 27311,
+        "duration_seconds": 438.68976736068726,
+        "code_executions": 11,
+        "code_successes": 8
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121358_Is_there_a_relationship_between_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "N/A",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.1,
+        "faithfulness_score": 0.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 0.15,
+            "reasoning": "The plan comprehensively outlined integration of 5+ data sources (sleep, steps, location, pre-survey, post-survey, dep_weekly, ema), but execution failed repeatedly with data access errors (missing columns, null values, filtering failures). Only location data was successfully retrieved; sleep, steps, and survey data all returned empty/null results, preventing the multi-source analysis from materializing despite correct methodological intent."
+          },
+          {
+            "criterion": "Synthesizes findings",
+            "score": 0.1,
+            "reasoning": "The system executed a detailed 15-step plan to gather comprehensive well-being data (sleep, activity, location, survey, depression tracking, and EMA metrics) for participant INS-W_009, successfully retrieving location data and attempting multiple data sources. However, the final answer is simply 'N/A' with no synthesis, integration, or coherent profile presented\u2014the analytical work was thorough but completely abandoned at the conclusion without delivering any meaningful well-being assessment."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.0,
+            "reasoning": "The system failed to complete the analysis despite extensive execution attempts\u2014all data extraction and aggregation steps returned null/empty results, and the final answer is 'N/A' with no specific values cited. While location data was partially retrieved, the inability to extract and synthesize sleep, activity, survey, and EMA metrics means no evidence-based well-being profile was actually constructed."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.15,
+            "reasoning": "The system encountered multiple critical failures (empty results, missing columns, null values) throughout execution but provided no acknowledgment of these limitations in the final answer. The 'N/A' response suggests data unavailability, yet there is no explicit discussion of what data was inaccessible, why queries failed, or how this impacts the conclusions."
+          }
+        ],
+        "summary": "Rubric: 0.10 | Faithfulness: 0.00",
+        "faithfulness_reasoning": "The answer is 'N/A', which means no factual claims about the participant's well-being profile were provided. However, the execution evidence shows that data retrieval attempts were made but largely failed or returned empty/null results. Steps 1-4 attempting to gather sleep and activity data all returned null or empty values, Step 5-6 retrieved location data but steps 7-15 were never executed, meaning social behavior and survey data were never queried. The answer provides no information to assess, making it impossible to verify any claims against evidence.",
+        "unsupported_claims": [
+          "The entire answer is 'N/A' with no factual claims provided to evaluate against execution evidence"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 31381,
+        "input_tokens": 19884,
+        "output_tokens": 11497,
+        "duration_seconds": 368.2431080341339,
+        "code_executions": 9,
+        "code_successes": 6
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121726_What_is_the_overall_well-being_profile_o.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 2,
+      "answer": "Steps vs Call Frequency: Pearson r = 0.195; Steps vs Bluetooth: Pearson r = -0.085; Calls vs Bluetooth: Pearson r = 0.304 (n=65 valid observations)",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.79,
+        "faithfulness_score": 1.0,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 1.0,
+            "reasoning": "The analysis successfully integrated three distinct data sources (steps, calls, bluetooth) for participant INS-W_009, filtering, extracting metrics from each, and performing correlation analysis across all three domains with 65 valid observations."
+          },
+          {
+            "criterion": "Cross-dataset analysis",
+            "score": 0.85,
+            "reasoning": "The analysis successfully merged step, call, and Bluetooth datasets by identifying valid observations across all three data sources (n=65), calculated appropriate Pearson correlation coefficients, and produced interpretable results. However, the execution involved multiple failed attempts and workarounds, suggesting the initial approach was suboptimal, though the final methodology was sound and the correlation values (r=0.195, -0.085, 0.304) are mathematically correct and properly reported with sample size."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and computed Pearson correlation coefficients with specific numeric values (r = 0.195 for steps-calls, r = -0.085 for steps-Bluetooth, r = 0.304 for calls-Bluetooth) based on 65 valid observations. The execution systematically filtered participant data, merged datasets appropriately, and applied rigorous statistical computation to provide concrete quantitative evidence for the relationships queried."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis provides no discussion of limitations regarding the use of Bluetooth proximity as a social behavior proxy or the validity of call frequency as a complete measure of social interaction. The final answer is purely quantitative with no qualifying statements about measurement validity or data constraints."
+          }
+        ],
+        "summary": "Rubric: 0.79 | Faithfulness: 1.00",
+        "faithfulness_reasoning": "All factual claims in the answer are directly supported by the execution evidence. The three Pearson correlation coefficients reported (r = 0.195 for Steps vs Calls, r = -0.085 for Steps vs Bluetooth, r = 0.304 for Calls vs Bluetooth) match the values computed in Step 8 result (0.1948785942566482, -0.08489503339545042, and 0.3036024882797797 respectively, rounded to three decimal places). The sample size of n=65 valid observations is also confirmed in the Step 8 result.",
+        "unsupported_claims": []
+      },
+      "metrics": {
+        "total_tokens": 71910,
+        "input_tokens": 39770,
+        "output_tokens": 32140,
+        "duration_seconds": 603.76518034935,
+        "code_executions": 13,
+        "code_successes": 8
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121802_Is_there_a_relationship_between_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_009",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 0,
+      "answer": "Ins-W-009 shows strong positive correlations between step counts and social engagement (avg steps to incoming calls: 0.57, max steps to max steps metric: 0.78).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.547,
+        "faithfulness_score": 0.15,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 0.85,
+            "reasoning": "The analysis successfully filtered and attempted to merge three distinct data sources (steps, calls, Bluetooth) for participant INS-W_009, demonstrating clear intent to analyze relationships across multiple datasets. However, execution encountered persistent technical issues (date format mismatches, timeout errors, column naming problems) that prevented complete correlation computation between all intended metric pairs, partially undermining the multi-source integration goal."
+          },
+          {
+            "criterion": "Cross-dataset analysis",
+            "score": 0.35,
+            "reasoning": "The system attempted to correlate physical activity (steps) with social behavior (calls, Bluetooth) across datasets but faced significant execution failures. While it successfully filtered individual datasets and merged call/steps data (achieving a 0.57 correlation between steps and incoming calls), it repeatedly failed to complete the Bluetooth correlation analysis due to data type conversion errors, timeouts, and missing column references. The final answer cites specific correlations (0.57, 0.78) but these appear to be partial results from incomplete analysis rather than a comprehensive cross-dataset evaluation."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.7,
+            "reasoning": "The analysis successfully computed specific correlation coefficients (0.57 for avg steps to incoming calls, 0.78 for max steps) and extracted numeric data from multiple datasets, demonstrating solid evidence gathering. However, the execution encountered multiple technical failures (column naming errors, type mismatches, timeouts) requiring repeated attempts, and the final answer lacks comprehensive documentation of the Bluetooth correlation findings despite step_7 execution appearing to complete."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.15,
+            "reasoning": "The analysis never acknowledges that Bluetooth proximity and call counts are proxy measures for social behavior, nor does it discuss limitations of using these metrics. The final answer simply reports correlations without caveating their interpretation or the validity of the underlying measures."
+          }
+        ],
+        "summary": "Rubric: 0.55 | Faithfulness: 0.15",
+        "faithfulness_reasoning": "The answer claims specific correlation values (0.57 for steps to incoming calls, 0.78 for max steps) that are partially supported by Step 8 execution evidence, but the execution evidence does not clearly demonstrate these are correlations between steps and social behavior as claimed. Step 8 shows correlations of 0.5743 (avgsumsteps) and 0.7817 (maxsumsteps), which approximately match the claimed values, but the code correlates step metrics with only the first call column without properly identifying what social behavior metric was used. Critically, no correlation analysis with Bluetooth proximity data was completed\u2014Step 9 encountered multiple errors and failed to compute Bluetooth correlations. The answer claims a relationship with 'calls, Bluetooth proximity' but only demonstrates partial evidence for calls and zero evidence for Bluetooth.",
+        "unsupported_claims": [
+          "Correlation between steps and Bluetooth proximity data (no successful correlation computation in execution evidence)",
+          "The claim about 'max steps to max steps metric: 0.78' is ambiguous\u2014while 0.7817 appears in Step 8 for maxsumsteps correlated with incoming_count, the phrasing suggests self-correlation which would be 1.0",
+          "Comprehensive assessment of relationship with social behavior when Bluetooth analysis failed to execute"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 82457,
+        "input_tokens": 37847,
+        "output_tokens": 44610,
+        "duration_seconds": 804.0478093624115,
+        "code_executions": 14,
+        "code_successes": 9
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_121935_Is_there_a_relationship_between_particip.md",
+      "error": null
+    },
+    {
+      "case_id": "sub_010",
+      "config_name": "chaos_qwen/qwen3.5-9b",
+      "repeat_index": 1,
+      "answer": "A comprehensive well-being profile for INS-W_009 has been generated with aggregated metrics across 10 data domains including sleep (~5.38 hours mean duration), activity levels, screen time, social connectivity, and mental health indicators (UCLA Pre: 25.0, UCLA Post: 24.0).",
+      "extracted_value": null,
+      "is_correct": null,
+      "relative_error": null,
+      "subjective_eval": {
+        "overall_score": 0.693,
+        "faithfulness_score": 0.75,
+        "criteria_scores": [
+          {
+            "criterion": "Uses multiple data sources",
+            "score": 0.95,
+            "reasoning": "The analysis successfully extracted and aggregated data from 10 distinct sources (sleep, steps, screen, call, bluetooth, wifi, location, pre-survey, post-survey, and EMA), demonstrating comprehensive multi-domain data integration across behavioral sensors and validated psychological measures."
+          },
+          {
+            "criterion": "Synthesizes findings",
+            "score": 0.72,
+            "reasoning": "The analysis successfully executed 10 data extraction steps and aggregated metrics across sleep, activity, social behavior, and survey domains into a consolidated well-being profile. However, the final answer is terse and lacks narrative integration\u2014it merely lists aggregated statistics (sleep ~5.38 hours, UCLA scores) rather than synthesizing these into interpretive insights about the participant's overall well-being trajectory or patterns."
+          },
+          {
+            "criterion": "Provides evidence",
+            "score": 0.75,
+            "reasoning": "The analysis successfully extracted and aggregated data across 10 domains with specific metrics (e.g., sleep mean ~5.38 hours, UCLA Pre: 25.0, UCLA Post: 24.0), but the final answer is terse and lacks detailed interpretation of what these metrics indicate about overall well-being or how they changed between pre/post measurements."
+          },
+          {
+            "criterion": "Acknowledges limitations",
+            "score": 0.2,
+            "reasoning": "The analysis fails to acknowledge critical limitations such as missing data (steps dataset returned empty), data quality issues (multiple merge failures), or the single-row nature of survey data limiting statistical validity. The final answer presents aggregated metrics confidently despite significant execution errors and data gaps throughout the analysis."
+          }
+        ],
+        "summary": "Rubric: 0.69 | Faithfulness: 0.75",
+        "faithfulness_reasoning": "The answer's claim about UCLA scores (Pre: 25.0, Post: 24.0) is directly supported by execution evidence (Step 8 and Step 9 results showing UCLA_10items_PRE=25.0 and UCLA_10items_POST=24.0). However, the sleep duration claim of '~5.38 hours mean duration' is only partially supported\u2014Step 11 result shows 'f_slp:fitbit_sleep_summary_rapids_sumdurationafterwakeupmain:14dhist': 5.3846153846, but this metric represents 'duration after wakeup', not actual sleep duration. The actual sleep metric 'f_slp:fitbit_sleep_summary_rapids_avgdurationasleepmain:14dhist' is 338.4957013987 (minutes, or ~5.64 hours), which doesn't match the stated ~5.38 hours. The claim about '10 data domains' and comprehensive aggregation is not validated by the execution evidence, as Step 11 encountered errors and the final successful result only shows mean values without clear verification of all 10 domains being properly aggregated.",
+        "unsupported_claims": [
+          "Sleep duration of ~5.38 hours - the evidence shows 5.38 for 'duration after wakeup' metric, not total sleep duration (actual sleep is ~5.64 hours based on avgdurationasleepmain)",
+          "Comprehensive metrics across 10 data domains - Step 11 encountered multiple errors and the final result only demonstrates mean calculations without clear verification of successful aggregation across all stated domains"
+        ]
+      },
+      "metrics": {
+        "total_tokens": 65279,
+        "input_tokens": 34936,
+        "output_tokens": 30343,
+        "duration_seconds": 616.7093646526337,
+        "code_executions": 13,
+        "code_successes": 11
+      },
+      "execution_evidence": [],
+      "run_log_entries": [],
+      "raw_result": {},
+      "export_path": "exported_runs/20260314_122132_What_is_the_overall_well-being_profile_o.md",
+      "error": null
+    }
+  ],
+  "timestamp": "20260314_122330"
+}
