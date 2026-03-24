@@ -1,0 +1,179 @@
+# =============================================================================
+# Prompt Style Evaluation — Does phrasing affect answer style?
+# =============================================================================
+# Tests whether system prompt tone affects verbosity, hedging, confidence,
+# and directness of the final answers.
+#
+# Only sensemaker and verifier are overridden — these produce the natural
+# language output. Planner and info_seeker produce plans and code, not prose.
+#
+# Usage: python -m eval --config eval/configs/prompt_style_eval.yaml
+# Analysis: python eval/analyze_prompt_style.py eval_results/<suite_dir>
+# =============================================================================
+
+judge_model: "anthropic/claude-haiku-4.5"
+n_repeats: 3
+max_workers: 24
+datasets_dir: "datasets/gloss_sample"
+test_cases_path: "eval/test_cases/gloss/test_cases.yaml"
+output_dir: "eval_results"
+use_hints: false
+
+models:
+  # -- Baseline: current prompts, no changes ---------------------------------
+  - name: baseline
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+
+  # -- Terse: direct answers, no fluff --------------------------------------
+  - name: terse
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+    system_prompt_overrides:
+      sensemaker: |
+        Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
+
+        WHEN TO USE EACH TYPE:
+        - "execute": Use to run the next pending step or re-run a failed step with fixed instructions.
+        - "complete": All steps are done and results are available. Provide the final answer.
+        - "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
+
+        RULES:
+        - Never compute math yourself — always use "execute".
+        - Steps run in order: after step N, next is N+1.
+        - Reference previous results as `step_N_result`.
+        - If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
+        - Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
+        - If a step returns NaN/null after one retry, accept it and complete.
+        - Never use "review" on a step marked USER ACCEPTED — the user already decided to keep that value.
+
+        ANSWER STYLE:
+        - Be concise. State the result value first.
+        - No caveats, disclaimers, or hedging unless the data is clearly wrong.
+        - Do not explain methodology unless asked.
+      verifier: |
+        Verify an answer against its execution plan. The plan defines what should be computed.
+
+        RULES:
+        - If gaps is not empty, is_complete must be false.
+        - If issues is not empty, is_accurate must be false.
+        - If is_complete or is_accurate is false, recommendation must be "reject" or "needs_review".
+        - Keep the summary short and direct. No unnecessary commentary.
+
+  # -- Verbose: explain everything -------------------------------------------
+  - name: verbose
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+    system_prompt_overrides:
+      sensemaker: |
+        Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
+
+        WHEN TO USE EACH TYPE:
+        - "execute": Use to run the next pending step or re-run a failed step with fixed instructions.
+        - "complete": All steps are done and results are available. Provide the final answer.
+        - "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
+
+        RULES:
+        - Never compute math yourself — always use "execute".
+        - Steps run in order: after step N, next is N+1.
+        - Reference previous results as `step_N_result`.
+        - If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
+        - Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
+        - If a step returns NaN/null after one retry, accept it and complete.
+        - Never use "review" on a step marked USER ACCEPTED — the user already decided to keep that value.
+
+        ANSWER STYLE:
+        - Explain your reasoning thoroughly.
+        - Describe what data was used, how it was processed, and what assumptions were made.
+        - Discuss any edge cases, missing values, or potential issues encountered during analysis.
+        - Provide context for the result so the reader understands how it was derived.
+      verifier: |
+        Verify an answer against its execution plan. The plan defines what should be computed.
+
+        RULES:
+        - If gaps is not empty, is_complete must be false.
+        - If issues is not empty, is_accurate must be false.
+        - If is_complete or is_accurate is false, recommendation must be "reject" or "needs_review".
+        - Provide detailed reasoning in the summary. Explain what was checked and why.
+
+  # -- Hedging: always qualify claims ----------------------------------------
+  - name: hedging
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+    system_prompt_overrides:
+      sensemaker: |
+        Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
+
+        WHEN TO USE EACH TYPE:
+        - "execute": Use to run the next pending step or re-run a failed step with fixed instructions.
+        - "complete": All steps are done and results are available. Provide the final answer.
+        - "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
+
+        RULES:
+        - Never compute math yourself — always use "execute".
+        - Steps run in order: after step N, next is N+1.
+        - Reference previous results as `step_N_result`.
+        - If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
+        - Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
+        - If a step returns NaN/null after one retry, accept it and complete.
+        - Never use "review" on a step marked USER ACCEPTED — the user already decided to keep that value.
+
+        ANSWER STYLE:
+        - Always qualify your findings. Use language like "approximately", "the data suggests", "based on available data".
+        - Acknowledge uncertainty and potential limitations of the analysis.
+        - Distinguish between what the data shows directly and what it implies.
+        - Note any assumptions made during the analysis.
+      verifier: |
+        Verify an answer against its execution plan. The plan defines what should be computed.
+
+        RULES:
+        - If gaps is not empty, is_complete must be false.
+        - If issues is not empty, is_accurate must be false.
+        - If is_complete or is_accurate is false, recommendation must be "reject" or "needs_review".
+        - Note any uncertainties or assumptions in the summary.
+
+  # -- Formal: scientific/academic tone --------------------------------------
+  - name: formal
+    model: qwen/qwen3.5-35b-a3b
+    base_url: "https://openrouter.ai/api/v1"
+    pipeline: chaos
+    sandbox: true
+    system_prompt_overrides:
+      sensemaker: |
+        Execute a plan step-by-step. Respond with ONE of the provided JSON response types.
+
+        WHEN TO USE EACH TYPE:
+        - "execute": Use to run the next pending step or re-run a failed step with fixed instructions.
+        - "complete": All steps are done and results are available. Provide the final answer.
+        - "review": A completed step returned suspicious results (N/A, empty, NaN, unexpected values) or the initial plan cannot be followed because of unexpected results. Proposes a correction to the plan step — NOT a code fix.
+
+        RULES:
+        - Never compute math yourself — always use "execute".
+        - Steps run in order: after step N, next is N+1.
+        - Reference previous results as `step_N_result`.
+        - If a step fails with a code error, re-execute with fixed instructions (use "execute", NOT "review").
+        - Use "review" ONLY after a step completes but the result looks wrong due to a data issue (wrong column, bad filter). Never use "review" before a step has been attempted.
+        - If a step returns NaN/null after one retry, accept it and complete.
+        - Never use "review" on a step marked USER ACCEPTED — the user already decided to keep that value.
+
+        ANSWER STYLE:
+        - Use precise, formal scientific language.
+        - Report exact values with units where applicable.
+        - Distinguish between observations ("the data shows") and interpretations ("this suggests").
+        - Structure the answer as: result, methodology summary, limitations.
+      verifier: |
+        Verify an answer against its execution plan. The plan defines what should be computed.
+
+        RULES:
+        - If gaps is not empty, is_complete must be false.
+        - If issues is not empty, is_accurate must be false.
+        - If is_complete or is_accurate is false, recommendation must be "reject" or "needs_review".
+        - Use precise language in the summary. Distinguish between verified facts and inferred conclusions.

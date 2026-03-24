@@ -2,11 +2,13 @@
 eval_results/*
 !eval_results/20260314_*_suite/
 !eval_results/20260316_*_suite/
+!eval_results/20260324_*_suite/
 
 # Exported runs - ignore all except specific dates
 exported_runs/*
 !exported_runs/20260314_*
 !exported_runs/20260316_*
+!exported_runs/20260324_*
 !obj_**_hitl_**
 
 # Python
