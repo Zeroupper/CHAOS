@@ -252,7 +252,7 @@ def export_run_to_markdown(
             lines.append(f"")
 
     # Write file
-    output_path.write_text("\n".join(lines))
+    output_path.write_text("\n".join(lines), encoding="utf-8")
     return output_path
 
 
@@ -345,7 +345,7 @@ def export_verbose_transcript(
         lines.append("---")
         lines.append("")
 
-    output_path.write_text("\n".join(lines))
+    output_path.write_text("\n".join(lines), encoding="utf-8")
     return output_path
 
 
