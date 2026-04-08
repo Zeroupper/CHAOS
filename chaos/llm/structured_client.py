@@ -39,6 +39,7 @@ class StructuredLLMClient:
         self._openai_client = OpenAI(
             base_url=config.base_url,
             api_key=config.api_key or "<local-api-key>",
+            timeout=20.0,
             default_headers=(
                 {}
                 if config.is_local

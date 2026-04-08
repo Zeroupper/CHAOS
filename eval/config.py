@@ -17,7 +17,7 @@ class RunConfiguration:
 
     name: str  # e.g. "gpt4o_with_schema"
     model: str  # e.g. "openai/gpt-4o"
-    pipeline: str = "chaos"  # "chaos" | "rag"
+    pipeline: str = "chaos"  # "chaos" | "rag" | "direct"
     base_url: str | None = None  # override for local models (e.g. "http://localhost:11434/v1")
     system_prompt_overrides: dict[str, str] = field(default_factory=dict)
     sandbox: bool = False

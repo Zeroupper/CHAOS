@@ -17,7 +17,7 @@ from rich.table import Table
 from chaos.ui.display import set_quiet
 
 from .config import EvalConfig, RunConfiguration, load_test_cases, parse_test_cases
-from .pipelines import run_chaos, run_rag
+from .pipelines import run_chaos, run_direct, run_rag
 from .types import EvalResult, RunMetrics, TestCase
 
 
@@ -95,6 +95,8 @@ def _run_work_item(item: _WorkItem, eval_config: EvalConfig) -> EvalResult:
     """Dispatch a work item to the correct pipeline function."""
     if item.run_config.pipeline == "rag":
         return run_rag(item.run_config, item.case, item.repeat, item.rag_index, eval_config.use_hints)
+    if item.run_config.pipeline == "direct":
+        return run_direct(eval_config, item.run_config, item.case, item.repeat, item.data_registry)
     return run_chaos(eval_config, item.run_config, item.case, item.repeat, item.data_registry)
 
 
